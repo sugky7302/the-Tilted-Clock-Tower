@@ -1,11 +1,11 @@
-local Runtime	= require 'import.Runtime'
-local Console	= require 'jass.Console'
+local Runtime	= require 'jass.runtime'
+local Console	= require 'jass.console'
 local string  = string
 
 Base = {}
 
 -- 版本號
-Base.version = '0.1.0'
+Base.VERSION = '0.1.0'
 
 --打開控制台
 Console.enable = true
@@ -43,4 +43,4 @@ end
 Base.add_lua_path ''
 
 -- 初始化本地腳本
-print('1')
+require 'main'

@@ -1,0 +1,1 @@
+如果要批量加載數據，請使用GeneralBonsuSystemPrototype加載，只不過有些數據要自己填
