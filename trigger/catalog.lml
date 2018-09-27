@@ -6,3 +6,6 @@
     base: 3-base
     main: 4-main
     jass_tool: 5-jass_tool
+'2 War3': '2-2 War3'
+    api: 1-api
+    id: 2-id
