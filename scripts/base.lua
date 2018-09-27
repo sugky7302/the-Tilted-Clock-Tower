@@ -1,25 +1,25 @@
-local runtime	= require 'jass.runtime'
-local console	= require 'jass.console'
+local Runtime	= require 'import.Runtime'
+local Console	= require 'jass.Console'
 local string  = string
 
-base = {}
+Base = {}
 
 -- 版本號
-base.version = '0.1.0'
+Base.version = '0.1.0'
 
 --打開控制台
-console.enable = true
+Console.enable = true
 
 --重載print，自動轉換編碼
-print = console.write
+print = Console.write
 
 --將handle等級設為0(地圖中所有的handle均使用table封裝)
-runtime.handle_level = 0
+Runtime.handle_level = 0
 
 --關閉等待
-runtime.sleep = false
+Runtime.sleep = false
 
-function base.error_handle(msg)
+function Base.error_handle(msg)
 	print("---------------------------------------")
 	print(tostring(msg) .. "\n")
 	print(debug.traceback())
@@ -27,20 +27,20 @@ function base.error_handle(msg)
 end
 
 --錯誤匯報
-function runtime.error_handle(msg)
-	base.error_handle(msg)
+function Runtime.error_handle(msg)
+	Base.error_handle(msg)
 end
 
-package.path = [[D:\YDWE1.25.10\example\自製技能\Mod\傾斜的時鐘塔Lua版\scripts\?.lua]]
+package.path = [[D:\YDWE1.25.10\example\Mod\The_Tilted_Clock_Tower\scripts\?.lua]]
 
-function base.add_lua_path(dir)
+function Base.add_lua_path(dir)
 	if dir ~= '' then dir = dir ..[[\]] end
 	local r = dir .. '?.lua'
-	package.path = package.path .. ';' .. [[D:\YDWE1.25.10\example\自製技能\Mod\傾斜的時鐘塔Lua版\scripts\]] .. r
+	package.path = package.path .. ';' .. [[D:\YDWE1.25.10\example\Mod\The_Tilted_Clock_Tower\scripts\]] .. r
 end
 
 -- 添加require搜寻路径
-base.add_lua_path ''
+Base.add_lua_path ''
 
 -- 初始化本地腳本
-require 'main'
+print('1')
