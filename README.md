@@ -3,11 +3,11 @@
 > - 將所有腳本的更新都集中撰寫，方便日後檢查、維護。
 >#### Added:
 > - 新增快速排序(quicksort)演算法。[2018-07-06]
-> - 新增node，用於list。
-> - 新增list，用於texttag。
-> - 新增array，用於group。
-> - 新增texttag。
-> - timer新增Pause函數。
+> - 新增node，用於list。[2018-09-29]
+> - 新增list，用於texttag。[2018-09-29]
+> - 新增array，用於group。[2018-09-29]
+> - 新增texttag。[2018-09-29]
+> - timer新增Pause函數。[2018-09-29]
 >#### Changed:
 > - 將外部腳本寫進地圖內，防止YDWE讀不到。[2018-09-27]
 > - 將group用array重寫部分函數。[2018-09-29]
