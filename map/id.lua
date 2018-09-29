@@ -1,4 +1,3 @@
-        local Base = require 'base'
         Base.ids1 = {}
         Base.ids2 = {}
         function Base._id(a)

@@ -1,5 +1,5 @@
 <?
-    import 'base.lua' [[
+    import 'base.lua' [==[
         local Runtime = require 'jass.runtime'
         local Console = require 'jass.console'
         local Debug = require 'jass.debug'
@@ -36,5 +36,5 @@
 
         -- 初始化本地腳本
         require 'main'
-    ]]
+    ]==]
 ?>

@@ -5,7 +5,24 @@
         运行
     base: 3-base
     main: 4-main
-    jass_tool: 5-jass_tool
 '2 War3': '2-2 War3'
     api: 1-api
     id: 2-id
+'3 STL': '3-3 STL'
+    stack: 1-stack
+    node: 2-node
+    array: 3-array
+    list: 4-list
+'4 Tool': '4-4 Tool'
+    greatest_common_factor: 1-greatest_common_factor
+    quick_sort: 2-quick_sort
+    random_number_generator: 3-random_number_generator
+    general_bonus_system: 4-general_bonus_system
+    custom_tool: 5-custom_tool
+    jass_tool: 6-jass_tool
+    color: 7-color
+'5 Types': '5-5 Types'
+    point: 1-point
+    timer: 2-timer
+    group: 3-group
+    texttag: 4-texttag

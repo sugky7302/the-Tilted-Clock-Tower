@@ -1,6 +1,5 @@
 <?
     import 'id.lua' [[
-        local Base = require 'base'
         Base.ids1 = {}
         Base.ids2 = {}
 
