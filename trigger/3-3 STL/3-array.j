@@ -1,6 +1,7 @@
 <?
     import 'array.lua' [==[
         local setmetatable = setmetatable
+        local Object = require 'object'
 
         local Array = {}
         setmetatable(Array, Array)
@@ -10,7 +11,7 @@
         -- 特性：連續
         -- 缺點：若移除中間元素之後，順序會開始混亂
         function Array:__call(type)
-            local obj = {
+            local obj = Object{
                 type = type,
                 begin = 1,
                 terminus = 0,

@@ -1,10 +1,11 @@
         local setmetatable = setmetatable
+        local Object = require 'object'
         local Stack = {}
         local mt = {}
         setmetatable(Stack, Stack)
         Stack.__index = mt
         function Stack:__call(type)
-            local obj = {
+            local obj = Object{
                 type = type,
                 top = nil,
                 size = 0, 

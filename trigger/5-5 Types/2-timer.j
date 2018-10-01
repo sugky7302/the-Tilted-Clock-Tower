@@ -3,6 +3,7 @@
         local setmetatable = setmetatable
         local Stack = require 'stack'
         local cj = require 'jass.common'
+        local Object = require 'object'
 
         local Timer = {}
         local mt = {}
@@ -14,7 +15,7 @@
         local Run = nil
 
         function Timer:__call(timeout, isPeriod, execution)
-            local obj = {
+            local obj = Object{
                 timeout = timeout,
                 isPeriod = isPeriod,
                 execution = execution

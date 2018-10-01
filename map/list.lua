@@ -1,48 +1,56 @@
         local setmetatable = setmetatable
         local Node = require 'node'
+        local Object = require 'object'
         local List = {}
-        setmetatable(List,List)
-        List.__index = List
+        local mt = {}
+        setmetatable(List, List)
+        List.__index = mt
         local Next
         function List:__call()
-            local obj = {head = nil, tail = nil, size = 0}
+            local obj = Object{
+                head = nil,
+                tail = nil,
+                size = 0
+            }
             setmetatable(obj, self)
             return obj
         end
-        function List:GetSize()
+        function mt:GetSize()
             return self.size
         end
-        function List:GetHead()
+        function mt:GetHead()
             return self.head
         end
-        function List:GetTail()
+        function mt:GetTail()
             return self.tail
         end
-        function List:Insert(node, data)
-            local newNode = Node(data)
+        function mt:Insert(node, data)
             if (self.size < 2) or (node == self.head) then
-                self:PushFront(newNode)
+                self:PushFront(data)
             else
-                newNode.prev = node.prev
-                node.prev.next = newNode
+                local newNode = Node(data)
+                local prevNode = node.prev
+                newNode.prev = prevNode
+                prevNode.next = newNode
                 newNode.next = node
                 node.prev = newNode
             end
             self.size = self.size + 1
         end
-        function List:PushFront(data)
+        function mt:PushFront(data)
             local newNode = Node(data)
             if self:IsEmpty() then
                 self.head = newNode
                 self.tail = newNode
             else
-                self.head.prev = newNode
-                newNode.next = self.head
+                local head = self.head
+                head.prev = newNode
+                newNode.next = head
                 self.head = newNode
             end
             self.size = self.size + 1
         end
-        function List:PushBack(data)
+        function mt:PushBack(data)
             local newNode = Node(data)
             if self:IsEmpty() then
                 self.head = newNode
@@ -55,51 +63,57 @@
             end
             self.size = self.size + 1
         end
-        function List:IsEmpty()
+        function mt:IsEmpty()
             return self.size < 1
         end
-        function List:Erase(node)
+        function mt:Erase(node)
             if node.EIN == self.head.EIN then 
                 self:PopFront()
             elseif node.EIN == self.tail.EIN then
                 self.PopBack()
             else
-                for currentNode in self:Iterator() do
-                    if currentNode.EIN == node.EIN then 
-                        currentNode.prev.next = currentNode.next
-                        currentNode.next.prev = currentNode.prev
-                        currentNode:Remove()
-                        self.size = self.size - 1
-                        break
-                    end
-                end
+                local prevNode = node.prev
+                local nextNode = node.next
+                prevNode.next = nextNode
+                nextNode.prev = prevNode
+                node:Remove()
+                self.size = self.size - 1
             end
         end
-        function List:PopFront()
-            if self.size < 2 then
+        function mt:PopFront()
+            if self.size == 1 then
                 self.head:Remove()
+                self.head = nil
+                self.tail = nil
             else
-                local currentNode = self.head.next
+                local head = self.head
+                local currentNode = head.next
                 currentNode.prev = nil
-                self.head.next = nil
-                self.head:Remove()
+                head:Remove()
                 self.head = currentNode
             end
             self.size = self.size - 1
         end
-        function List:PopBack()
-            if self.size < 2 then
+        function mt:Remove()
+            while self.tail ~= nil do
+                self:PopBack()
+            end
+        end
+        function mt:PopBack()
+            if self.size == 1 then
                 self.head:Remove()
+                self.head = nil
+                self.tail = nil
             else
-                local currentNode = self.tail.prev
+                local tail = self.tail
+                local currentNode = tail.prev
                 currentNode.next = nil
-                self.tail.prev = nil
-                self.tail:Remove()
+                tail:Remove()
                 self.tail = currentNode
             end
             self.size = self.size - 1
         end
-        function List:Find(data)
+        function mt:Find(data)
             for node in self:Iterator() do
                 if node.data == data then 
                     return node
@@ -107,19 +121,12 @@
             end
             return nil
         end
-        function List:Remove()
-            while self.head ~= nil do
-                self:PopBack()
-            end
-        end
-        function List:Iterator()
+        function mt:Iterator()
             return Next, self, nil
         end
         Next = function(list, node)
             if not node then
                 return list.head
-            elseif node == list.tail then -- 終止條件
-                return nil
             else
                 return node.next
             end

@@ -2,9 +2,6 @@
         local js = require 'jass_tool'
         local gbs = require 'general_bonus_system'
         local Color = require 'color'
-local Texttag = require 'texttag'
-local Point = require 'point'
-obj = Texttag("test", Point(0, 0), 10, true)
         require 'id'
         local function main()
             print('歡迎進入 奧蘭多') -- 測試lua check訊息

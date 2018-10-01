@@ -3,6 +3,7 @@
         local cj = require 'jass.common'
         local sin, cos, rad = math.sin, math.cos, math.rad
         local setmetatable = setmetatable
+        local Object = require 'object'
 
         local Point = {}
         local mt = {}
@@ -10,7 +11,7 @@
         Point.__index = mt
 
         function Point:__call(x, y, z)
-            local obj = {
+            local obj = Object{
                 x = x or 0,
                 y = y or 0,
                 z = z or 0

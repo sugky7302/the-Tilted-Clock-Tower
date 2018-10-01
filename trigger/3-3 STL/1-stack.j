@@ -1,6 +1,7 @@
 <?
     import 'stack.lua' [==[
         local setmetatable = setmetatable
+        local Object = require 'object'
 
         local Stack = {}
         local mt = {}
@@ -8,7 +9,7 @@
         Stack.__index = mt
 
         function Stack:__call(type)
-            local obj = {
+            local obj = Object{
                 type = type,
                 top = nil,
                 size = 0, 

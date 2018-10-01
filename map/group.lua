@@ -3,6 +3,7 @@
         local stack = require 'stack'
         local js = require 'jass_tool'
         local Array = require 'array'
+        local Object = require 'object'
         local Group = {}
         local mt = {}
         setmetatable(Group,Group) -- 調用元方法的設定方式
@@ -11,7 +12,7 @@
         Group.QUANTITY = 128
         Group.recycleGroup = stack("group")
         function Group:__call(filter)
-            local obj = {units = Array("units")}
+            local obj = Object{units = Array("units")}
             if self.recycleGroup:IsEmpty() then
                 obj.object = cj.CreateGroup()
             else

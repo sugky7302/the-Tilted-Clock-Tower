@@ -26,3 +26,6 @@
     timer: 2-timer
     group: 3-group
     texttag: 4-texttag
+    object: 5-object
+'6 System': '6-6 System'
+    combat: 1-combat

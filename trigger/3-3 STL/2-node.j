@@ -2,25 +2,25 @@
     import 'node.lua' [==[
         local setmetatable = setmetatable
         local collectgarbage = collectgarbage
+        local Object = require 'object'
 
         local Node = {}
+        local mt = {}
         setmetatable(Node, Node)
-        Node.__index = Node
-        Node._EIN = 1
+        Node.__index = mt
 
         function Node:__call(data)
-            local obj = {
+            local obj = Object{
                 data = data,
                 prev = nil,
                 next = nil,
-                EIN = self._EIN
             }
-            self._EIN = self._EIN + 1
             setmetatable(obj, self)
             return obj
         end
 
-        function Node:Remove()
+        function mt:Remove()
+            self.data = nil
             self.prev = nil
             self.next = nil
             self = nil
