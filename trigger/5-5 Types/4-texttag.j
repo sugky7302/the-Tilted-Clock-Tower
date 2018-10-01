@@ -1,7 +1,6 @@
 <?
     import 'texttag.lua' [==[
         local math = math
-        local table = table
         local setmetatable = setmetatable
         local cj = require 'jass.common'
         local Point = require 'point'
