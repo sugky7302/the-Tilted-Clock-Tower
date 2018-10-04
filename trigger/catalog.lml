@@ -30,3 +30,7 @@
 '6 System': '6-6 System'
     combat: 1-combat
     shield: 2-shield
+'7 Module': '7-7 Module'
+    '[texttag] text_to_attach_unit': '1-[texttag] text_to_attach_unit'
+test_code: 8-test_code
+    test: 1-test

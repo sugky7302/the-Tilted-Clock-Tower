@@ -3,66 +3,67 @@
         local math = math
         local setmetatable = setmetatable
         local cj = require 'jass.common'
-        local Point = require 'point'
         local Timer = require 'timer'
         local List = require 'list'
         local Object = require 'object'
-
         local Texttag = {}
         local mt = {}
         setmetatable(Texttag, Texttag)
         Texttag.__index = mt
 
-        -- 本地變量
-        Texttag.executingOrder = List()
-
-        -- 常數
-        Texttag.DEFAULT_ANGLE = math.pi / 2
-        Texttag.IS_ANGLE_RANDOM = true
-        Texttag.TIME_LIFE = 0.7
-        Texttag.TIME_FADE = 0.3
-        Texttag.VELOCITY = 5
-        Texttag.SIZE = 0.75
-        Texttag.SIZE_MIN = 0.018
-        Texttag.Z_OFFSET = 20
-        Texttag.SIZE_BONUS = 0.012
-        Texttag.Z_OFFSET_BONUS = 55
+        -- constants
         Texttag.PERIOD = 0.03125
+        Texttag.TIME_FADE = 0.3
+        Texttag.SIZE = 0.05
+        Texttag.Z_OFFSET = 20
 
-        local IsPauseTimer, IsExpired, Update, SetTexttag, RunTimer
+        -- variables
+        Texttag.executingOrder = List()
+        local IsPauseTimer, IsExpired, Initialize, Update
 
-        function Texttag:__call(str, loc, scale)
-            local angle = (self.IS_ANGLE_RANDOM and cj.GetRandomReal(0, 2*math.pi) or self.DEFAULT_ANGLE)
-            scale = scale or 1
+        -- TODO:核心提供最基本的漂浮文字功能，在固定點創建有時間性的固定漂浮文字
+        function Texttag:__call(str, loc, dur, isPermanant)
+            str = (type(str) == 'table') and str or self:New(str, loc, dur, isPermanant)
+            str.texttag = cj.CreateTextTag() 
+            str:Initialize()
+            self.executingOrder:PushBack(str)
+            self:RunTimer()
+            return str
+        end
+
+        function mt:New(str, loc, dur, isPermanant)
             local obj = Object{
                 msg = str,
                 loc = loc,
-                timeout = self.TIME_LIFE,
-                offset = Point(math.cos(angle) * self.VELOCITY, math.sin(angle) * self.VELOCITY), 
-                size = self.SIZE * scale,
+                timeout = dur,
+                isPermanant = isPermanant and true or false,
+                Initialize = Initialize,
+                Update = Update
             }
-            setmetatable(obj, self)
-            obj.__index = obj
-            self.executingOrder:PushBack(obj)
-            SetTexttag(self, obj)
-            RunTimer(self)
+            setmetatable(obj, obj)
+            obj.__index = self
             return obj
         end
 
-        SetTexttag = function(self, obj)
-            obj.texttag = cj.CreateTextTag()
-            cj.SetTextTagPermanent(obj.texttag, false)
+        Initialize = function(obj) 
+            cj.SetTextTagText(obj.texttag, obj.msg, obj.SIZE)
+            cj.SetTextTagPos(obj.texttag, obj.loc.x, obj.loc.y, obj.SIZE * obj.Z_OFFSET)
+            cj.SetTextTagPermanent(obj.texttag, obj.isPermanant)
             cj.SetTextTagLifespan(obj.texttag, obj.timeout)
-            cj.SetTextTagFadepoint(obj.texttag, self.TIME_FADE)
-            cj.SetTextTagText(obj.texttag, obj.msg, obj.size * self.SIZE_MIN)
-            cj.SetTextTagPos(obj.exttag, obj.offset.x, obj.offset.y, obj.size * self.Z_OFFSET)
+            cj.SetTextTagFadepoint(obj.texttag, obj.TIME_FADE)
         end
 
-        RunTimer = function(self)
+        Update = function(data)
+        end
+
+        function Texttag:RunTimer()
             if self.executingOrder:GetSize() < 2 then --啟動計時器
                 self.timer = Timer(self.PERIOD, true, function()
                     for node in self.executingOrder:Iterator() do
-                        Update(self, node.data)
+                        if not node.data.isPermanent then
+                            node.data.timeout = node.data.timeout - self.PERIOD
+                        end
+                        node.data.Update(node.data) -- TODO: 要根據所有的texttag plugin及外部調用此函數的結構來定下Update的參數。
                         IsExpired(self, node)
                     end
                     IsPauseTimer(self)
@@ -70,16 +71,9 @@
             end
         end
 
-        Update = function(list, data)
-            local trace = math.sin(math.pi * data.timeout) -- 文字的運動軌跡
-            data.timeout = data.timeout - list.PERIOD
-            data.loc = data.loc + data.offset
-            cj.SetTextTagPos(data.texttag, data.loc.x, data.loc.y, data.size * (list.Z_OFFSET + list.Z_OFFSET_BONUS * trace))
-            cj.SetTextTagText(data.texttag, data.msg, data.size * (list.SIZE_MIN + list.SIZE_BONUS * trace))
-        end
-
         IsExpired = function(self, node)
             if node.data.timeout <= 0 then
+                node.data:Remove()
                 self.executingOrder:Erase(node)
             end
         end
@@ -91,8 +85,6 @@
         end
 
         function mt:Remove()
-            self.loc:Remove()
-            self.offset:Remove()
             cj.DestroyTextTag(self.texttag)
             self.texttag = nil
             self = nil
