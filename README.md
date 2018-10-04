@@ -1,5 +1,6 @@
 ### Unreleased - 2018-10-04
 >#### Added:
+> - 新增test，用於測試程式碼。
 > - [texttag] 將原先texttag的戰鬥漂浮文字獨立成text_to_attch_unit模塊。
 >#### Changed:
 > - [texttag] 將原先的戰鬥漂浮文字功能拆解成獨立模塊，核心只提供固定漂浮文字功能。
