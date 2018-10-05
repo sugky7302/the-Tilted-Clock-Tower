@@ -1,28 +1,48 @@
-        local Runtime = require 'jass.runtime'
-        local Console = require 'jass.console'
-        local Debug = require 'jass.debug'
-        local string = string
-        Base = {}
-        -- 版本號
-        Base.VERSION = '0.1.0'
-        --打開控制台
-        Console.enable = true
-        --重載print，自動轉換編碼
-        print = Console.write
-        --將handle等級設為0(地圖中所有的handle均使用table封裝)
-        Runtime.handle_level = 0
-        --關閉等待
-        Runtime.sleep = false
-        function Base.error_handle(msg)
-            print("---------------------------------------")
-            print(tostring(msg) .. "\n")
-            print(Debug.traceback())
-            print("---------------------------------------")
-        end
-        --錯誤匯報
-        function Runtime.error_handle(msg)
-            Base.error_handle(msg)
-        end
-        -- 初始化本地腳本
-        require 'main'
+local Runtime = require 'jass.runtime'
+local Console = require 'jass.console'
+local Debug = require 'jass.debug'
+
+Base = {}
+
+--打開控制台
+Console.enable = true
+--重載print，自動轉換編碼
+print = Console.write
+--將handle等級設為0(地圖中所有的handle均使用table封裝)
+Runtime.handle_level = 0
+--關閉等待
+Runtime.sleep = false
+
+function Base.error_handle(msg)
+    print("---------------------------------------")
+    print(tostring(msg) .. "\n")
+    print(Debug.traceback())
+    print("---------------------------------------")
+end
+
+--錯誤匯報
+function Runtime.error_handle(msg)
+    Base.error_handle(msg)
+end
+
+package.path = package.path .. ';D:\\Tools\\YDWE1.25.10\\Creation\\Mod\\The_Tilted_Clock_Tower\\scripts\\?.lua'
+
+function Base.AddPath(dir)
+	if dir ~= '' then dir = dir ..[[\]] end
+	local r = dir .. '?.lua'
+	package.path = package.path .. ';D:\\Tools\\YDWE1.25.10\\Creation\\Mod\\The_Tilted_Clock_Tower\\scripts\\' .. r
+end
+
+-- 添加路徑
+Base.AddPath 'Item'
+Base.AddPath 'Module'
+Base.AddPath 'STL'
+Base.AddPath 'System'
+Base.AddPath 'Test'
+Base.AddPath 'Tool'
+Base.AddPath 'Type'
+Base.AddPath 'War3'
+
+-- 初始化本地腳本
+require 'main'
     

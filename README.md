@@ -1,46 +1,47 @@
-### Unreleased - 2018-10-04
->#### Added:
-> - 新增test，用於測試程式碼。
-> - [texttag] 將原先texttag的戰鬥漂浮文字獨立成text_to_attch_unit模塊。
->#### Changed:
-> - [texttag] 將原先的戰鬥漂浮文字功能拆解成獨立模塊，核心只提供固定漂浮文字功能。
->#### Fixed:
-> - [texttag] 修正由於字體過大導致遊戲內看不見漂浮文字的問題。
+﻿# 我的英雄不可能那么萌
 
-### 0.3.0 - 2018-10-01
->#### Added:
->- 新增combat，處理戰鬥相關的事件。
->#### Changed:
-> - [texttag] 不再提供自訂字體大小，改為自訂縮放倍率。
->#### Removed:
-> - [texttag] 移除可自訂顯示漂浮文字的功能，目前改為統一顯示。
->#### Fixed:
-> - [list] 修正Iterator()讀到tail.next時，會因為node的setmetatable(node).__index=node而產生錯誤的問題。
-> - [texttag] 修正RunTimer內由於list:Iterator()而產生的問題。
-> - [texttag] 修正由於SetTexttag設定錯誤導致漂浮文字無法顯示的問題。
+这是一张5v5的魔兽地图。由于版权的原因，没有放出资源(mdx/blp/mp3等)。
 
-### 0.2.0 - 2018-09-29
->#### Added:
-> - 新增node，用於list。
-> - 新增list，用於texttag。
-> - 新增array，用於group。
-> - 新增texttag。
-> - [timer] 新增Pause函數。
->#### Changed:
-> - [group] 用array重寫部分函數。
->#### Fixed:
-> - [custom_tool] 修正匿名函數內含 ']]' 導致遊戲無法執行的問題。
-> - [point] 修正建構函數，使point作運算時，不會再出現遊戲當機的問題。
-> - [timer] 修正對象無法呼叫Pause的問題。
+## 依赖项目
 
-### 0.1.1 - 2018-09-27 - 開發
->#### Changed:
-> - 將外部腳本寫進地圖內，防止YDWE讀不到。
+* [ydwe](https://github.com/actboy168/YDWE)
+* [w3x2lni](https://github.com/sumneko/w3x2lni)
+* [lni](https://github.com/actboy168/lni)
 
-### 0.1.0 - 2018-07-06 - 啟動ChangeLog
->#### Goal:
-> - 將所有腳本的更新都集中撰寫，方便日後檢查、維護。
-> - 按日期降序排列，方便檢視最新的更新。
-> - 類別按照字母排列。
->#### Added:
-> - 新增快速排序(quicksort)演算法。[2018-07-06]
+## 作者
+
+* [actboy168](https://github.com/actboy168/)
+* [最萌小汐](https://github.com/sumneko/)
+* 幻雷
+* 一文字鲲
+* 德堪
+* 裸奔的代码
+
+## 开发环境
+
+* YDWE，请使用最新的版本，并且确保你已经用YDWE关联了w3x文件。
+* VSCode，构建支持。
+* **非必选** VSCode插件`actboy168.lua-debug`，提供调试地图的功能。
+* **非必选** VSCode插件`actboy168.tasks`，task会出现在左下方状态栏，适合不想输入指令的人。
+
+## 编译&运行
+
+在VSCode中，`ctrl+p`，输入`task`，会列出可用的Task。使用`actboy168.tasks`的情况下，Task会直接出现在下方的状态栏上。
+
+* 运行。测试地图，注意这个操作不会重新打包地图。
+* 配置。打开YDWE的配置界面。
+* 语法检查。检查地图脚本是否有语法错误。这个最好不要用插件来运行，因为这样会丢失一部分功能。
+* 🔍。同样是语法检查，并且它会一直检测所有脚本是否有语法错误。
+* Obj。打包Obj格式的地图，以便供YDWE打开来编辑物编、供魔兽运行地图。
+* Lni。打包Lni格式的地图，用YDWE编译过Obj格式的地图后，需要打包成Lni来提交Git。
+* Slk。打包Slk格式的地图，用于发布的版本。
+
+地图的打包流程使用`w3x2lni`完成，同时我们做了几个插件以实现一些特殊的功能，包括：
+
+* 我们会对resource目录的包做特殊处理(因为有些人可能没有resource目录)。对于没有resource目录的人，我们会帮你把模型全部替换成步兵。
+* 打包成Obj格式时，我们不会打包脚本文件，同时给地图注入一些代码，以便地图可以在运行时读取本地硬盘上的脚本(而不是地图内的)。这样你可以实时修过脚本，并通过-reload指令让它立刻生效。
+
+## 调试
+
+安装`actboy168.lua-debug`之后，按F5可以直接运行地图，并激活调试。
+
