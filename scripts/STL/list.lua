@@ -7,7 +7,7 @@ local mt = {}
 setmetatable(List, List)
 List.__index = mt
 
-local Next
+local _Next
 
 function List:__call()
     local obj = Object{
@@ -138,10 +138,10 @@ function mt:Find(data)
 end
 
 function mt:Iterator()
-    return Next, self, nil
+    return _Next, self, nil
 end
 
-Next = function(list, node)
+_Next = function(list, node)
     if not node then
         return list.head
     else

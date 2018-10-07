@@ -1,7 +1,7 @@
-local cj = require 'jass.common'
-local js = require 'jass_tool'
 local setmetatable = setmetatable
 local math = math
+local cj = require 'jass.common'
+local js = require 'jass_tool'
 
 local gbs = {
     ['攻擊'] = {},

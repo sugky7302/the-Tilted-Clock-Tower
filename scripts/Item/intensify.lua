@@ -21,16 +21,16 @@ local refinedTable = {
     {["fixedValue"] = 4, ["randomMaxValue"] = 5},
 }
 
-local IsEquipmentInBag, IsGoldEnough, IsRefine, GetGoldCost = nil, nil, nil, nil
+local _IsEquipmentInBag, _IsGoldEnough, _IsRefine, _GetGoldCost
 
 function Intensify.__call(item)
-    if IsEquipmentInBag(item.owner) then
-        local goldCost = GetGoldCost(item.stability + item.intensifyLevel, #item.holes)
+    if _IsEquipmentInBag(item.owner) then
+        local goldCost = _GetGoldCost(item.stability + item.intensifyLevel, #item.holes)
         
-        if IsGoldEnough(item.ownPlayer, goldCost) then
+        if _IsGoldEnough(item.ownPlayer, goldCost) then
             cj.SetPlayerState(item.ownPlayer, "PLAYER_STATE_GOLD", cj.GetPlayerState(item.ownPlayer, "PLAYER_STATE_GOLD") - goldCost)
             
-            if IsRefine(item.intensifyLevel) then
+            if _IsRefine(item.intensifyLevel) then
                 item.intensifyLevel += 1
 
                 local fixedValue, randomMaxValue = refinedTable[item.intensifyLevel]["fixedValue"], refinedTable[item.intensifyLevel]["randomMaxValue"]
@@ -50,19 +50,19 @@ function Intensify.__call(item)
     end
 end
 
-local function IsEquipmentInBag(owner)
+local function _IsEquipmentInBag(owner)
     return cj.UnitItemInSlot(owner,0) != nil
 end
 
-local function GetGoldCost(level, usedHoleCount)
+local function _GetGoldCost(level, usedHoleCount)
     return (80 * level^2 * usedHoleCount + 100 * (level + 2)) * 1.25^level
 end
 
-local function IsGoldEnough(ownPlayer, goldcost)
+local function _IsGoldEnough(ownPlayer, goldcost)
     return ownPlayer.gold >= goldcost
 end
 
-local function IsRefine(intensifyLevel)
+local function _IsRefine(intensifyLevel)
     local p = (intensifyLevel <= 3) and 100 - 16 * intensifyLevel or 100 / intensifyLevel
     return math.random() <= p / 100
 end

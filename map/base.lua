@@ -13,7 +13,7 @@ Runtime.handle_level = 0
 --關閉等待
 Runtime.sleep = false
 
-function Base.error_handle(msg)
+function Base.ErrorHandle(msg)
     print("---------------------------------------")
     print(tostring(msg) .. "\n")
     print(Debug.traceback())
@@ -21,14 +21,16 @@ function Base.error_handle(msg)
 end
 
 --錯誤匯報
-function Runtime.error_handle(msg)
-    Base.error_handle(msg)
+function Runtime.ErrorHandle(msg)
+    Base.ErrorHandle(msg)
 end
 
 package.path = package.path .. ';D:\\Tools\\YDWE1.25.10\\Creation\\Mod\\The_Tilted_Clock_Tower\\scripts\\?.lua'
 
 function Base.AddPath(dir)
-	if dir ~= '' then dir = dir ..[[\]] end
+    if dir ~= '' then
+        dir = dir ..[[\]]
+    end
 	local r = dir .. '?.lua'
 	package.path = package.path .. ';D:\\Tools\\YDWE1.25.10\\Creation\\Mod\\The_Tilted_Clock_Tower\\scripts\\' .. r
 end

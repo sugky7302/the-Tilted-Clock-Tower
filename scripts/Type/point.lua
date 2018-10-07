@@ -1,6 +1,6 @@
-local cj = require 'jass.common'
 local sin, cos, rad = math.sin, math.cos, math.rad
 local setmetatable = setmetatable
+local cj = require 'jass.common'
 local Object = require 'object'
 
 local Point = {}

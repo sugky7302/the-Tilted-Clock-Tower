@@ -8,11 +8,11 @@ setmetatable(RandomNumberGenerator, RandomNumberGenerator)
 RandomNumberGenerator.__index = mt
 
 -- variables
-local GenerateValidCards
+local _GenerateValidCards
 
 -- 功能：生成以《超幾何分配》為原理的隨機數牌組
 function RandomNumberGenerator:__call(cardsLabel, probability)
-    local obj = GenerateNewCards(probability)
+    local obj = _GenerateValidCards(probability)
     self[cardsLabel] = obj
     obj:GenerateValidCards()
     return obj
@@ -20,7 +20,7 @@ end
 
 -- 功能：生成新牌組
 -- 描述：計算最大公因數，生成新牌組，並調整牌數，使其牌數超過10張
-GenerateNewCards = function(probability)
+_GenerateValidCards = function(probability)
     local gcd = gcf(probability, 100)
     local validCardCount = probability / gcd
     local totalCardCount = 100 / gcd

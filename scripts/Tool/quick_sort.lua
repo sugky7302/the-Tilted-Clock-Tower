@@ -4,21 +4,21 @@ local QuickSort = {}
 setmetatable(QuickSort, QuickSort)
 
 -- variables
-local quicksort, partition
+local _quicksort, _partition
 
 function QuickSort:__call(array)
-    quicksort(array, 1, #array)
+    _quicksort(array, 1, #array)
 end
 
-quicksort = function(array, left, right)
+_quicksort = function(array, left, right)
     if right > left then
-        local pivotNewIndex = partition(array, left, right, left)
-        quicksort(array, left, pivotNewIndex - 1)
-        quicksort(array, pivotNewIndex + 1, right)
+        local pivotNewIndex = _partition(array, left, right, left)
+        _quicksort(array, left, pivotNewIndex - 1)
+        _quicksort(array, pivotNewIndex + 1, right)
     end
 end
 
-partition = function(array, left, right, pivotIndex)
+_partition = function(array, left, right, pivotIndex)
     local pivotValue = array[pivotIndex]
     array[pivotIndex], array[right] = array[right], array[pivotIndex]
     local storeIndex = left

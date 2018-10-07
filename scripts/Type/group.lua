@@ -1,7 +1,7 @@
 local setmetatable = setmetatable
 local cj = require 'jass.common'
-local stack = require 'stack'
 local js = require 'jass_tool'
+local Stack = require 'stack'
 local Array = require 'array'
 local Object = require 'object'
 
@@ -11,16 +11,15 @@ setmetatable(Group,Group) -- 調用元方法的設定方式
 Group.__index = mt
 
 -- variables
-Group.QUANTITY = 128
-Group.recycleGroup = stack("group")
+local _QUANTITY, _recycleGroup = 128, Stack("group")
 
 function Group:__call(filter)
     local obj = Object{units = Array("units")}
-    if self.recycleGroup:IsEmpty() then
+    if _recycleGroup:IsEmpty() then
         obj.object = cj.CreateGroup()
     else
-        obj.object = self.recycleGroup:Top()
-        self.recycleGroup:Pop()
+        obj.object = _recycleGroup:Top()
+        _recycleGroup:Pop()
     end
     obj.filter = filter or 0 -- 用於條件判定，如果filter沒有傳參，要設定成0才不會出問題
     setmetatable(obj, self)
@@ -30,10 +29,10 @@ end
 
 function mt:Remove()
     self:Clear()
-    if Group.recycleGroup:GetSize() >= Group.QUANTITY then
+    if _recycleGroup:GetSize() >= _QUANTITY then
         cj.DestroyGroup(self.object)
     else
-        Group.recycleGroup:Push(self)
+        _recycleGroup:Push(self)
     end 
     self.object = nil
 end

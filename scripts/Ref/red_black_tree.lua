@@ -1,3 +1,10 @@
+--[[
+節點是紅色或黑色。
+根是黑色。
+所有葉子都是黑色（葉子是NIL節點）。
+每個紅色節點必須有兩個黑色的子節點。（從每個葉子到根的所有路徑上不能有兩個連續的紅色節點。）
+從任一節點到其每個葉子的所有簡單路徑都包含相同數目的黑色節點（簡稱黑高）。
+]]
 local setmetatable = setmetatable
 local Object = require 'object'
 local Node = require 'RBTree_node'
@@ -111,12 +118,13 @@ _RotateRight = function(node)
 end
 
 function mt:Erase(node)
-    if node == self.root then
+    if not node then
+        return false
+    elseif node == self.root then
         _EraseRoot(self)
     if node:IsLeafNode() then
         _EraseLeafNode(node)
-    else
-        if self.right then
+    elseif not self.right then
         else
     end
 end
@@ -126,23 +134,20 @@ _EraseRoot = function(self)
         self.root:Remove()
         self.root = nil
     else
-        local node
-        -- 如果左子樹存在，把左子樹最大值給根
-        if self.left then
-            node = _GetMaxNodeInLeftSubtree(self.left)
-            if node.left then
-                node.parent.right = node.left
-                node.left.parent = node.parent
-            end
-        else -- 如果左子樹不存在，把右子樹最小值給根
-            node = _GetMinNodeInRightSubtree(self.right)
-            if node.right then
-                node.parent.left = node.right
-                node.right.parent = node.parent
-            end
+        -- 如果左子樹存在，設定左子樹為新根
+        if not self.root.right then
+            local root = self.root
+            self.root = self.root.left
+            root:Remove()
+        elseif not self.root.left then -- 如果左子樹不存在，這定右子樹為新根
+            local root = self.root
+            self.root = self.root.right
+            root:Remove()
+        else -- 如果都存在，就找右子樹的最小值給root
+            node = _GetMinNodeInRightSubtree(self.root)
+            self.root.data = node.data
+            node:Remove()
         end
-        self.root.data = node.data
-        node:Remove()
     end
 end
 

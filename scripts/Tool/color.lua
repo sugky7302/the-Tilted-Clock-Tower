@@ -5,8 +5,8 @@ local Color = {}
 setmetatable(Color,Color)
 
 -- constants
-local HEXADECIMAL_SIGN = {'a', 'b', 'c', 'd', 'e', 'f'}
-local D2H
+local _HEXADECIMAL_SIGN = {'a', 'b', 'c', 'd', 'e', 'f'}
+local _D2H
 
 function Color:Init()
     self["red"] = "|cffff0000"
@@ -34,13 +34,13 @@ function Color:__call(...) -- 可能會給 顏色的英文名字 或 RGB數字
     if type(r) == 'string' then
         return Color[r]
     else
-        return '|cff' .. D2H(r) .. D2H(g) .. D2H(b)
+        return '|cff' .. _D2H(r) .. _D2H(g) .. _D2H(b)
     end
 end
 
-D2H = function(num)
-    local firstSign = (math.modf(num/16) > 9) and HEXADECIMAL_SIGN[math.modf(num/16)-9] or math.modf(num/16) .. ""
-    local secondSign = (num%16 > 9) and HEXADECIMAL_SIGN[num%16-9] or num%16 .. ""
+_D2H = function(num)
+    local firstSign = (math.modf(num/16) > 9) and _HEXADECIMAL_SIGN[math.modf(num/16)-9] or math.modf(num/16) .. ""
+    local secondSign = (num%16 > 9) and _HEXADECIMAL_SIGN[num%16-9] or num%16 .. ""
     return firstSign .. secondSign
 end
 

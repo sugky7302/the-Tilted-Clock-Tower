@@ -4,7 +4,7 @@ local mt = {}
 local Enchanted = {}
 Enchanted.__index = mt
 setmetatable(Enchanted, Enchanted)
-print("1")
+
 function Enchanted:__call()
 end
 

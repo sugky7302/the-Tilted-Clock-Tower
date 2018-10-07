@@ -1,7 +1,8 @@
+local setmetatable = setmetatable
 local cj = require 'jass.common'
 local User = require 'User'
-local War3 = require 'war3.api'
-local setmetatable = setmetatable
+local War3 = require 'War3.api'
+local Object = require 'object'
 
 local mt = {}
 local Item = {}
@@ -9,45 +10,45 @@ Item.__index = mt
 setmetatable(Item, Item)
 
 -- 本地函式聲明
-local DisplayedInfo, DialogDisplay = nil, nil
+local _DisplayedInfo, _DialogDisplay
 
 -- 建構函式
 function Item:__call(item)
-    local object = {}
+    local obj = Object()
     
-    object.name = cj.GetItemName(item)
-    object.owner = nil
-    object.ownPlayer = cj.GetOwningPlayer(object.owner)
-    object.prefix = nil 
-    object.bigSecretOrderPrefix = nil
-    object.smallSecretOrderPrefix = nil
-    object.level = nil
-    object.fixedAttributes = nil
-    object.attribute = {additionalEffect = {}, inscription = {}} -- 為一table,每個元素包含index, value, states三個部分
-    object.attributeCount = nil
-    object.color = "|cffffffff"
-    object.intensifyLevel = 0
-    object.stability = nil
-    object.intensify = nil
-    object.fusion = nil
-    object.uniqueness = nil
+    obj.name = cj.GetItemName(item)
+    obj.owner = nil
+    obj.ownPlayer = cj.GetOwningPlayer obj.owner)
+    obj.prefix = nil 
+    obj.bigSecretOrderPrefix = nil
+    obj.smallSecretOrderPrefix = nil
+    obj.level = nil
+    obj.fixedAttributes = nil
+    obj.attribute = Object{additionalEffect = Object(), inscription = Object()} -- 為一table,每個元素包含index, value, states三個部分
+    obj.attributeCount = nil
+    obj.color = "|cffffffff"
+    obj.intensifyLevel = 0
+    obj.stability = nil
+    obj.intensify = nil
+    obj.fusion = nil
+    obj.uniqueness = nil
     
-    setmetatable(object, self)
-    object.__index = object
-    return object
+    setmetatable(obj, self)
+    obj.__index = obj
+    return obj
 end
 
 -- 移除函式
 function mt:Remove()
-    object = nil
+    self = nil
 end
 
 -- 顯示數據
 function mt:Display()
-    DialogDisplay(self.ownPlayer, GetDisplayedInfo(self))
+    _DialogDisplay(self.ownPlayer, _DisplayedInfo(self))
 end
 
-local function GetDisplayedInfo(self)
+_DisplayedInfo = function(self)
     -- 名稱
     local bigSecretOrderPrefix = self.bigSecretOrderPrefix and "|cff804000" .. self.bigSecretOrderPrefix .. "|r|n" or ""
     local smallSecretOrderPrefix = self.smallSecretOrderPrefix and "|cffff8d00" .. self.smallSecretOrderPrefix .. "|r|n" or ""
@@ -77,20 +78,20 @@ local function GetDisplayedInfo(self)
     return returnString
 end
 
-local function DialogDisplay(player, displayedInfo)
+_DialogDisplay = function(player, _DisplayedInfo)
     local dialog = User[cj.GetPlayerId(player)].dialog
     local button = cj.DialogAddButton(dialog, "關閉", 0)
     local trigger = War3.CreateTrigger(function()
         -- 關閉對話框
-        cj.DialogDisplay(player, dialog, false)
+        cj._DialogDisplay(player, dialog, false)
         cj.DialogClear(dialog)
         -- 刪除觸發
         war3.DestroyTrigger(trigger)
         return true
     end)
 
-    cj.DialogSetMessage(dialog, displayedInfo)
-    cj.DialogDisplay(player, dialog, true)
+    cj.DialogSetMessage(dialog, _DisplayedInfo)
+    cj._DialogDisplay(player, dialog, true)
     cj.TriggerRegisterDialogButtonEvent(tr,button)
 end
 

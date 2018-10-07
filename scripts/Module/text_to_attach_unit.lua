@@ -21,7 +21,7 @@ TextToAttachUnit.SIZE_BONUS = 0.012
 TextToAttachUnit.Z_OFFSET_BONUS = 55
 
 -- variables
-local Initialize, Update, Remove
+local _Initialize, _Update, _Remove
 
 function TextToAttachUnit:__call(str, loc, scale)
     local angle = (self.IS_ANGLE_RANDOM and cj.GetRandomReal(0, 2*math.pi) or self.DEFAULT_ANGLE)
@@ -32,16 +32,16 @@ function TextToAttachUnit:__call(str, loc, scale)
         timeout = self.TIME_LIFE,
         offset = Point(math.cos(angle) * self.VELOCITY, math.sin(angle) * self.VELOCITY), 
         size = self.SIZE * scale,
-        Initialize = Initialize,
-        Update = Update,
-        Remove = Remove
+        Initialize = _Initialize,
+        Update = _Update,
+        Remove = _Remove
     }
     setmetatable(obj, obj)
     obj.__index = self
     return Texttag(obj)
 end
 
-Initialize = function(obj)
+_Initialize = function(obj)
     cj.SetTextTagPermanent(obj.texttag, false)
     cj.SetTextTagLifespan(obj.texttag, obj.timeout)
     cj.SetTextTagFadepoint(obj.texttag, obj.TIME_FADE)
@@ -49,14 +49,14 @@ Initialize = function(obj)
     cj.SetTextTagPos(obj.texttag, obj.loc.x, obj.loc.y, obj.size * obj.Z_OFFSET)
 end
 
-Update = function(data)
+_Update = function(data)
     local trace = math.sin(math.pi * data.timeout) -- 文字的運動軌跡
     data.loc = data.loc + data.offset
     cj.SetTextTagPos(data.texttag, data.loc.x, data.loc.y, data.size * (data.Z_OFFSET + data.Z_OFFSET_BONUS * trace))
     cj.SetTextTagText(data.texttag, data.msg, data.size * (data.SIZE_MIN + data.SIZE_BONUS * trace))
 end
 
-Remove = function(data)
+_Remove = function(data)
     Texttag.Remove(data)
 end
 

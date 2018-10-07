@@ -1,4 +1,16 @@
-### Unreleased - 2018-10-05 - 更名為CHANGELOG
+### 0.6.1 - 2018-10-07
+>#### Fixed:
+> - [timer] 修正Remove函數不會暫停計時器，可能會一直執行的問題。
+
+### 0.6.0 - 2018-10-06
+>#### Added:
+> - 新增add_recipe、detect_recipe(未測試)庫。
+> - [object] 新增Insert、Sort函數。
+> - [test] 新增group和add_recipe的測試。
+>#### Changed:
+> - 根據**程式碼撰寫規則**重審所有程式碼，並測試部分程式碼。
+
+### 0.5.0 - 2018-10-05 - 更名為CHANGELOG
 >#### Added:
 > - 新增紅黑樹，但「刪除」動作尚未完成。
 
