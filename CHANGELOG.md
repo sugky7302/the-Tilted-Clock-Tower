@@ -1,3 +1,20 @@
+### 0.7.0 - 2018-10-08
+>#### Added:
+> - 新增missile_tool庫，將missile的工具獨立出來。
+> - 新增trace_lib庫，將missile的彈道庫獨立出來。
+> - [test] 新增missile的測試。
+>#### Changed:
+> - [missile] 將missile_tool的angle改成初始設定，之後missile要做弧形軌跡，就直接更改obj.angle。
+>#### Fixed:
+> - 在war3map.j的main函數內直接調用base.lua，防止使用YDWE的觸發編輯器後儲存，會無法調用base.lua的問題。
+> - [array] 修正由於array.__index=array會導致group的unitDetermined重複呼叫array的問題。
+> - [array] 修正Remove函數，使IsEmpty函數可以正確獲得self.size。
+> - [group] 修正Clear函數，使其功能單一化，不再和Remove重疊。
+> - [missile_tool] 由於SetUnitX、SetUnitY無法對移動速度=0的單位執行動作，因此改成SetUnitPosition。
+> - [missile_tool] 修正Move函數一直計算angle，導致Pass型投射物無法移動到最大距離的問題。
+> - [missile_tool] 根據下條錯誤，修正SetHeight獲取錯誤高度，導致條件判斷會使得missile還沒設定timer時就刪除timer的問題。
+> - [point] 修正+-*/會覆蓋舊point，使得Distance函數計算=0，進而導致missile_tool的_GetSlope函數會出現nan(ind)的問題。
+
 ### 0.6.1 - 2018-10-07
 >#### Fixed:
 > - [timer] 修正Remove函數不會暫停計時器，可能會一直執行的問題。

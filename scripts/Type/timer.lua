@@ -9,7 +9,7 @@ setmetatable(Timer, Timer)
 Timer.__index = mt
 
 -- variables
-local _recycleTimer, _Run = Stack("timer")
+local _recycleTimer, _GetTimer, _Run = Stack("timer")
 
 function Timer:__call(timeout, isPeriod, execution)
     local obj = Object{
@@ -19,31 +19,33 @@ function Timer:__call(timeout, isPeriod, execution)
     }
     setmetatable(obj, self)
     obj.__index = obj
-    if _recycleTimer:IsEmpty() then
-        obj.object = cj.CreateTimer()
-    else
-        obj.object = _recycleTimer.Top()
-        _recycleTimer.Pop()
-    end
+    obj.timer = _GetTimer()
     _Run(obj)
     return obj
 end
 
+_GetTimer = function()
+    if _recycleTimer:IsEmpty() then
+        return cj.CreateTimer()
+    else
+        local timer = _recycleTimer.Top()
+        _recycleTimer.Pop()
+        return timer
+    end
+end
+
 _Run = function(obj)
-    cj.TimerStart(obj.object, obj.timeout, obj.isPeriod, obj.execution)
+    cj.TimerStart(obj.timer, obj.timeout, obj.isPeriod, obj.execution)
 end
 
 function mt:Pause()
-    cj.PauseTimer(self.object)
+    cj.PauseTimer(self.timer)
 end
 
 function mt:Remove()
     self:Pause()
-    self.timeout = nil
-    self.isPeriod = nil
-    self.execution = nil
-    _recycleTimer.Push(self.object)
-    self.object = nil
+    _recycleTimer:Push(self.timer)
+    self.timer = nil
     self = nil
 end
 

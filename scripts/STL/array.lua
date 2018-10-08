@@ -2,8 +2,9 @@ local setmetatable = setmetatable
 local Object = require 'object'
 
 local Array = {}
+local mt = {}
 setmetatable(Array, Array)
-Array.__index = Array
+Array.__index = mt
 
 -- 陣列
 -- 特性：連續
@@ -20,46 +21,43 @@ function Array:__call(type)
     return obj
 end
 
-function Array:PushBack(data)
+function mt:PushBack(data)
     self.terminus = self.terminus + 1
     self.size = self.size + 1
     self[self.terminus] = data
 end
 
 -- 消除所有data
-function Array:Erase(data)
+function mt:Erase(data)
     for i = self.begin, self.terminus do
         if self[i] == data then
             self[i] = self[self.terminus]
             self[self.terminus] = nil
             self.terminus = self.terminus - 1
+            self.size = self.size - 1
         end
     end
 end
 
-function Array:GetSize()
+function mt:GetSize()
     return self.size
 end
 
-function Array:IsEmpty()
+function mt:IsEmpty()
     return self.size < 1
 end
 
-function Array:Remove()
-    self.type = nil
-    self.begin = nil
-    self.terminus = nil
-    self.size = nil
+function mt:Remove()
     self = nil
 end
 
-function Array:Clear()
+function mt:Clear()
     self.begin = 1
     self.terminus = 0
     self.size = 0
 end
 
-function Array:Exist(data)
+function mt:Exist(data)
     for i = self.begin, self.terminus do
         if self[i] == data then
             return true 

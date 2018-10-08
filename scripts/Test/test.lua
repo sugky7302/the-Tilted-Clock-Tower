@@ -43,7 +43,18 @@ end
 
 function Test:Missile()
     local Missile = require 'missile'
-    local obj = Missile()
+    local Point = require 'point'
+    local p  = Point(15009, 9869)
+    local obj = Missile{
+        owner = nil,
+        modelName = 'A00T',
+        startingPoint = p,
+        targetPoint = p + Point(600, 0),
+        maxDistance = 1000,
+        traceMode = "StraightLine",
+        hitMode = "Pass",
+        execution = function() end,
+    }
 end
         
 return Test

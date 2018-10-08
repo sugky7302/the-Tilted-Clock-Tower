@@ -32,9 +32,11 @@ function mt:Remove()
     if _recycleGroup:GetSize() >= _QUANTITY then
         cj.DestroyGroup(self.object)
     else
-        _recycleGroup:Push(self)
-    end 
+        _recycleGroup:Push(self.object)
+    end
+    self.units:Remove()
     self.object = nil
+    self = nil
 end
 
 function mt:Clear()
@@ -42,7 +44,7 @@ function mt:Clear()
         self:RemoveUnit(self[i])
     end)
     cj.GroupClear(self.object)
-    self.units:Remove()
+    self.units:Clear()
 end
 
 function mt:Loop(action)
@@ -76,7 +78,7 @@ function mt:RemoveUnit(u)
 end
 
 function mt:UnitInArea(u)
-    return self.units:Exist(u)
+    return self.units:Exist()
 end
 
 function mt:GetSize()
@@ -88,11 +90,11 @@ function mt:IsEmpty()
 end
 
 function Group.IsEnemy(u,filter)
-    return cj.GetUnitState(u, cj.UNITX_STATE_LIFE) > 0 and cj.IsUnitEnemy(u, cj.GetOwningPlayer(filter))
+    return cj.GetUnitState(u, cj.UNITX_STATE_LIFE) > 0.3 and cj.IsUnitEnemy(u, cj.GetOwningPlayer(filter))
 end
 
 function Group.IsAlly(u,filter)
-    return cj.GetUnitState(u, cj.UNITX_STATE_LIFE) > 0 and cj.IsUnitAlly(u, cj.GetOwningPlayer(filter))
+    return cj.GetUnitState(u, cj.UNITX_STATE_LIFE) > 0.3 and cj.IsUnitAlly(u, cj.GetOwningPlayer(filter))
 end
 
 function Group.Nil(u, filter)

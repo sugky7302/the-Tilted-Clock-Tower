@@ -1,4 +1,4 @@
-local sin, cos, rad = math.sin, math.cos, math.rad
+local sin, cos, rad, sqrt, atan = math.sin, math.cos, math.rad, math.sqrt, math.atan
 local setmetatable = setmetatable
 local cj = require 'jass.common'
 local Object = require 'object'
@@ -30,11 +30,15 @@ function mt:Remove()
 end
 
 function Point.Distance(p1, p2)
-    return math.sqrt((p1.x - p2.x)^2 + (p1.y - p2.y)^2)
+    return sqrt((p1.x - p2.x)^2 + (p1.y - p2.y)^2)
+end
+
+function Point.DistanceInSpace(p1, p2)
+    return sqrt((p1.x - p2.x)^2 + (p1.y - p2.y)^2 + (p1.z - p2.z)^2)
 end
 
 function Point.Angle(p1, p2)
-    return math.atan(p2.y - p1.y, p2.x - p1.x)
+    return atan(p2.y - p1.y, p2.x - p1.x)
 end
 
 function mt:Rotate(val)
@@ -46,23 +50,23 @@ function Point:__tostring()
 end
 
 function Point:__add(p)
-    self.x, self.y, self.z = self.x + p.x, self.y + p.y, self.z + p.z
-    return self
+    local newPoint = Point(self.x + p.x, self.y + p.y, self.z + p.z)
+    return newPoint
 end
 
 function Point:__sub(p)
-    self.x, self.y, self.z = self.x - p.x, self.y - p.y, self.z - p.z
-    return self
+    local newPoint = Point(self.x - p.x, self.y - p.y, self.z - p.z)
+    return newPoint
 end
 
 function Point:__mul(val)
-    self.x, self.y, self.z = self.x * val, self.y * val, self.z * val
-    return self
+    local newPoint = Point(self.x * val, self.y  * val, self.z  * val)
+    return newPoint
 end
 
 function Point:__div(val)
-    self.x, self.y, self.z = self.x * val, self.y * val, self.z * val
-    return self
+    local newPoint = Point(self.x / val, self.y  / val, self.z  / val)
+    return newPoint
 end
 
 return Point
