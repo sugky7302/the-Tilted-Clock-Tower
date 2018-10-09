@@ -5,7 +5,6 @@
 > - [combat] 添加單位被攻擊後顯示戰鬥文字的觸發。
 > - [group] 添加新的判斷條件IsHero、IsNonHero。
 >#### Changed:
-> - [api] 更名為trigger。
 > - [jass_tool] 調整debug函數只能在debug模式下才能顯示。
 > - [timer] 參照moe-master 2.1重寫timer，改成中心計時器。
 >#### Fixed:
