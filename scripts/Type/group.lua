@@ -90,11 +90,19 @@ function mt:IsEmpty()
 end
 
 function Group.IsEnemy(u,filter)
-    return cj.GetUnitState(u, cj.UNITX_STATE_LIFE) > 0.3 and cj.IsUnitEnemy(u, cj.GetOwningPlayer(filter))
+    return cj.GetUnitState(u, cj.UNIT_STATE_LIFE) > 0.3 and cj.IsUnitEnemy(u, cj.GetOwningPlayer(filter))
 end
 
 function Group.IsAlly(u,filter)
-    return cj.GetUnitState(u, cj.UNITX_STATE_LIFE) > 0.3 and cj.IsUnitAlly(u, cj.GetOwningPlayer(filter))
+    return cj.GetUnitState(u, cj.UNIT_STATE_LIFE) > 0.3 and cj.IsUnitAlly(u, cj.GetOwningPlayer(filter))
+end
+
+function Group.IsHero(u, filter)
+    return cj.IsUnitType(u, cj.UNIT_TYPE_HERO)
+end
+
+function Group.IsNonHero(u, filter)
+    return not cj.IsUnitType(u, cj.UNIT_TYPE_HERO)
 end
 
 function Group.Nil(u, filter)

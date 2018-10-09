@@ -4,13 +4,19 @@ local Debug = require 'jass.debug'
 
 Base = {}
 
---打開控制台
+-- Debug模式
+Base.debugMode = true
+
+-- 打開控制台
 Console.enable = true
---重載print，自動轉換編碼
+
+-- 重載print，自動轉換編碼
 print = Console.write
---將handle等級設為0(地圖中所有的handle均使用table封裝)
+
+-- 將handle等級設為0(地圖中所有的handle均使用table封裝)
 Runtime.handle_level = 0
---關閉等待
+
+-- 關閉等待
 Runtime.sleep = false
 
 function Base.ErrorHandle(msg)
@@ -20,7 +26,7 @@ function Base.ErrorHandle(msg)
     print("---------------------------------------")
 end
 
---錯誤匯報
+-- 錯誤匯報
 function Runtime.ErrorHandle(msg)
     Base.ErrorHandle(msg)
 end

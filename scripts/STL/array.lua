@@ -49,6 +49,7 @@ end
 
 function mt:Remove()
     self = nil
+    collectgarbage("collect")
 end
 
 function mt:Clear()

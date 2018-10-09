@@ -111,6 +111,7 @@ function mt:Remove()
     while self.tail ~= nil do
         self:PopBack()
     end
+    collectgarbage("collect")
 end
 
 function mt:PopBack()

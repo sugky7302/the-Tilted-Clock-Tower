@@ -13,6 +13,8 @@ function Object:__call(obj)
     obj = obj or {}
     self.CountOfEIN = self.CountOfEIN + 1
     obj.EIN = self.CountOfEIN
+    setmetatable(obj, self)
+    obj.__index = obj
     return obj
 end
 

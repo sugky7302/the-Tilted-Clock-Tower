@@ -45,4 +45,11 @@ function mt:GetType()
     return self.type
 end
 
+function mt:Remove()
+    while not self:IsEmpty() do
+        self:Pop()
+    end
+    collectgarbage("collect")
+end
+
 return Stack

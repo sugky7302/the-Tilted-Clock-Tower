@@ -11,7 +11,7 @@ setmetatable(Texttag, Texttag)
 Texttag.__index = mt
 
 -- constants
-Texttag.PERIOD = 0.03125
+Texttag.PERIOD = 0.03
 Texttag.TIME_FADE = 0.3
 Texttag.SIZE = 0.05
 Texttag.Z_OFFSET = 20

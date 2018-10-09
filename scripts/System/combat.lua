@@ -1,13 +1,27 @@
 local setmetatable = setmetatable
 local math = math
 local cj = require 'jass.common'
-local Texttag = require 'texttag'
+local js = require 'jass_tool'
+local TexttagToAttachUnit = require 'text_to_attach_unit'
 local Point = require 'point'
+local War3 = require 'api'
 
 local Combat = {}
 local mt = {}
 setmetatable(Combat, Combat)
 Combat.__index = mt
+
+function Combat:Init()
+    self.unitIsAttacked = War3.CreateTrigger(function()
+        local target, damageValue = cj.GetTriggerUnit(), cj.GetEventDamage()
+        Combat.SetText(target, damageValue, "物理")
+        return true
+    end)
+end
+
+function Combat:RegisterEvent(target)
+    cj.TriggerRegisterUnitEvent(self.unitIsAttacked, target, cj.EVENT_UNIT_ATTACKED)
+end
 
 function Combat.SetText(target, value, textType, scale)
     local text
@@ -24,7 +38,7 @@ function Combat.SetText(target, value, textType, scale)
             text = "|cffff0000" .. "忽視!"
         end
     end
-    Texttag(text, Point(cj.GetUnitx(target), cj.GetUnitY(target)), scale)
+    TexttagToAttachUnit(text, Point(cj.GetUnitX(target), cj.GetUnitY(target)), scale)
 end
 
 return Combat

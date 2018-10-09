@@ -1,7 +1,7 @@
 local setmetatable = setmetatable
 local cj = require 'jass.common'
 local User = require 'User'
-local War3 = require 'War3.api'
+local War3 = require 'api'
 local Object = require 'object'
 
 local mt = {}
@@ -86,7 +86,7 @@ _DialogDisplay = function(player, _DisplayedInfo)
         cj._DialogDisplay(player, dialog, false)
         cj.DialogClear(dialog)
         -- 刪除觸發
-        war3.DestroyTrigger(trigger)
+        War3.DestroyTrigger(trigger)
         return true
     end)
 
