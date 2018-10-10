@@ -79,7 +79,7 @@ end
 
 _IsPauseTimer = function(self)
     if self.executingOrder:IsEmpty() then -- 如果沒有漂浮文字運作，就關閉計時器
-        self.timer:Pause()
+        self.timer:Remove()
     end 
 end
 
@@ -87,6 +87,7 @@ function mt:Remove()
     cj.DestroyTextTag(self.texttag)
     self.texttag = nil
     self = nil
+    collectgarbage("collect")
 end
 
 return Texttag

@@ -25,6 +25,10 @@ function mt:GetZ()
     cj.RemoveLocation(loc)
 end
 
+function Point:GetUnitLoc(unit)
+    return self(cj.GetUnitX(unit), cj.GetUnitY(unit))
+end
+
 function mt:Remove()
     self = nil
 end

@@ -45,7 +45,7 @@ end
 Base.AddPath 'Item'
 Base.AddPath 'Module'
 Base.AddPath 'STL'
-Base.AddPath 'System'
+Base.AddPath 'Maps'
 Base.AddPath 'Test'
 Base.AddPath 'Tool'
 Base.AddPath 'Type'

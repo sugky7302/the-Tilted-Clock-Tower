@@ -6,13 +6,14 @@ local Test = require 'test'
 local Group = require 'group'
 local Combat = require 'combat'
 local Timer = require 'timer'
+local Game = require 'game'
 require 'id'
 
 local function _RegisterHeros()
     Base.Heros = Group()
     Base.Heros:EnumUnitsInRange(0, 0, 1000000, Group.IsNonHero)
     Base.Heros:Loop(function(heros, i)
-        Combat:RegisterEvent(heros.units[i])
+        Game:EventDispatch("單位-創建", heros.units[i])
     end)
 end
 

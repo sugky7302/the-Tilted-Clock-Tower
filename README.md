@@ -1,3 +1,17 @@
+### Unreleased - 2018-10-10
+>#### Added:
+> - 新增trigger庫。參照moe-master 2.1和javascript的自定義事件，理解原理再根據需求修改。
+> - 新增event庫，同上理由。
+> - 新增game庫，用於註冊遊戲內所有系統、事件。
+> - [timer] 新增clock函數，獲取遊戲開始到調用的時間。
+>#### Changed:
+> - System資料夾名改成Maps。
+> - [combat] 根據trigger和event庫，重寫觸發函數。
+>#### Fixed:
+> - [combat] 修正漂浮文字與攻擊動畫不同步的問題。
+> - [event] 修正.__call無法讀取eventName的問題。
+> - [trigger] 修正沒有將回調函數添加進事件佇列的問題。
+
 ### 0.8.0 - 2018-10-09 - 重新更名回README
 >#### Added:
 > - 新增queue。

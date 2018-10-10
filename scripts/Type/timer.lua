@@ -179,4 +179,8 @@ function mt:Remove()
     collectgarbage("collect")
 end
 
+function mt:Clock()
+    return _currentFrame * PERIOD
+end
+
 return Timer
