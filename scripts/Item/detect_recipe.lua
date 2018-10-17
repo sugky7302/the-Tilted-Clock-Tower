@@ -1,3 +1,4 @@
+local math = math
 local setmetatable = setmetatable
 local cj = require 'jass.common'
 local AddRecipe = require 'add_recipe'
@@ -5,15 +6,16 @@ local Object = require 'object'
 
 local DetectRecipe = {}
 setmetatable(DetectRecipe, DetectRecipe)
+math.randomseed(tostring(os.time()):reverse():sub(1, 6))
 
 local _CollectUnitItemInSlot, _CheckRecipe, _SearchRecipes, _DecreaseItemChargesOrRemoveItem, _UnitAddItem
 
 function DetectRecipe:__call(unit)
     local recipe = _CollectUnitItemInSlot(unit)
     local productCollection = _CheckRecipe(recipe)
-    if productCollection and (productCollection.productId > 0) then
+    if productCollection and (productCollection.product > 0) then
         _DecreaseItemChargesOrRemoveItem(productCollection)
-        _UnitAddItem(unit, productCollection.productId)
+        _UnitAddItem(unit, productCollection.product)
         cj.DestroyEffect(cj.AddSpecialEffectTarget("Abilities\\Spells\\Items\\AIam\\AIamTarget.mdl", unit, "origin"))
     end
 end
@@ -38,7 +40,7 @@ _CheckRecipe = function(recipe)
 end
 
 _SearchRecipes = function(recipe)
-    local productCollection, recipeIndex = Object{productId = 0}
+    local productCollection, recipeIndex = Object{product = 0}
     local node = AddRecipe.root
     for i = 1, #recipe do
         recipeIndex = Base.Id2String(cj.GetItemTypeId(recipe[i]))
@@ -47,7 +49,7 @@ _SearchRecipes = function(recipe)
             productCollection:Insert(recipe[i])
         else
             -- 無值代表配方讀取完畢，讀取產品
-            productCollection.productId = node.productId
+            productCollection.product = node.products[math.random(#node.products)]
             break
         end
         node = node[recipeIndex]

@@ -1,4 +1,8 @@
-### Unreleased - 2018-10-10
+### Unreleased - 2018-10-18
+>#### Changed:
+> - [recipe] 修改product，能儲存多種產品。運用隨機數讀取隨機一種產品，用於材料賭博相關方面，由《超神機械師》參考而來。
+
+### 0.9.0 - 2018-10-10
 >#### Added:
 > - 新增trigger庫。參照moe-master 2.1和javascript的自定義事件，理解原理再根據需求修改。
 > - 新增event庫，同上理由。

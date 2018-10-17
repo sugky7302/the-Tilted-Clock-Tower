@@ -56,6 +56,21 @@ function Test:Missile()
         execution = function() end,
     }
 end
-        
+
+function Test:Buff()
+    local Buff = require 'buff'
+    local obj = Buff{
+        name = ,
+        type = ,
+        owner = ,
+        remaining = ,
+        icon = nil,
+        coverMode = 1,
+        pulse = 1,
+        callback = function() end,
+        execute = function() end
+    }
+end
+
 return Test
     

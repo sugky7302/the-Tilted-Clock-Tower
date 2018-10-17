@@ -35,7 +35,10 @@ _RegisterRecipe = function(self, recipe)
             node[recipe[i]] = newNode
         end
         if i == #recipe then
-            newNode.productId = recipe[i]
+            if not newNode.products then
+                newNode.products = Object()
+            end
+            newNode.products:Insert(recipe[i])
         end
         node = newNode
     end
