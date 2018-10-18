@@ -2,6 +2,7 @@ local setmetatable = setmetatable
 local cj = require 'jass.common'
 local js = require 'jass_tool'
 local Timer = require 'timer'
+local Array = require 'array'
 
 local Buff = {}
 local mt = {}
@@ -9,9 +10,9 @@ setmetatable(Buff, Buff)
 Buff.__index = mt 
 
 -- variables
-local _SetObject, _SetVariables, _FindQueue, _PushBuff, _SetBuff, _AddEffect
+local _SetObject, _SetVariables, _FindQueue, _PushBuff, _SetBuff, _AddEffect, _AddArt, _RemoveArt
 
--- obj含name, type, owner, remaining, icon, coverMode, pulse, callback(添加/刪除屬性), execute(持續觸發函數)
+-- obj含name, type, owner, remaining, art, coverMode, pulse, callback(添加/刪除屬性), execute(持續觸發函數)
 function Buff:__call(obj)
     _SetObject(obj)
     _SetBuff(obj)
@@ -48,7 +49,6 @@ _PushBuff = function(buff, self)
     self.buff = buff
     buff:PushBack(self)
     setmetatable(self, Buff)
-    self.__index = self
 end
 
 --[[
@@ -74,13 +74,15 @@ _SetBuff = function(self)
             end
         elseif self.coverMode == 3 then
             if buff[1] ~= self then
-                buff[1] = buff[1] + self
+                buff[1].layer = buff[1].layer + 1
+                buff[1]:on_cover()
                 buff[1].timer:SetRemaining(self.remaining) -- TODO: timer要設定此函數
                 self:Remove()
             end
         elseif self.coverMode == 4 then
             if buff[1] ~= self then
-                buff[1] = buff[1] + self
+                self.layer = self.layer + 1
+                self:on_cover()
                 self:Remove()
             end
         end
@@ -88,29 +90,39 @@ _SetBuff = function(self)
 end
 
 _AddEffect = function(self)
-    self:callback("start")
-    if self.icon then
-        cj.UnitAddAbility(self.owner, self.icon)
-    end
+    self:on_add()
+    _AddArt(self.owner, self.art)
     if self.type == "dot" then
         local count = self.remaining / self.pulse
         self.timer = Timer(self.pulse, count, function()
-            if self.execute then
-                self:execute()
+            if self.on_finish then
+                self:on_finish()
             end
             if count < 1 then
-                cj.UnitRemoveAbility(self.owner, self.icon)
-                self:callback("stop")
+                _RemoveArt(self.owner, self.art)
+                self:on_remove()
             end
         end)
     else
-        self.timer = Timer(self.remaining, false, funciton()
-            if self.icon then
-                cj.UnitRemoveAbility(self.owner, self.icon)
-            end
-            self:callback("stop")
+        self.timer = Timer(self.remaining, false, function()
+            _RemoveArt(self.owner, self.art)
+            self:on_remove()
         end)
     end
+end
+
+_AddArt = function(owner, art)
+    if art then
+        cj.UnitAddAbility(owner, art)
+    end
+    return
+end
+
+_RemoveArt = function(owner, art)
+    if art then
+        cj.UnitRemoveAbility(owner, art)
+    end
+    return
 end
 
 function mt:Remove()

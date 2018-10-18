@@ -80,7 +80,7 @@ function Timer:__call(timeout, isPeriod, execution)
         timeout = max(floor(timeout / PERIOD) or 1, 1),
         isPeriod = isPeriod,
         execution = execution,
-        invalie = false
+        invalid = false
     }
     setmetatable(obj, self)
     obj.__index = obj
@@ -171,16 +171,24 @@ function mt:GetRemaining()
 end
 
 function mt:Remove()
+    self:Pause()
     self.timeout = nil
     self.isPeriod = nil
     self.execution = nil
-    self.invalie = nil
+    self.invalid = nil
     self = nil
     collectgarbage("collect")
 end
 
 function mt:Clock()
     return _currentFrame * PERIOD
+end
+
+function mt:SetRemaining(timeout)
+    if not self.invalid then
+        self:Pause()
+    end
+    self = Timer(timeout, self.isPeriod, self.execution)
 end
 
 return Timer
