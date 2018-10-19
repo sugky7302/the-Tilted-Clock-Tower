@@ -80,8 +80,7 @@ function mt:InitState()
         return 
     end
     self['等級'] = data.level
-    self['最小物理攻擊力'] = data.dmgplus1 + data.dice1
-    self['最大物理攻擊力'] = data.dmgplus1 + data.dice1 * data.sides1
+    self['骰子面數'] = 7
     self['法術攻擊力'] = 0
     self['法術護甲'] = 0
     self['攻擊範圍'] = data.rangeN1
@@ -274,14 +273,38 @@ on_set['魔力上限'] = function(self)
 	end
 end
 
-get['物理攻擊力'] = function(self)
-	japi.SetUnitState(self.object, 0x10, 1)
-	japi.SetUnitState(self.object, 0x11, 1)
+get['最大物理攻擊力'] = function(self)
+    return japi.GetUnitState(self.object, 0x12) + self["骰子面數"]
+end
+
+set['最大物理攻擊力'] = function(self, attack)
+    local side = math.max(1, attack - self:get "最小物理攻擊力")
+    japi.SetUnitState(self.object, 0x11, side)
+    self["骰子面數"] = side
+end
+
+get['最小物理攻擊力'] = function(self)
+    japi.SetUnitState(self.object, 0x10, 1)
+    japi.SetUnitState(self.object, 0x11, self["骰子面數"])
 	return japi.GetUnitState(self.object, 0x12) + 1
 end
 
+set['最小物理攻擊力'] = function(self, attack)
+    local old = self:get "最大物理攻擊力"
+    japi.SetUnitState(self.object, 0x12, attack - 1)
+    if old < attack then
+        old = attack
+    end
+    self:set("最大物理攻擊力", old)
+end
+
+get['物理攻擊力'] = function(self)
+    return math.modf(self:get "最小物理攻擊力" + self:get "最大物理攻擊力")
+end
+
 set['物理攻擊力'] = function(self, attack)
-	japi.SetUnitState(self.object, 0x12, attack - 1)
+    self:set("最大物理攻擊力", self:get "最大物理攻擊力" + attack)
+    self:set("最小物理攻擊力", self:get "最小物理攻擊力" + attack)
 end
 
 get['物理護甲'] = function(self)

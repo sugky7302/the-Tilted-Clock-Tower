@@ -3,8 +3,7 @@
     // for the documentation about the tasks.json format
     "version": "2.0.0",
     "type": "shell",
-    "tasks": [
-        {
+    "tasks": [{
             "label": "執行",
             "command": "chcp 65001 && \"${workspaceRoot}/tools/w3x2lni/bin/w3x2lni-lua.exe\"",
             "args": [
@@ -154,7 +153,7 @@
                 "panel": "new"
             },
             "args": [
-                ".\\tools\\jass语法检查.lua",
+                ".\\tools\\jass語法檢查.lua",
                 "${workspaceRoot}",
                 "--notwatch",
                 "${file}",
