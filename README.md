@@ -3,6 +3,7 @@
 > - 新增damage庫。
 > - 新增unit庫，為單位註冊結構。
 > - 新增hero庫，繼承unit庫，並添加英雄特有屬性及函數。
+> - 新增math_lib庫，補充lua的math庫沒有的函數。
 >#### Changed:
 > - [map] "單位-創建"事件移動到unit庫統一執行。
 >#### Fixed:
