@@ -8,6 +8,7 @@ local Point = require 'point'
 local War3 = require 'api'
 local Game = require 'game'
 local Timer = require 'timer'
+local Hero = require 'hero'
 
 local Combat = {}
 local mt = {}
@@ -16,11 +17,11 @@ Combat.__index = mt
 
 function Combat:Init()
     local unitIsAttacked = War3.CreateTrigger(function()
-        local source, target, dmg = cj.GetAttacker(), cj.GetTriggerUnit(), cj.GetEventDamage()
-        Game:EventDispatch("單位-顯示傷害", source, target, dmg)
+        local source, target = cj.GetAttacker(), cj.GetTriggerUnit()
+        Game:EventDispatch("單位-顯示傷害", source, target)
         return true
     end)
-    Game:Event "單位-顯示傷害" (function(self, source, target, dmg)
+    Game:Event "單位-顯示傷害" (function(self, source, target)
         local point_source, point_target = Point:GetUnitLoc(source), Point:GetUnitLoc(target)
         local dist = Point.Distance(point_source, point_target)
         local sourceId = Base.Id2String(cj.GetUnitTypeId(source))
@@ -30,7 +31,15 @@ function Combat:Init()
         point_source:Remove()
         point_target:Remove()
         Timer(timeout, false, function()
-            Combat.SetText(target, dmg, "物理")
+            target = Hero(target)
+            local life, maxLife = target:get "生命", target:get "生命上限"
+            target:add('生命上限', 10000)
+            target:set("生命", target:get "生命上限")
+            Timer(0, false, function()
+                target:set("生命上限", maxLife)
+                target:set("生命", life)
+                Combat.SetText(target.object, 10, "物理") -- TODO: 設定真實物理傷害
+            end)
         end)
     end)
     Game:Event "單位-創建" (function(self, target)

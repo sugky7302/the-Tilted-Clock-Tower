@@ -1,15 +1,32 @@
 local setmetatable = setmetatable
-local Test = {}
 
+local Test = {}
 setmetatable(Test, Test)
 
+-- variables 
+local _Add
+
 function Test:__call()
+    -- self.Add()
     -- self.Texttag()
     -- self.TextToAttachUnit()
     -- self.AddRecipe()
     -- self.Group()
     -- self.Missile()
-    self.Buff()
+    -- self.Buff()
+    -- self.Damage()
+end
+
+function Test.Add()
+    local a = 0
+    for i = 1, 10 do
+        _Add(a)
+        print(a.."")
+    end
+end
+-- 不改變原a，應是複製a的值
+_Add = function(a)
+    a = a + 1
 end
         
 function Test.Texttag()
@@ -28,7 +45,6 @@ function Test.AddRecipe()
     local AddRecipe = require 'add_recipe'
     local obj = AddRecipe{1, 2, 3, 4, 5, 6}
     ob = {12, 4564, 897321, 987564, 1231}
-    print("1")
 end
 
 function Test.Group()
@@ -39,7 +55,6 @@ function Test.Group()
     end 
     obj[1]:Remove()
     obj[1] = Group()
-    print("2")
 end
 
 function Test.Missile()
@@ -87,6 +102,19 @@ function Test.Buff()
         on_cover = function() end,
         on_finish = function() end,
         on_cast = function() end
+    }
+end
+
+function Test.Damage()
+    local Damage = require 'damage'
+    Damage{
+        type = "法術", 
+        name = "",
+        source = "",
+        target = "",
+        elementType = "無",
+        basicDamage = "",
+        proc = 1,
     }
 end
 

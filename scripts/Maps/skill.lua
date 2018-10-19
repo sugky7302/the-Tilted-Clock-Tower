@@ -72,11 +72,11 @@ mt.breakCastShot = 0
 mt.breakCastFinish = 1
 
 -- variables
-local _CallEvent
+local _CallEvent, _InitSkillAttributes
 
 function Skill.Init()
     local unitIsCasted = War3.CreateTrigger(function()
-        local source, order, target = cj.GetOrderedUnit(), cj.GetIssuedOrderId(), cj.GetOrderTargetUnit()
+        local source, order, target = cj.GetOrderedUnit(), cj.GetIssuedOrderId(), cj.GetOrderTarget()
         Game:EventDispatch("單位-發布指令", source, order, target)
         return true
     end)
@@ -90,10 +90,11 @@ function Skill.Init()
 			return
         end
         -- 獲取技能
-        for _, skillName in hero.skills do
-            Skill[skillName]:on_cast_start(hero, target)
-            return 
-        end
+        -- for _, skillName in hero.skills do
+        --     Skill[skillName]:on_cast_start(hero, target)
+        --     return 
+        -- end
+        Skill['暴風雪']:on_cast_start(hero, target)
     end)
     Game:Event "單位-創建" (function(self, target)
         cj.TriggerRegisterUnitEvent(unitIsCasted, target, cj.EVENT_UNIT_ISSUED_TARGET_ORDER)
@@ -106,9 +107,13 @@ function Skill:__call(name)
     return function(obj)
         self[name] = obj
         self[name].name = name
+        _InitSkillAttributes(self[name])
         setmetatable(obj, self)
         return self[name]
     end
+end
+
+_InitSkillAttributes = function(self)
 end
 
 -- 觸發技能事件 (事件名, 無視禁用狀態)
