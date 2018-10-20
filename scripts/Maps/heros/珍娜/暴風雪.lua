@@ -11,7 +11,6 @@ function mt:on_cast_start(hero, target)
     local g = Group(hero)
     -- g:EnumUnitsInRange(target.x, target.y, self.area, Group.IsEnemy)
     g:EnumUnitsInRange(0, 0, self.area, Group.IsEnemy)
-    print("1")
     g:Loop(function(group, i)
     end)
 end

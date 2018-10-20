@@ -50,6 +50,7 @@ Base.AddPath 'Test'
 Base.AddPath 'Tool'
 Base.AddPath 'Type'
 Base.AddPath 'War3'
+Base.AddPath 'Database'
 
 -- 初始化本地腳本
 require 'main'

@@ -7,15 +7,35 @@ local War3 = require 'api'
 local Game = require 'game'
 local Timer = require 'timer'
 local Group = require 'group'
+local Item = require 'item'
+local Equipment = require 'equipment'
+local Secrets = require 'secrets'
 
 local Hero = {}
 setmetatable(Hero, Hero)
 Hero.__index = Unit
 Hero.type = "Hero"
 
+-- varaiables
+local _RegDropItemEvent, _RegObtainItemEvent, _RegReviveEvent, _RegSellItemEvent, _RegUseItemEvent, _RegSpellEffectEvent
+
 function Hero.Init()
+    -- 添加事件
+    Game:Event "單位-創建" (function(self, target)
+        if Hero(target).type == "Hero" then
+            cj.TriggerRegisterUnitEvent(_RegReviveEvent(), target, cj.EVENT_UNIT_DEATH) -- 死亡事件
+            cj.TriggerRegisterUnitEvent(_RegUseItemEvent(), target, cj.EVENT_UNIT_USE_ITEM) -- 使用物品事件
+            cj.TriggerRegisterUnitEvent(_RegObtainItemEvent(), target, cj.EVENT_UNIT_PICKUP_ITEM) -- 獲得物品事件
+            cj.TriggerRegisterUnitEvent(_RegDropItemEvent(), target, cj.EVENT_UNIT_DROP_ITEM) -- 丟棄物品事件
+            cj.TriggerRegisterUnitEvent(_RegSellItemEvent(), target, cj.EVENT_UNIT_SELL_ITEM) -- 出售物品事件
+            cj.TriggerRegisterUnitEvent(_RegSpellEffectEvent(), target, cj.EVENT_UNIT_SPELL_EFFECT)
+        end
+    end)
+end
+
+_RegReviveEvent = function()
     -- 註冊英雄死亡等待復活的事件
-    local trg = War3.CreateTrigger(function()
+    local _reviveTrg = War3.CreateTrigger(function()
         Game:EventDispatch("單位-復活", Hero(cj.GetTriggerUnit()))
         return true
     end)
@@ -24,19 +44,64 @@ function Hero.Init()
             cj.ReviveHero(obj.object, obj.revivePoint.x, obj.revivePoint.y, true)
         end)
     end)
-    Game:Event "單位-創建" (function(self, target)
-        if Hero(target).type == "Hero" then
-            cj.TriggerRegisterUnitEvent(trg, target, cj.EVENT_UNIT_DEATH)
+    return _reviveTrg
+end
+
+_RegUseItemEvent = function()
+    -- 創建使用物品事件
+    local _useItemTrg = War3.CreateTrigger(function()
+        Game:EventDispatch("單位-使用物品", cj.GetTriggerUnit(), cj.GetManipulatedItem())
+        return true
+    end)
+    Game:Event "單位-使用物品" (function(self, hero, item)
+    end)
+    return _useItemTrg
+end
+
+_RegObtainItemEvent = function()
+    -- 創建獲得物品事件
+    local _obtainItemTrg = War3.CreateTrigger(function()
+        Game:EventDispatch("單位-獲得物品", cj.GetTriggerUnit(), cj.GetManipulatedItem())
+        return true
+    end)
+    Game:Event "單位-獲得物品" (function(self, hero, item)
+        if Item.IsEquipment(item) then
+            Equipment(item).owner = hero
+        elseif Item.IsSecrets(item) then
+            Secrets(item).owner = hero
+        else
+            Item(item).owner = hero
         end
     end)
-    -- 為單位生成結構與註冊事件
-    local g = Group()
-    g:EnumUnitsInRange(0, 0, 9999999, Group.IsHero)
-    g:Loop(function(self, i)
-        Hero(self.units[i])
-        Game:EventDispatch("單位-創建", self.units[i])
+    return _obtainItemTrg
+end
+
+_RegDropItemEvent = function()
+    -- 創建丟棄物品事件
+    local _dropItemTrg = War3.CreateTrigger(function()
+        Game:EventDispatch("單位-丟棄物品", cj.GetTriggerUnit(), cj.GetManipulatedItem())
+        return true
     end)
-    g:Remove()
+    return _dropItemTrg
+end
+
+_RegSellItemEvent = function()
+    -- 創建出售物品事件
+    local _sellItemTrg = War3.CreateTrigger(function()
+        Game:EventDispatch("單位-出售物品", cj.GetTriggerUnit(), cj.GetManipulatedItem())
+        return true
+    end)
+    Game:Event "單位-出售物品" (function(self, hero, item)
+    end)
+    return _sellItemTrg
+end
+
+_RegSpellEffectEvent = function()
+    local _spellEffectTrg = War3.CreateTrigger(function()
+        Game:EventDispatch("單位-發動技能效果", cj.GetTriggerUnit(), cj.GetSpellAbilityId(), cj.GetSpellTargetUnit(), cj.GetSpellTargetItem(), cj.GetSpellTargetLoc())
+        return true
+    end)
+    return _spellEffectTrg
 end
 
 function Hero:__call(hero)
@@ -72,27 +137,26 @@ function Hero:InitState()
     self['額外法術傷害'] = 0
     self['特殊物理傷害'] = 0
     self['特殊法術傷害'] = 0
-    self['增強物理護甲'] = 0
-    self['增強法術護甲'] = 0
+    self['物理護甲%'] = 0
+    self['法術護甲%'] = 0
     self['額外物理護甲'] = 0
     self['額外法術護甲'] = 0
+    self['特殊物理護甲'] = 0
+    self['特殊法術護甲'] = 0
     self['近戰減傷'] = 0
     self['遠程減傷'] = 0
-    self['種族增傷'] = {}
-    self['種族減傷'] = {}
     for _, name in ipairs(Hero._RACE) do
-        self['種族增傷'][name] = 0
-        self['種族減傷'][name] = 0
+        self[name .. '增傷'] = 0
+        self[name .. '減傷'] = 0
+        self['對' .. name .. '降傷'] = 0
     end
-    self['階級增傷'] = {}
-    self['階級減傷'] = {}
     for _, name in ipairs(Hero._LEVEL) do
-        self['階級增傷'][name] = 0
-        self['階級減傷'][name] = 0
+        self[name .. '增傷'] = 0
+        self[name .. '減傷'] = 0
+        self['對' .. name .. '降傷'] = 0
     end
-    self['元素增傷'] = {}
     for _, name in ipairs(Hero._ELEMENTS) do
-        self['元素增傷'][name] = 0
+        self[name .. '元素增傷'] = 0
     end
 end
 

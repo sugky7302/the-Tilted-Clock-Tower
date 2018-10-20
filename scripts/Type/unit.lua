@@ -9,6 +9,7 @@ local Point = require 'point'
 local Timer = require 'timer'
 local Game = require 'game'
 local War3 = require 'api'
+local Event = require 'event'
 
 local Unit = {}
 local mt = {}
@@ -18,11 +19,12 @@ Unit.__index = mt
 -- constants
 mt._RACE = {'龍族', '元素', '靈魂', '動物', '人形', '人造', '惡魔'}
 mt._ELEMENTS = {"無", "地", "水", "火", "風"}
-mt._LEVEL = {"普通", "菁英", "頭目"}
+mt._LEVEL = {"普通", "菁英", "稀有菁英", "頭目"}
 mt.type = "Unit"
 
 -- variables
 local set, get, on_add, on_set, on_get = {}, {}, {}, {}, {}
+local _GetBodySize
 
 function Unit.Init()
     -- 註冊單位死亡要刷新的事件
@@ -33,9 +35,11 @@ function Unit.Init()
     Game:Event "單位-刷新" (function(self, obj)
         local id = js.U2Id(obj.object) -- 移除單位前先存單位id才不會讀不到
         Unit.KillUnit(obj.object)
-        Timer(obj:get '刷新時間', false, function()
+        -- Timer(obj:get '刷新時間', false, function()
+        Timer(5, false, function()
             local unit = cj.CreateUnit(cj.Player(cj.PLAYER_NEUTRAL_AGGRESSIVE), id, obj.revivePoint.x, obj.revivePoint.y, cj.GetRandomReal(0, 180))
             Unit(unit) -- 新單位註冊實例
+            Game:EventDispatch("單位-創建", unit)
             obj:Remove() -- 移除實例
         end)
     end)
@@ -44,14 +48,6 @@ function Unit.Init()
             cj.TriggerRegisterUnitEvent(trg, target, cj.EVENT_UNIT_DEATH)
         end
     end)
-    -- 為單位生成結構與註冊事件
-    local g = Group()
-    g:EnumUnitsInRange(0, 0, 9999999, Group.IsNonHero)
-    g:Loop(function(self, i)
-        Unit(self.units[i])
-        Game:EventDispatch("單位-創建", self.units[i])
-    end)
-    g:Remove()
 end
 
 function mt.KillUnit(unit)
@@ -83,11 +79,13 @@ function mt:InitState()
     self['骰子面數'] = 7
     self['法術攻擊力'] = 0
     self['法術護甲'] = 0
+    self['元素傷害'] = 0
+    self['元素傷害%'] = 0
     self['攻擊範圍'] = data.rangeN1
     self['移動速度'] = data.spd
     self['轉身速度'] = data.turnRate
-    self['魔力恢復'] = data.regenMana
-    self['生命恢復'] = data.regenHP
+    self['魔力恢復'] = 0
+    self['生命恢復'] = 0
     self['物理暴擊率'] = 0
     self['法術暴擊率'] = 0
     self['種族'] = mt._RACE[data.goldcost]
@@ -100,7 +98,7 @@ function mt:InitState()
     self['物理格擋'] = 0
     self['法術格擋'] = 0
     self['閃避'] = 0
-    self['命中'] = 0
+    self['命中'] = 1
     self['沉默'] = 0
     self['致盲'] = 0
     self['暈眩'] = 0
@@ -113,11 +111,23 @@ function mt:InitState()
     self['變形'] = 0
     self['睡眠'] = 0
     self['階級'] = data.points
+    self['元素屬性'] = "無"
+    self['體型'] = _GetBodySize(data.collision)
 
     if self.type == 'Unit' then
         self['刷新時間'] = data.stockRegen
     end
 end 
+
+_GetBodySize = function(collision)
+    if collision < 24 then
+        return "小"
+    elseif collision < 41 then
+        return "中"
+    else
+        return "大"
+    end
+end
 
 function mt:add(name, value)
     local v1, v2 = 0, 0
@@ -127,7 +137,10 @@ function mt:add(name, value)
 		name = name:sub(1, -2)
 	else
 		v1 = value
-	end
+    end
+    if type(self[name]) == 'string' then
+        return 
+    end
 	local key1 = name -- 數值
 	local key2 = name .. '%' -- 百分比
 	if not self[key1] then
@@ -150,7 +163,7 @@ function mt:add(name, value)
 		self[key2] = self[key2] + v2
 	end
 	if set[name] then
-		set[name](self, self[key1] * (1 + self[key2] / 100))
+		set[name](self, self[key1] * (1 + (self[key2] or 0) / 100))
 	end
 	if f then
 		f()
@@ -158,6 +171,14 @@ function mt:add(name, value)
 end
 
 function mt:set(name, value)
+    local v1, v2 = 0, 0
+    -- 判斷是否為定值
+	if name:sub(-1, -1) == '%' then
+		v2 = value
+		name = name:sub(1, -2)
+	else
+		v1 = value
+	end
 	local key1 = name
 	local key2 = name .. '%'
 	if not self[key1] then
@@ -168,10 +189,16 @@ function mt:set(name, value)
 	if on_set[name] then
 		f = on_set[name](self)
 	end
-	self[key1] = value
-	self[key2] = 0
+	-- 加定值
+    if v1 then
+		self[key1] = v1
+    end
+    -- 加百分比
+	if v2 then
+		self[key2] = v2
+	end
 	if set[name] then
-		set[name](self, self[key1] * (1 + self[key2] / 100))
+		set[name](self, self[key1] * (1 + (self[key2] or 0) / 100))
 	end
 	if f then
 		f()
@@ -179,10 +206,13 @@ function mt:set(name, value)
 end
 
 function mt:get(name)
-	local type = 0
+	local type1 = 0
 	if name:sub(-1, -1) == '%' then
 		name = name:sub(1, -2)
-		type = 1
+		type1 = 1
+    end
+    if type(self[name]) == 'string' then
+        return self[name]
     end
 	local key1 = name
     local key2 = name .. '%'
@@ -190,13 +220,13 @@ function mt:get(name)
 		self[key1] = get[name] and get[name](self) or 0
 		self[key2] = 0
 	end
-	if type == 1 then
+	if type1 == 1 then
 		return self[key2]
 	end
 	if on_get[name] then
 		return on_get[name](self, self[key1] * (1 + self[key2] / 100))
-	end
-	return self[key1] * (1 + self[key2] / 100)
+    end
+	return self[key1] * (1 + (self[key2] or 0) / 100)
 end
 
 get['生命'] = function(self)
@@ -305,6 +335,14 @@ end
 set['物理攻擊力'] = function(self, attack)
     self:set("最大物理攻擊力", self:get "最大物理攻擊力" + attack)
     self:set("最小物理攻擊力", self:get "最小物理攻擊力" + attack)
+end
+
+get['增強物理攻擊力'] = function(self)
+    return japi.GetUnitState(self.object, 0x13)
+end
+
+set['增強物理攻擊力'] = function(self, value)
+    cj.SetUnitState(self.object, 0x13, value)
 end
 
 get['物理護甲'] = function(self)

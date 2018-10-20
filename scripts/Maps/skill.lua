@@ -76,11 +76,10 @@ local _CallEvent, _InitSkillAttributes
 
 function Skill.Init()
     local unitIsCasted = War3.CreateTrigger(function()
-        local source, order, target = cj.GetOrderedUnit(), cj.GetIssuedOrderId(), cj.GetOrderTarget()
-        Game:EventDispatch("單位-發布指令", source, order, target)
+        Game:EventDispatch("單位-發布命令", cj.GetOrderedUnit(), cj.GetIssuedOrderId(), cj.GetOrderTarget())
         return true
     end)
-    Game:Event '單位-發布指令' (function(hero, order, target)
+    Game:Event '單位-發布命令' (function(self, hero, order, target)
 		if order == '' then
 			return
         end
@@ -94,7 +93,7 @@ function Skill.Init()
         --     Skill[skillName]:on_cast_start(hero, target)
         --     return 
         -- end
-        Skill['暴風雪']:on_cast_start(hero, target)
+        -- Skill['暴風雪']:on_cast_start(hero, target)
     end)
     Game:Event "單位-創建" (function(self, target)
         cj.TriggerRegisterUnitEvent(unitIsCasted, target, cj.EVENT_UNIT_ISSUED_TARGET_ORDER)

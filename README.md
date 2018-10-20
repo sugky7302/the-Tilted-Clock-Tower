@@ -12,7 +12,36 @@
 過程使用**項目管理.xlsx**及**evernote**來管理我的專案。
 
 ## 更新日誌
-### Unreleased - 2018-10-19
+### Unreleased - 2018-10-20
+>#### Added:
+> - 新增database資料夾，儲存各類型需要的模板。
+> - 新增secrets_database、attribute_database庫，提供物品需要的數據。
+> - 新增item、enchanted、equipment、secrets庫，完成附魔功能。
+> - 新增player庫，設定玩家專有的函數。
+> - 新增order_id庫，用於將命令轉成編輯器認識的id編碼。
+> - 新增dialog庫，用於裝備顯示框。
+> - [damage] 新增混合傷害，可自行設定物法比例。
+> - [enchanted] 新增init函數，專門呼叫附魔函數。
+> - [hero] 新增物品、發動技能效果事件。
+> - [main] 新增部分初始化函數。
+> - [skill] 完善發布命令事件。
+> - [unit] 新增增強物理攻擊力來獲得面板的綠字攻擊。
+> - [unit] 修正set函數會根據 name 自動生成 name% 屬性的問題。
+>#### Changed:
+> - [damage] 根據混合傷害的需要，調整獲取物理攻擊力、法術攻擊力、物理護甲、法術護甲的觸發。
+> - [equipment] 改成對話框顯示。
+> - [hero] 註冊事件改為map呼叫。
+> - [main] 調整初始化順序。
+> - [map] 調用模塊改由該函數呼叫。
+> - [unit] 註冊事件改為map呼叫。
+> - [database] 調整所有database的呼叫方式，改為全域變量。
+>#### Fixed:
+> - [combat] 修正復活後的怪物會無法扣除傷害觸發內的暫時生命值的問題。
+> - [damage] 修正傷害文字和實際傷害值不符的問題。
+>#### Removed:
+> - [equipment] 由於物品數據是類型一起更改，無法達到單件物品專門修改的效果，因此刪除此功能。
+
+### 0.10.0 - 2018-10-19
 >#### Added:
 > - 新增damage庫。
 > - 新增unit庫，為單位註冊結構。

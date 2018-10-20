@@ -1,3 +1,5 @@
+local setmetatable = setmetatable
+local math = math
 local cj = require 'jass.common'
 local TextToAttachUnit = require 'text_to_attach_unit'
 local Point = require 'point'
@@ -66,31 +68,47 @@ local _ELEMENT_TYPE = {
 local _ComputeAttack, _ComputeDamageDefense, _DealDamage, _TransHitAndDodge, _IsHitOrDodge
 local _IsCriOrACT, _TransCriAndACT, _DeterminCriOrACT, _IsPntOrBlk, _TransPntOrBlk
 local _GetIndependentBonusInAtk, _GetWeakness, _GetEAtk, _GetTalentsBonusInAtk, _GetBuffInAtk
-local _GetTalentsBonusInDef, _GetBuffInDef, _GetIndependentBonusInDef
+local _GetTalentsBonusInDef, _GetBuffInDef, _GetIndependentBonusInDef, _GetAtk, _GetMatk, _GetDef, _GetMdef
 
--- obj 含 source(Hero type), target(Hero type), type, name, elementType, basicDamage, proc
+-- obj 含 source(Hero type), target(Hero type), type, name, elementType, basicDamage(技能基礎傷害), proc(法術攻擊力係數), ratio(混合傷害的物法比例)
 function Damage:__call(obj)
     local atk, def = _ComputeAttack(obj), _ComputeDefense(obj)
-    local dmg = _DamageDetermine(obj, atk, def)
-    if type(dmg) != "string" then
+    local dmg, textSize = _DamageDetermine(obj, atk, def)
+    if type(dmg) ~= "string" then
         _DealDamage(obj.target, dmg)
     end
+    _Show(obj.target.object, dmg, obj.type, textSize)
 end
 
 _ComputeAttack = function(obj)
-    local atk
+    local atk, extraDmg
     if obj.type == "物理" then
-        atk = (MathLib.Random(obj.source:get "最小物理攻擊力", obj.source:get "最大物理攻擊力") + obj.source:get "固定傷害") * _BODY_TYPE[obj.source:get "體型"][obj.target:get "體型"]
+        atk = _GetAtk(obj.source, obj.target)
+        extraDmg = obj.source:get "特殊物理傷害"
     elseif obj.type == "法術" then
-        if type(obj.basicDamage) == "table" then
-            obj.basicDamage = MathLib.Random(obj.basicDamage[1], obj.basicDamage[2])
-        end
-        atk = obj.basicDamage + obj.proc * obj.source:get "法術攻擊力"
+        atk = _GetMatk(obj.source, obj.basicDamage, obj.proc)
+        extraDmg = obj.source:get "特殊法術傷害"
+    elseif obj.type == "混合" then
+        atk = obj.ratio[1] * _GetAtk(obj.source, obj.target) + obj.ratio[2] * _GetMatk(obj.source, obj.basicDamage, obj.proc)
+        extraDmg = obj.ratio[1] * obj.source:get "特殊物理傷害" + obj.ratio[2] * obj.source:get "特殊法術傷害"
     end
     local eAtk = _GetEAtk(obj)
-    local part1 = (atk + eAtk + obj.source:get "額外傷害") * _GetTalentsBonusInAtk(obj.source) * _GetBuffInAtk(obj.source, obj.target)
-    local part2 = obj.source:get("種族增傷", obj.target:get "種族") * obj.source:get("階級增傷", obj.target:get "階級") * obj.source:get "精通" 
-    return  part1 * part2 * _GetIndependentBonusInAtk(obj.source) + obj.source:get "特殊傷害"
+    local part1 = (atk + eAtk) * _GetTalentsBonusInAtk(obj.source) * _GetBuffInAtk(obj.source, obj.target)
+    local part2 = obj.source:get(obj.target:get "種族" .. "增傷")  * obj.source:get(obj.target:get "階級" .. "增傷") * obj.source:get "精通" 
+    local part3 = obj.target:get("對" .. obj.source:get "種族" .. "降傷")  * obj.target:get("對" .. obj.source:get "階級" .. "降傷")
+    return part1 * (1 + part2) * (1 + part3) * _GetIndependentBonusInAtk(obj.source) + extraDmg
+end
+
+_GetAtk = function(source, target)
+    local basic = MathLib.Random(source:get "最小物理攻擊力", source:get "最大物理攻擊力") + source:get "增強物理攻擊力"
+    return (basic + source:get "固定傷害") * _BODY_TYPE[source:get "體型"][target:get "體型"] + source:get "額外物理傷害"
+end
+
+_GetMatk = function(source, basicDamage, proc)
+    if type(basicDamage) == "table" then
+        basicDamage = MathLib.Random(basicDamage[1], basicDamage[2])
+    end
+    return basicDamage + proc * source:get "法術攻擊力" + source:get "額外法術傷害"
 end
 
 _GetIndependentBonusInAtk = function(source)
@@ -101,7 +119,7 @@ _GetIndependentBonusInAtk = function(source)
 end
 
 _GetEAtk = function(obj)
-    return obj.source:get "元素傷害" * obj.source:get "元素增幅" * obj.target:get "元素抗性" * _ELEMENT_TYPE[obj.elementType][obj.target:get "元素屬性"]
+    return obj.source:get "元素傷害" * (1 - obj.target:get "元素抗性") * _ELEMENT_TYPE[obj.elementType][obj.target:get "元素屬性"]
 end
 
 _GetTalentsBonusInAtk = function(source)
@@ -113,15 +131,29 @@ _GetBuffInAtk = function(source, target)
 end
 
 _ComputeDefense = function(obj)
-    local def, part3
+    local def, extraAmr
     if obj.type == "物理" then
-        def = obj.target:get "物理護甲" * _BODY_TYPE[obj.source:get "體型"][obj.target:get "體型"] * obj.target:get "增強物理護甲"
+        def = _GetDef(obj.source, obj.target)
+        extraAmr = obj.target:get("特殊物理護甲")
     elseif obj.type == "法術" then
-        def = obj.target:get "法術護甲" * obj.target:get "增強法術護甲"
+        def = _GetMdef(obj.target)
+        extraAmr = obj.target:get("特殊法術護甲")
+    elseif obj.type == "混合" then
+        def = obj.ratio[1] * _GetDef(obj.source, obj.target) + obj.ratio[2] * _GetMdef(obj.target)
+        extraAmr = obj.ratio[1] * obj.target:get("特殊物理護甲") + obj.ratio[2] * obj.target:get("特殊法術護甲")
     end
     local part1 = def * _GetTalentsBonusInDef(obj.source) * _GetBuffInDef(obj.source, obj.target) * _GetIndependentBonusInDef(obj.source)
-    local part2 = obj.source:get("種族減傷", obj.target:get "種族") * obj.source:get("階級減傷", obj.target:get "階級")
-    return part1 * part2 + obj.target:get("額外" .. obj.type .. "護甲")
+    local part2 = obj.target:get(obj.source:get "種族" .. "減傷")  * obj.target:get(obj.source:get "階級" .. "減傷")
+    local part3 = obj.source:get("對" .. obj.target:get "種族" .. "降傷")  * obj.source:get("對" .. obj.target:get "階級" .. "降傷")
+    return part1 * (1 + part2) * (1 + part3) + extraAmr
+end
+
+_GetDef = function(source, target)
+    return target:get "物理護甲" * _BODY_TYPE[source:get "體型"][target:get "體型"] + target:get("額外物理護甲")
+end
+
+_GetMdef = function(target)
+    return target:get "法術護甲" + target:get("額外法術護甲")
 end
 
 _GetTalentsBonusInDef = function(source)
@@ -142,22 +174,22 @@ _DamageDetermine = function(obj, atk, def)
         -- 暴擊與韌性判定
         local criProc = _DeterminCriOrACT(obj.source:get(obj.type .. "暴擊率"), obj.target:get(obj.type .. "韌性"), obj.source:get "等級", obj.target:get "等級")
         if _IsPntOrBlk(obj.source:get(obj.type .. "穿透"), obj.target:get(obj.type .. "格擋"), atk, def) then
-            return _BoundaryDetermine(obj.target:get "最大生命值", atk, 0, criProc)
+            return _BoundaryDetermine(obj.target:get "生命上限", atk, 0, criProc), criProc
         else
-            return _BoundaryDetermine(obj.target:get "最大生命值", atk, def, criProc)
+            return _BoundaryDetermine(obj.target:get "生命上限", atk, def, criProc), criProc
         end
     else
-        return "閃避"
+        return "閃避", 1
     end
 end
 
 _IsHitOrDodge = function(hit, dodge)
     if hit > dodge then
-        return MathLib.Random() < 0.8 + _TransposeHitAndDodge(hit, dodge)
+        return MathLib.Random() < 0.8 + _TransHitAndDodge(hit, dodge)
     elseif hit == dodge then
         return MathLib.Random() < 0.5
     else
-        return not(MathLib.Random() < 0.8 + _TransposeHitAndDodge(dodge, hit))
+        return not(MathLib.Random() < 0.8 + _TransHitAndDodge(dodge, hit))
     end
 end
 
@@ -174,7 +206,7 @@ _DeterminCriOrACT = function(cri, act, sourceLv, targetLv)
 end
 
 _IsCriOrACT = function(cri, act, sourceLv, targetLv)
-    return _TransposeCriAndACT(cri, sourceLv) > _TransposeCriAndACT(act, targetLv)
+    return _TransCriAndACT(cri, sourceLv) > _TransCriAndACT(act, targetLv)
 end
 
 _TransCriAndACT = function(x, y)
@@ -192,21 +224,35 @@ end
 
 _BoundaryDetermine = function(maxLife, atk, def, criProc)
     if atk < def then
-        return 0.05 * atk * criProc
+        return math.max(1, 0.05 * atk)
     end
     local dmg = criProc * (atk - def)
     if dmg >= maxLife then
-        return dmg * 0.95
+        return maxLife * 0.95
     end
     return dmg
 end
 
 _DealDamage = function(target, dmg)
-    if target:get "生命" <= dmg then
-        target:set("生命", -0.95 * target:get "生命")
+    if dmg < target:get "生命" then
+        target:set('生命', target:get "生命" - dmg)
     else
-        target:set('生命', -dmg)
+        cj.KillUnit(target.object)
     end
+end
+
+_Show = function(target, value, textType, scale)
+    local text
+    if type(value) == "string" then
+        text = "|cffff0000" .. value .. "!"
+    elseif textType == "法術" then
+        text = "|cffffff00" .. math.modf(MathLib.Round(value))
+    elseif textType == "混合" then
+        text = "|cff8080c0" .. math.modf(MathLib.Round(value))
+    else
+        text = math.modf(MathLib.Round(value))
+    end
+    TextToAttachUnit(text, Point(cj.GetUnitX(target), cj.GetUnitY(target)), scale)
 end
 
 return Damage
