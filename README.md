@@ -12,7 +12,25 @@
 過程使用**項目管理.xlsx**及**evernote**來管理我的專案。
 
 ## 更新日誌
-### Unreleased - 2018-10-20
+### Unreleased - 2018-10-21
+>#### Added:
+> - 新增extend_hole、intensify庫，完善物品核心系統。
+> - [equipment] 新增獲取裝備評分的函數。
+> - [equipment] 對話框新增裝備評分。
+> - [Item資料夾] 新增init，將裝備的核心系統放在同個地方初始化。
+> - [Tool資料夾] 新增init，將類型的初始化函數合併調用。
+> - [Type資料夾] 新增init，將類型的初始化函數合併調用。
+>#### Changed:
+> - [add_recipe] 配方的材料數量可設定成任意，不再侷限為1個。
+> - [detect_recipe] 根據add_recipe而做調整。
+> - [dialog] insert函數新增label參數，不再將標籤和按鈕文字綁定。
+>#### Fixed:
+> - [enchanted] 修正顯示裝備框也會觸發附魔的使用物品事件。
+> - [equipment] 修正_RandRingCount函數只會生成最低孔數及最高孔數的問題。
+> - [player] 修正add函數算符錯誤，導致exten_hole扣除金額時變成增加的問題。
+> - [secrets] 修正_GenerateAttributes函數無法給secrets對象數據，導致附魔錯誤的問題。
+
+### 0.11.0 - 2018-10-20
 >#### Added:
 > - 新增database資料夾，儲存各類型需要的模板。
 > - 新增secrets_database、attribute_database庫，提供物品需要的數據。
@@ -34,7 +52,7 @@
 > - [main] 調整初始化順序。
 > - [map] 調用模塊改由該函數呼叫。
 > - [unit] 註冊事件改為map呼叫。
-> - [database] 調整所有database的呼叫方式，改為全域變量。
+> - [Database資料夾] 調整所有database的呼叫方式，改為全域變量。
 >#### Fixed:
 > - [combat] 修正復活後的怪物會無法扣除傷害觸發內的暫時生命值的問題。
 > - [damage] 修正傷害文字和實際傷害值不符的問題。

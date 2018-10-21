@@ -26,7 +26,7 @@ _GenerateAttributes = function(self)
     if not SecretsDatabase[self.id] then
         return 
     end
-    for name, val in ipairs(SecretsDatabase[self.id]) do
+    for name, val in pairs(SecretsDatabase[self.id]) do
         self.attribute[name] = val
     end
 end

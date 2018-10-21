@@ -10,6 +10,7 @@ local Timer = require 'timer'
 local Game = require 'game'
 local War3 = require 'api'
 local Event = require 'event'
+local Player = require 'player'
 
 local Unit = {}
 local mt = {}
@@ -59,6 +60,7 @@ function Unit:__call(unit)
     if not obj then
         obj = {
             object = unit,
+            owner = Player(cj.GetOwningPlayer(unit)),
             revivePoint = Point:GetUnitLoc(unit)
         }
         Unit[js.H2I(unit) .. ""] = obj -- 利用單位呼叫實例

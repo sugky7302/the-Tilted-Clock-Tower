@@ -26,19 +26,29 @@ function AddRecipe.IsRecipeAmountLimit(recipe)
 end
 
 _RegisterRecipe = function(self, recipe)
-    local node = AddRecipe.root
-
+    local node, demands = AddRecipe.root, {}
     for i = 1, #recipe do
-        local newNode = node[recipe[i]]
+        if i == #recipe then
+            if not node.products then
+                node.products = Object()
+            end
+            demands[0] = recipe[i]
+            node.products:Insert(demands)
+            break
+        end
+        -- 獲取需求量
+        local name
+        if type(recipe[i]) == 'table' then
+            name = recipe[i][1]
+            table.insert(demands, recipe[i][2])
+        else
+            name = recipe[i]
+            table.insert(demands, 1)
+        end
+        local newNode = node[name]
         if not newNode then
             newNode = Object()
-            node[recipe[i]] = newNode
-        end
-        if i == #recipe then
-            if not newNode.products then
-                newNode.products = Object()
-            end
-            newNode.products:Insert(recipe[i])
+            node[name] = newNode
         end
         node = newNode
     end

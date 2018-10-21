@@ -15,8 +15,8 @@ function Dialog:__call(player)
     return obj
 end
 
-function mt:Insert(text, hotkey)
-    self.buttons[text] = cj.DialogAddButton(self.object, text, hotkey or 0)
+function mt:Insert(text, label, hotkey)
+    self.buttons[label or text] = cj.DialogAddButton(self.object, text, hotkey or 0)
 end
 
 function mt:Erase(text)

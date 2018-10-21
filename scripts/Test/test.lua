@@ -122,15 +122,14 @@ end
 
 function Test.Enchanted()
     local Enchanted = require 'enchanted'
-    local cj = require 'jass.common'
-    local japi = require 'jass.japi'
     local Item = require 'item'
     local Equipment = require 'equipment'
     local Secrets = require 'secrets'
     local Point = require 'point'
     local p = Point(15009, 9869)
     local item, rune = Equipment(Item.Create('asbl', p)), Secrets(Item.Create('afac', p))
-    item:Rand(1, 3)
+    item:Rand(1, 1)
 end
+
 return Test
     

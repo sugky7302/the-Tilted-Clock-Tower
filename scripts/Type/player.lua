@@ -6,6 +6,9 @@ local Player, mt = {}, {}
 setmetatable(Player, Player)
 Player.__index = mt
 
+-- vairables
+local set, get = {}, {}
+
 function Player.Init()
     -- 設定點擊事件
     local War3 = require 'api'
@@ -38,5 +41,43 @@ function Player:__call(player)
     end
     return obj
 end 
+
+function mt:add(name, val)
+    if not set[name] then
+        return 
+    end
+    set[name](self, get[name](self) + val)
+end
+
+function mt:get(name)
+    if not get[name] then
+        return
+    end
+    return get[name](self)
+end
+
+function mt:set(name, val)
+    if not set[name] then
+        return 
+    end
+    set[name](self, val)
+end
+
+
+set['黃金'] = function(self, val)
+    cj.SetPlayerState(self.object, cj.PLAYER_STATE_RESOURCE_GOLD, val)
+end
+
+get['黃金'] = function(self)
+    return cj.GetPlayerState(self.object, cj.PLAYER_STATE_RESOURCE_GOLD)
+end
+
+set['木頭'] = function(self, val)
+    cj.SetPlayerState(self.object, cj.PLAYER_STATE_RESOURCE_LUMBER, val)
+end
+
+get['木頭'] = function(self)
+    return cj.GetPlayerState(self.object, cj.PLAYER_STATE_RESOURCE_LUMBER)
+end
 
 return Player

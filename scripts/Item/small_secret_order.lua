@@ -5,7 +5,8 @@ local SmallSpiritEquipment = {}
 SmallSpiritEquipment.__index = mt
 setmetatable(SmallSpiritEquipment, SmallSpiritEquipment)
 
-function SmallSpiritEquipment:__call()
+function SmallSpiritEquipment:__call(item)
+    
 end
 
 return SmallSpiritEquipment

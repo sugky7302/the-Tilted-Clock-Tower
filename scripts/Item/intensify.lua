@@ -1,70 +1,86 @@
-local cj = require 'jass.common'
 local setmetatable = setmetatable
 local math = math
-math.randomseed(tostring(os.time()):reverse():sub(1, 6))
+local cj = require 'jass.common'
+local MathLib = require 'math_lib'
+local Equipment = require 'equipment'
+require 'intensify_database'
 
 local mt = {}
 local Intensify = {}
 Intensify.__index = mt
 setmetatable(Intensify, Intensify)
 
-local refinedTable = {
-    {["fixedValue"] = 1, ["randomMaxValue"] = 0},
-    {["fixedValue"] = 1, ["randomMaxValue"] = 0},
-    {["fixedValue"] = 1, ["randomMaxValue"] = 0},
-    {["fixedValue"] = 1, ["randomMaxValue"] = 1},
-    {["fixedValue"] = 1, ["randomMaxValue"] = 1},
-    {["fixedValue"] = 1, ["randomMaxValue"] = 1},
-    {["fixedValue"] = 2, ["randomMaxValue"] = 2},
-    {["fixedValue"] = 2, ["randomMaxValue"] = 2},
-    {["fixedValue"] = 2, ["randomMaxValue"] = 2},
-    {["fixedValue"] = 4, ["randomMaxValue"] = 5},
-}
+-- constants
+-- 第一個元素是固定提升值，第二個是隨機提升值
+local _REFINE_TABLE = {{1, 0}, {1, 0}, {1, 0}, {1, 1}, {1, 1}, {1, 1}, {2, 2}, {2, 2}, {2, 2}, {4, 5}}
+local _INTENSIFY_SCALE = {[0] = 1, 2, 3, 4, 6, 8, 10, 14, 18, 22, 31}
 
-local _IsEquipmentInBag, _IsGoldEnough, _IsRefine, _GetGoldCost
+-- variables
+local _IsEquipmentInBag, _IsGoldEnough, _IsRefine, _GetGoldCost, _NotLimit
 
-function Intensify.__call(item)
-    if _IsEquipmentInBag(item.owner) then
-        local goldCost = _GetGoldCost(item.stability + item.intensifyLevel, #item.holes)
-        
-        if _IsGoldEnough(item.ownPlayer, goldCost) then
-            cj.SetPlayerState(item.ownPlayer, "PLAYER_STATE_GOLD", cj.GetPlayerState(item.ownPlayer, "PLAYER_STATE_GOLD") - goldCost)
-            
-            if _IsRefine(item.intensifyLevel) then
-                item.intensifyLevel += 1
+function Intensify.Init()
+    local Game = require 'game'
+    local Hero = require 'hero'
 
-                local fixedValue, randomMaxValue = refinedTable[item.intensifyLevel]["fixedValue"], refinedTable[item.intensifyLevel]["randomMaxValue"]
-                for i = 1, #item.holes do
-                    item.holes[i].value += (fixedValue + math.random(0, randomMaxValue))
+    Game:Event "單位-使用物品" (function(self, unit, item)
+        Intensify(Hero(unit))
+    end)
+end
+
+function Intensify:__call(hero)
+    if _IsEquipmentInBag(hero.object) then
+        local item = Equipment(cj.UnitItemInSlot(hero.object, 0))
+        if _NotLimit(item) then
+            local goldCost = _GetGoldCost(item)
+            if _IsGoldEnough(item.ownPlayer, goldCost) then
+                item.ownPlayer:add("黃金", -goldCost)
+                if _IsRefine(item.intensifyLevel) then
+                    item.intensifyFailTimes = 0 -- 重置失敗次數
+                    item.intensifyLevel = item.intensifyLevel + 1
+                    local fixedValue, randomMaxValue = _REFINE_TABLE[item.intensifyLevel][1], _REFINE_TABLE[item.intensifyLevel][2]
+                    for i = 1, item.attributeCount do
+                        if INTENSIFY_ATTRIBUTE[item.attribute[i][1]] then
+                            item.attribute[i][2] = item.attribute[i][2] + fixedValue + MathLib.Random(0, randomMaxValue)
+                        end
+                    end
+                    item:Update()
+                    cj.DisplayTimedTextToPlayer(hero.owner.object, 0., 0., 6., "|cff00ff00提示|r - 裝備精鍊成功。")
+                else
+                    cj.DisplayTimedTextToPlayer(hero.owner.object, 0., 0., 6., "|cff00ff00提示|r - 裝備精鍊失敗。")
+                    item.intensifyFailTimes = item.intensifyFailTimes + 1
                 end
-
-                cj.DisplayTimedTextToPlayer(item.ownPlayer, 0., 0., 6., "|cff00ff00提示|r - 裝備附魔成功。")
             else
-                cj.DisplayTimedTextToPlayer(item.ownPlayer, 0., 0., 6., "|cff00ff00提示|r - 裝備附魔失敗。")
+                cj.DisplayTimedTextToPlayer(hero.owner.object, 0., 0., 6., "|cff00ff00提示|r - 你攜帶的金錢不足。")
             end
         else
-            cj.DisplayTimedTextToPlayer(item.ownPlayer, 0., 0., 6., "|cff00ff00提示|r - 你攜帶的金錢不足。")
+            cj.DisplayTimedTextToPlayer(hero.owner.object, 0., 0., 6., "|cff00ff00提示|r - 裝備精鍊值已達上限。")
         end
     else
-        cj.DisplayTimedTextToPlayer(item.ownPlayer, 0., 0., 6., "|cff00ff00提示|r - 你第一格沒有裝備。")
+        cj.DisplayTimedTextToPlayer(hero.owner.object, 0., 0., 6., "|cff00ff00提示|r - 你第一格沒有裝備。")
     end
 end
 
-local function _IsEquipmentInBag(owner)
-    return cj.UnitItemInSlot(owner,0) != nil
+_IsEquipmentInBag = function(owner)
+    return cj.GetItemLevel(cj.UnitItemInSlot(owner, 0)) == 5
 end
 
-local function _GetGoldCost(level, usedHoleCount)
-    return (80 * level^2 * usedHoleCount + 100 * (level + 2)) * 1.25^level
+_NotLimit = function(item)
+    return item.intensifyLevel < 10
 end
 
-local function _IsGoldEnough(ownPlayer, goldcost)
-    return ownPlayer.gold >= goldcost
+_GetGoldCost = function(item)
+    local base = 50 * (2 + math.modf(item.level + item.intensifyLevel - 1) / 8)
+    local punishProc = 1 + 0.2 * item.intensifyFailTimes
+    return base * item:GetGearScore() * _INTENSIFY_SCALE[item.intensifyLevel] * punishProc
 end
 
-local function _IsRefine(intensifyLevel)
-    local p = (intensifyLevel <= 3) and 100 - 16 * intensifyLevel or 100 / intensifyLevel
-    return math.random() <= p / 100
+_IsGoldEnough = function(ownPlayer, goldCost)
+    return ownPlayer:get "黃金" >= goldCost
+end
+
+_IsRefine = function(intensifyLevel)
+    local p = (intensifyLevel < 4) and 100 - 16 * intensifyLevel or 100 / intensifyLevel
+    return MathLib.Random(100) <= p
 end
 
 return Intensify

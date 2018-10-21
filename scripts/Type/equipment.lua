@@ -8,6 +8,7 @@ local Unit = require 'unit'
 local MathLib = require 'math_lib'
 local Item = require 'item'
 local Player = require 'player'
+local Prefix = require 'prefix'
 require 'attribute_database'
 
 local Equipment = {}
@@ -51,41 +52,56 @@ _DialogDisplay = function(player, displayedInfo)
 end
 
 _GetDisplayedInfo = function(self)
+    local max = math.max
+    local string_len = string.len
+
+    local len = 0 -- 計算裝備評分前面要幾個空格，顯示框才會比較方
     -- 名稱
     local bigSecretOrderPrefix = self.bigSecretOrderPrefix and "|cff804000" .. self.bigSecretOrderPrefix .. "|r|n" or ""
     local smallSecretOrderPrefix = self.smallSecretOrderPrefix and "|cffff8d00" .. self.smallSecretOrderPrefix .. "|r|n" or ""
     local prefix = self.prefix and self.prefix or ""
     local intensifyLevel = (self.intensifyLevel > 0) and "|cff00ff00+" .. self.intensifyLevel .. " " or ""
     local name = bigSecretOrderPrefix .. smallSecretOrderPrefix .. intensifyLevel .. self.color .. prefix .. self.name .. "|n"
-    
+    len = max(len, string_len(name))
     -- 基本資料
-    local basicInfo = "|cffffffff物品等級：|r" .. (self.level + self.intensifyLevel) .. "|n"
-
-    -- 裝備評分
-    local sum = 0
-    for i = 1, self.attributeCount do
-        sum = sum + self.attribute[i][2] * ATTRIBUTE_SCORE[self.attribute[i][1]]
-    end
-    local gearScore = "|cffffffff裝備評分：|r" .. sum .. "|n"
-
+    local basicInfo = "|cffffffff物品等級 |r" .. (self.level + self.intensifyLevel) .. "|n"
+    len = max(len, string_len(basicInfo))
     -- 屬性
     local attributes = ""
     for i = 1, self.attributeCountLimit do
-        attributes = attributes .. (self.attribute[i] and "|cff3366ff◆|r" .. self.attribute[i][3] or "|cff3366ff◇|r") .. "|n"
+        local str = (self.attribute[i] and "|cff3366ff◆|r|cff99ccff" .. self.attribute[i][3] or "|cff3366ff◇") .. "|r|n"
+        attributes = attributes .. str
+        len = max(len, string_len(str))
     end
     for i = 1, #self.additionalEffect do
-        attributes = attributes .. "|cff3366ff◆|r" .. self.additionalEffect[i].state .. "|n"
+        local additionalEffect = "|cff3366ff◆|r" .. self.additionalEffect[i].state .. "|n"
+        attributes = attributes .. additionalEffect
+        len = max(len, string_len(additionalEffect))
     end
-    attributes = attributes .. (self.inscriptions.state and "|cff3366ff◆|r" .. self.inscriptions.state .. "|n" or "")
-
+    local inscriptions = (self.inscriptions.state and "|cff3366ff◆|r" .. self.inscriptions.state .. "|n" or "")
+    attributes = attributes .. inscriptions
+    len = max(len, string_len(inscriptions))
     -- 秘物序列
     local smallSecretOrderState = self.smallSecretOrderPrefix and "|cffff8d00" .. self.smallSecretOrder.state .. "|r|n" or ""
     local bigSecretOrderState = self.bigSecretOrderPrefix and "|cff804000" .. self.bigSecretOrder.state .. "|r|n" or ""
     local secretOrderState = smallSecretOrderState .. bigSecretOrderState
+    len = max(len, string_len(smallSecretOrderState))
+    len = max(len, string_len(bigSecretOrderState))
+    -- 裝備評分
+    local gs = "裝備評分 " .. self:GetGearScore()
+    local gearScore = "|cff808080" .. string.rep(" ", max(0, len - string_len(gs) - 9)) .. gs .. "|r"
 
-    local returnString = name .. basicInfo .. gearScore .. attributes .. secretOrderState
+    local returnString = name .. basicInfo .. attributes .. secretOrderState .. gearScore
 
     return returnString
+end
+
+function Equipment:GetGearScore()
+    local sum = 0
+    for i = 1, self.attributeCount do
+        sum = sum + self.attribute[i][2] * ATTRIBUTE_SCORE[self.attribute[i][1]]
+    end
+    return sum
 end
 
 -- 建構函式
@@ -104,6 +120,7 @@ function Equipment:__call(item)
         obj.attributeCount = 0
         obj.attributeCountLimit = 0
         obj.intensifyLevel = 0
+        obj.intensifyFailTimes = 0
         obj.stability = 0
         obj.intensify = 0
         obj.fusion = 0
@@ -118,15 +135,12 @@ end
 
 function Equipment:Update()
     _SetAttributeState(self)
+    Prefix(self)
 end
 
 _SetAttributeState = function(self)
     local string_gsub = string.gsub
-    print(#self.attribute .."/"..self.attributeCount)
     for i, tb in pairs(self.attribute) do
-        print(type(ATTRIBUTE_STATE))
-        print(tb[1])
-        print(ATTRIBUTE_STATE[tb[1]])
         local str = ATTRIBUTE_STATE[tb[1]]
         self.attribute[i][3] = string_gsub(str, "N", tb[2] .. "")
     end
@@ -157,7 +171,7 @@ function Equipment:Rand(lv, layer)
 end
 
 _RandRingCount = function(self)
-    local rand, r = MathLib.Random() * 100, 0
+    local rand, r = MathLib.Random(100), 0
     for c, p in ipairs(_DROP_CHANCE[self.layer]) do
         r = r + p
         if rand <= r then
@@ -165,6 +179,14 @@ _RandRingCount = function(self)
             break
         end
     end
+end
+
+function Equipment:IsFull()
+    return not(self.attributeCount < self.attributeCountLimit)
+end
+
+function Equipment:IsLimit()
+    return self.attributeCountLimit < 5
 end
 
 return Equipment

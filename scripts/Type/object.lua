@@ -22,8 +22,8 @@ function mt:Insert(data)
     table.insert(self, data)
 end
 
-function mt:Sort()
-    table.sort(self)
+function mt:Sort(fn)
+    table.sort(self, fn)
 end
 
 return Object

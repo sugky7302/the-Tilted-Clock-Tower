@@ -10,6 +10,7 @@ local Group = require 'group'
 local Item = require 'item'
 local Equipment = require 'equipment'
 local Secrets = require 'secrets'
+local Player = require 'player'
 
 local Hero = {}
 setmetatable(Hero, Hero)
@@ -66,11 +67,14 @@ _RegObtainItemEvent = function()
     end)
     Game:Event "單位-獲得物品" (function(self, hero, item)
         if Item.IsEquipment(item) then
-            Equipment(item).owner = hero
+            Equipment(item).owner = Hero(hero)
+            Equipment(item).ownPlayer = Player(cj.GetOwningPlayer(hero))
         elseif Item.IsSecrets(item) then
-            Secrets(item).owner = hero
+            Secrets(item).owner = Hero(hero)
+            Secrets(item).ownPlayer = Player(cj.GetOwningPlayer(hero))
         else
-            Item(item).owner = hero
+            Item(item).owner = Hero(hero)
+            Item(item).ownPlayer = Player(cj.GetOwningPlayer(hero))
         end
     end)
     return _obtainItemTrg

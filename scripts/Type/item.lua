@@ -13,7 +13,7 @@ function Item:__call(item)
         obj.name = cj.GetItemName(item)
         obj.id = Base.Id2String(cj.GetItemTypeId(item))
         obj.owner = nil
-        obj.ownPlayer = cj.GetOwningPlayer(obj.owner) or nil
+        obj.ownPlayer = nil
         obj.level = cj.GetWidgetLife(item)
         obj.object = item
         self[js.H2I(item) .. ""] = obj
