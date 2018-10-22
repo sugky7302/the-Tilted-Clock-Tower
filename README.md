@@ -9,12 +9,30 @@
 - 以業界工程師的標準撰寫程式碼
 - 根據玩家的回饋修正遊戲
 
-過程使用**項目管理.xlsx**及**evernote**來管理我的專案。
+過程使**Evernote**來管理我的專案。
 
 ## 更新日誌
-### Unreleased - 2018-10-21
+### 0.13.0 - 2018-10-22
 >#### Added:
+> - 新增smallSecretOrder、bigSecretOrder庫，但秘物序列還沒進行測試。
+> - 新增combine庫，用於低級材料轉換成高級材料。
+> - [item] 新增set、get、add函數，並優化相關函數。
+> - [jass_tool] 新增item2id、item2str函數，讓物品能夠直接獲得整數或字串名。
+>#### Changed:
+> - [damage] 優化造成傷害函數。
+> - [detect_recipe] 調整結構。
+>#### Fixed:
+> - [enchanted] 修正相同屬性的秘物可以用在同一件裝備的問題。
+
+### 0.12.0 - 2018-10-21
+>#### Added:
+> - 新增attribute資料庫，儲存屬性、描述文字、裝備評分。
+> - 新增combine資料庫，儲存材料合成公式。
 > - 新增extend_hole、intensify庫，完善物品核心系統。
+> - 新增intensify資料庫，儲存精鍊後可提升的屬性。
+> - 新增prefix資料庫, 儲存詞綴。
+> - 新增recipe資料庫，儲存配方。
+> -新增secret資料庫，儲存秘物屬性。
 > - [equipment] 新增獲取裝備評分的函數。
 > - [equipment] 對話框新增裝備評分。
 > - [Item資料夾] 新增init，將裝備的核心系統放在同個地方初始化。

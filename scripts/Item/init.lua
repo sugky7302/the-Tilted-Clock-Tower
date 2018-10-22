@@ -6,3 +6,6 @@ require 'intensify'.Init()
 
 -- 初始化鑲環
 require 'extend_hole'.Init()
+
+-- 初始化合成
+require 'combine'.Init()

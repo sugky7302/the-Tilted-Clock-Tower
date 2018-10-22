@@ -1,6 +1,7 @@
 local setmetatable = setmetatable
 local math = math
 local cj = require 'jass.common'
+local js = require 'jass_tool'
 local TextToAttachUnit = require 'text_to_attach_unit'
 local Point = require 'point'
 local MathLib = require 'math_lib'
@@ -237,7 +238,7 @@ _DealDamage = function(target, dmg)
     if dmg < target:get "生命" then
         target:set('生命', target:get "生命" - dmg)
     else
-        cj.KillUnit(target.object)
+        js.RemoveUnit(target.object)
     end
 end
 

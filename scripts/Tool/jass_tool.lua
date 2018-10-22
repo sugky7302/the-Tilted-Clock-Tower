@@ -22,7 +22,13 @@ return {
     end,
     RemoveUnit = function(unit)
         cj.UnitApplyTimedLife(unit, Base.String2Id('BHwe'), 0.1)
-    end
+    end,
     -- 設定生命週期利用war3機制自動刪除，會比用RemoveUnit乾淨，內存絕不會漏掉
+    Item2Id = function(item)
+        return cj.GetItemTypeId(item)
+    end,
+    Item2Str = function(item)
+        return Base.Id2String(cj.GetItemTypeId(item))
+    end,
 }
     

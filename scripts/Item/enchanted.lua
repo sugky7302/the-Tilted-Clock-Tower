@@ -1,5 +1,6 @@
 -- 發動技能效果事件 比 使用物品事件 更早觸發
 local setmetatable = setmetatable
+local cj = require 'jass.common'
 
 local Enchanted = {}
 
@@ -26,8 +27,19 @@ end
 
 -- 附魔
 function Enchanted.Insert(item, secrets, isFixed)
+    local nameCollection = {}
+    for _, tb in ipairs(item.attribute) do
+        nameCollection[tb[1]] = true
+    end
     for name, val in pairs(secrets.attribute) do
+        -- 檢查屬性是否超過限制
         if item.attributeCount > item.attributeCountLimit then
+            break
+        end
+        -- 檢查是否有相同的屬性
+        if nameCollection[name] then
+            cj.DisplayTimedTextToPlayer(item.ownPlayer.object, 0., 0., 6., "|cff00ff00提示|r - 已附魔相同的秘物。")
+            secrets:add('數量', 1) -- 返還數量
             break
         end
         item.attributeCount = item.attributeCount + 1

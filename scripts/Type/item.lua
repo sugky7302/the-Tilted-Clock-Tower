@@ -6,6 +6,9 @@ local Item, mt = {}, {}
 setmetatable(Item, Item)
 Item.__index = mt
 
+-- varaibles
+local set, add, get = {}, {}, {}
+
 function Item:__call(item)
     local obj = self[js.H2I(item) .. ""]
     if not obj then
@@ -14,7 +17,7 @@ function Item:__call(item)
         obj.id = Base.Id2String(cj.GetItemTypeId(item))
         obj.owner = nil
         obj.ownPlayer = nil
-        obj.level = cj.GetWidgetLife(item)
+        obj.level = math.modf(cj.GetWidgetLife(item))
         obj.object = item
         self[js.H2I(item) .. ""] = obj
         setmetatable(obj, self)
@@ -24,6 +27,7 @@ function Item:__call(item)
 end
 
 function Item:Remove()
+    cj.RemoveItem(self.object)
     self = nil
 end
 
@@ -37,6 +41,39 @@ end
 
 function mt.IsSecrets(item)
     return cj.GetItemLevel(item) == 1
+end
+
+function mt:add(name, val)
+    if not set[name] then
+        return 
+    end
+    set[name](self, get[name](self) + val)
+end
+
+function mt:set(name, val)
+    if not set[name] then
+        return 
+    end
+    set[name](self, val)
+end
+
+function mt:get(name)
+    if not get[name] then
+        return
+    end
+    return get[name](self)
+end
+
+add['數量'] = function(self, val)
+    cj.SetItemCharges(self.object, cj.GetItemCharges(self.object) + val)
+end
+
+get['數量'] = function(self)
+    return cj.GetItemCharges(self.object)
+end
+
+set['數量'] = function(self, val)
+    cj.SetItemCharges(self.object, val)
 end
 
 return Item

@@ -9,6 +9,7 @@ setmetatable(Secrets, Secrets)
 -- variables
 local _GenerateAttributes
 
+-- TODO: 秘物的生命值為秘物等級
 function Secrets:__call(item)
     local obj = self[js.H2I(item) .. ""]
     if not obj then
@@ -33,6 +34,7 @@ end
 
 function Secrets:set(name, val)
     if not SecretsDatabase[self.id][name] then
+        Item.set(self, name, val)
         return 
     end
     if not self.attribute[name] then
@@ -43,7 +45,7 @@ end
 
 function Secrets:get(name)
     if not SecretsDatabase[self.id][name] then
-        return 
+        return Item.get(self, name) or nil
     end
     if not self.attribute[name] then
         self.attribute[name] = SecretsDatabase[self.id][name]

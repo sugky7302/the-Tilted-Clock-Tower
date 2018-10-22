@@ -1,6 +1,6 @@
-输入路径：D:\Tools\YDWE1.25.10\Creation\Mod\The_Tilted_Clock_Tower\TheTiltedCLockTower.w3x
-输出路径：D:\Tools\YDWE1.25.10\Creation\Mod\The_Tilted_Clock_Tower
-输入格式：Mpq
-输出模式：lni
+输入路径：D:\Tools\YDWE1.25.10\Creation\Mod\The_Tilted_Clock_Tower
+输出路径：D:\Tools\YDWE1.25.10\Creation\Mod\The_Tilted_Clock_Tower\TheTiltedCLockTower.w3x
+输入格式：Lni
+输出模式：obj
 结果：0 个错误，0 条警告
-用时：0.866 秒
+用时：1.388 秒

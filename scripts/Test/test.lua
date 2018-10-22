@@ -16,6 +16,7 @@ function Test:__call()
     -- self.Buff()
     -- self.Damage()
     self.Enchanted()
+    self.Combine()
 end
 
 function Test.Add()
@@ -129,6 +130,18 @@ function Test.Enchanted()
     local p = Point(15009, 9869)
     local item, rune = Equipment(Item.Create('asbl', p)), Secrets(Item.Create('afac', p))
     item:Rand(1, 1)
+end
+
+function Test.Combine()
+    local Item = require 'item'
+    local Point = require 'point'
+    local p = Point(15009, 9869)
+    for i = 1, 3 do
+        Item.Create('afac', p)
+    end
+    for i = 1, 5 do
+        Item.Create('asbl', p)
+    end
 end
 
 return Test

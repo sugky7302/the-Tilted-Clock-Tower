@@ -19,6 +19,7 @@ Hero.type = "Hero"
 
 -- varaiables
 local _RegDropItemEvent, _RegObtainItemEvent, _RegReviveEvent, _RegSellItemEvent, _RegUseItemEvent, _RegSpellEffectEvent
+local _IsItem, _IsTypeSame
 
 function Hero.Init()
     -- 添加事件
@@ -32,6 +33,29 @@ function Hero.Init()
             cj.TriggerRegisterUnitEvent(_RegSpellEffectEvent(), target, cj.EVENT_UNIT_SPELL_EFFECT)
         end
     end)
+
+    Game:Event "單位-發布命令" (function(self, hero, order, target)
+        if _IsItem(target) and (order == Base.String2OrderId('smart')) then
+            if cj.GetItemCharges(target) > 0 then
+                for i = 0, 5 do
+                    local bagItem = cj.UnitItemInSlot(hero, i)
+                    if _IsTypeSame(bagItem, target) then
+                        cj.SetItemCharges(bagItem, cj.GetItemCharges(bagItem) + cj.GetItemCharges(target))
+                        cj.RemoveItem(target)
+                        return
+                    end
+                end
+            end
+        end
+    end)
+end
+
+_IsItem = function(item)
+    return cj.GetItemName(item)
+end
+
+_IsTypeSame = function(bagItem, target)
+    return (js.Item2Id(bagItem) == js.Item2Id(target)) and (bagItem ~= target)
 end
 
 _RegReviveEvent = function()
@@ -62,7 +86,9 @@ end
 _RegObtainItemEvent = function()
     -- 創建獲得物品事件
     local _obtainItemTrg = War3.CreateTrigger(function()
-        Game:EventDispatch("單位-獲得物品", cj.GetTriggerUnit(), cj.GetManipulatedItem())
+        if cj.GetManipulatedItem() ~= nil then
+            Game:EventDispatch("單位-獲得物品", cj.GetTriggerUnit(), cj.GetManipulatedItem())
+        end
         return true
     end)
     Game:Event "單位-獲得物品" (function(self, hero, item)

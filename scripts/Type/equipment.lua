@@ -82,8 +82,8 @@ _GetDisplayedInfo = function(self)
     attributes = attributes .. inscriptions
     len = max(len, string_len(inscriptions))
     -- 秘物序列
-    local smallSecretOrderState = self.smallSecretOrderPrefix and "|cffff8d00" .. self.smallSecretOrder.state .. "|r|n" or ""
-    local bigSecretOrderState = self.bigSecretOrderPrefix and "|cff804000" .. self.bigSecretOrder.state .. "|r|n" or ""
+    local smallSecretOrderState = self.smallSecretOrder.prefix and "|cffff8d00" .. self.smallSecretOrder.state .. "|r|n" or ""
+    local bigSecretOrderState = self.bigSecretOrder.prefix and "|cff804000" .. self.bigSecretOrder.state .. "|r|n" or ""
     local secretOrderState = smallSecretOrderState .. bigSecretOrderState
     len = max(len, string_len(smallSecretOrderState))
     len = max(len, string_len(bigSecretOrderState))
@@ -110,8 +110,8 @@ function Equipment:__call(item)
     if not obj then
         obj = Item(item)
         obj.prefix = nil 
-        obj.bigSecretOrderPrefix = nil
-        obj.smallSecretOrderPrefix = nil
+        obj.bigSecretOrder= {}
+        obj.smallSecretOrder = {}
         obj.fixAttribute = nil
         obj.attribute = {} -- 每個元素包含index, value, states
         obj.additionalEffect = {} -- 額外效果
