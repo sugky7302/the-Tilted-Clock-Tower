@@ -12,6 +12,20 @@
 過程使**Evernote**來管理我的專案。
 
 ## 更新日誌
+### 0.14.0 - 2018-10-23
+>#### Added:
+> - [damage] 考慮到某些技能需要必中，因此新增"mustHit"參數。
+> - [hero] 新增模板函數，用於解析英雄模板。
+> - [hero] 新增"準備施放技能"及"發布命令"事件、create函數。
+> - [point] 新增GetLoc函數，能獲取jass點結構的point。
+> - [skill] 將技能區分成cast、channel、shot、finish四個階段，實際功能還在實作。
+> - [texttag] 新增break函數，使漂浮文字在某些情況下可以主動消失。
+>#### Changed:
+> - [珍娜] 修改成"冰霜秘術師"，使其能讓hero調用。
+> >#### Fixed:
+> - [damage] 修正獲取元素傷害錯誤的問題。
+> - [暴風雪] 修正暴風雪獲取單位組內單位錯誤的問題。
+
 ### 0.13.0 - 2018-10-22
 >#### Added:
 > - 新增smallSecretOrder、bigSecretOrder庫，但秘物序列還沒進行測試。

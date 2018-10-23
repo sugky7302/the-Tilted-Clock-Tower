@@ -15,8 +15,8 @@ function Test:__call()
     -- self.Missile()
     -- self.Buff()
     -- self.Damage()
-    self.Enchanted()
-    self.Combine()
+    -- self.Enchanted()
+    -- self.Combine()
 end
 
 function Test.Add()

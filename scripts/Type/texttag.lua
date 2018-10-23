@@ -23,6 +23,7 @@ local _IsPauseTimer, _IsExpired, Initialize, Update
 -- TODO:核心提供最基本的漂浮文字功能，在固定點創建有時間性的固定漂浮文字
 function Texttag:__call(str, loc, dur, isPermanant)
     str = (type(str) == 'table') and str or self:New(str, loc, dur, isPermanant)
+    str.invalid = false
     str.texttag = cj.CreateTextTag() 
     str:Initialize()
     self.executingOrder:PushBack(str)
@@ -71,7 +72,7 @@ function Texttag:RunTimer()
 end
 
 _IsExpired = function(self, node)
-    if node.data.timeout <= 0 then
+    if node.data.timeout <= 0 or node.data.invalid then
         node.data:Remove()
         self.executingOrder:Erase(node)
     end
@@ -88,6 +89,10 @@ function mt:Remove()
     self.texttag = nil
     self = nil
     collectgarbage("collect")
+end
+
+function mt:Break()
+    self.invalid = true
 end
 
 return Texttag

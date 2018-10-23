@@ -191,4 +191,8 @@ function mt:SetRemaining(timeout)
     self = Timer(timeout, self.isPeriod, self.execution)
 end
 
+function mt:Break()
+    self.invalid = true
+end
+
 return Timer

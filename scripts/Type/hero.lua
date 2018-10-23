@@ -11,6 +11,8 @@ local Item = require 'item'
 local Equipment = require 'equipment'
 local Secrets = require 'secrets'
 local Player = require 'player'
+local Skill = require 'skill'
+local Point = require 'point'
 
 local Hero = {}
 setmetatable(Hero, Hero)
@@ -20,11 +22,37 @@ Hero.type = "Hero"
 -- varaiables
 local _RegDropItemEvent, _RegObtainItemEvent, _RegReviveEvent, _RegSellItemEvent, _RegUseItemEvent, _RegSpellEffectEvent
 local _IsItem, _IsTypeSame
+local set, get = {}, {}
+Hero.heroDatas = {}
 
 function Hero.Init()
+    local orderTrg = War3.CreateTrigger(function()
+        Game:EventDispatch("單位-發布命令", cj.GetOrderedUnit(), cj.GetIssuedOrderId(), cj.GetOrderTarget())
+        return true
+    end)
+    local unitIsCasted = War3.CreateTrigger(function()
+        Game:EventDispatch("單位-準備施放技能", Hero(cj.GetTriggerUnit()), cj.GetSpellAbilityId(), Hero(cj.GetSpellTargetUnit()), Point:GetLoc(cj.GetSpellTargetLoc()))
+        return true
+    end)
+    Game:Event '單位-準備施放技能' (function(self, hero, id, targetUnit, targetLoc)
+        -- 獲取技能
+        for _, skill in pairs(hero.heroDatas[cj.GetUnitName(hero.object)].skillDatas) do
+            if skill.orderId == Base.Id2String(id) then
+                skill.owner = hero
+                skill.targetUnit = targetUnit
+                skill.targetLoc = targetLoc
+                skill:_cast_start()
+                return 
+            end
+        end
+    end)
     -- 添加事件
     Game:Event "單位-創建" (function(self, target)
         if Hero(target).type == "Hero" then
+            cj.TriggerRegisterUnitEvent(unitIsCasted, target, cj.EVENT_UNIT_SPELL_CHANNEL)
+            cj.TriggerRegisterUnitEvent(orderTrg, target, cj.EVENT_UNIT_ISSUED_TARGET_ORDER)
+            cj.TriggerRegisterUnitEvent(orderTrg, target, cj.EVENT_UNIT_ISSUED_POINT_ORDER)
+            cj.TriggerRegisterUnitEvent(orderTrg, target, cj.EVENT_UNIT_ISSUED_ORDER)
             cj.TriggerRegisterUnitEvent(_RegReviveEvent(), target, cj.EVENT_UNIT_DEATH) -- 死亡事件
             cj.TriggerRegisterUnitEvent(_RegUseItemEvent(), target, cj.EVENT_UNIT_USE_ITEM) -- 使用物品事件
             cj.TriggerRegisterUnitEvent(_RegObtainItemEvent(), target, cj.EVENT_UNIT_PICKUP_ITEM) -- 獲得物品事件
@@ -188,6 +216,28 @@ function Hero:InitState()
     for _, name in ipairs(Hero._ELEMENTS) do
         self[name .. '元素增傷'] = 0
     end
+end
+
+function Hero.Create(name)
+    return function(obj)
+        Hero.heroDatas[name] = obj
+        -- 註冊技能
+		obj.skillDatas = {}
+		if type(obj.skillNames) == 'string' then
+            for name in string.gmatch(obj.skillNames, '%S+') do
+				table.insert(obj.skillDatas, Skill[name])
+			end
+		elseif type(obj.skillNames) == 'table' then
+			for _, name in ipairs(obj.skillNames) do
+				table.insert(obj.skillDatas, Skill[name])
+			end
+        end
+        return obj
+    end
+end
+
+get['施法速度'] = function(self)
+    return 2 * self:get "急速" / (self:get "急速" + 100 + 50 * self.level)
 end
 
 return Hero

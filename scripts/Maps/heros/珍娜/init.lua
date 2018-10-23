@@ -1,1 +1,0 @@
-require 'heros.珍娜.暴風雪'

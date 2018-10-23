@@ -1,7 +1,7 @@
 local Map = require 'map'
 
 Map.heroList = {
-	{'珍娜','珍娜'}
+	{'冰霜秘術師','冰霜秘術師'}
 }
 
 --加載英雄數據

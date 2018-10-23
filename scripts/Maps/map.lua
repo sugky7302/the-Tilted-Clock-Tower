@@ -5,14 +5,12 @@ local _RegUnits
 
 function Map.Init()
     local Combat = require 'combat'
-    local Skill = require 'skill'
 	-- 英雄初始化
     require 'heros.init'
     -- 物品核心系統初始化
     require 'Item.init'
     -- 遊戲初始化
     Combat:Init()
-    Skill.Init()
     _RegUnits()
 end
 

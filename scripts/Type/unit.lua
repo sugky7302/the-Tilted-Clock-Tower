@@ -83,6 +83,7 @@ function mt:InitState()
     self['法術護甲'] = 0
     self['元素傷害'] = 0
     self['元素傷害%'] = 0
+    self['元素抗性'] = 0
     self['攻擊範圍'] = data.rangeN1
     self['移動速度'] = data.spd
     self['轉身速度'] = data.turnRate
