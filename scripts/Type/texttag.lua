@@ -86,6 +86,7 @@ end
 
 function mt:Remove()
     cj.DestroyTextTag(self.texttag)
+    self.invalid = true
     self.texttag = nil
     self = nil
     collectgarbage("collect")

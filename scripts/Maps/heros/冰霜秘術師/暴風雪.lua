@@ -7,16 +7,16 @@ local Hero = require 'hero'
 
 local mt = Skill '暴風雪' {
     orderId = 'A00H',
-    area = 600,
-    castStartTime = 2,
+    area = 200,
+    castChannelTime = 2,
 }
 
-function mt:on_cast_start(hero, _, loc)
-    local g = Group(hero.object)
-    g:EnumUnitsInRange(loc.x, loc.y, self.area, Group.IsEnemy)
+function mt:on_cast_channel()
+    local g = Group(self.owner.object)
+    g:EnumUnitsInRange(self.targetLoc.x, self.targetLoc.y, self.area, Group.IsEnemy)
     g:Loop(function(group, i)
         Damage{
-            source = hero,
+            source = self.owner,
             target = Hero(group.units[i]),
             type = "法術",
             name = "暴風雪",

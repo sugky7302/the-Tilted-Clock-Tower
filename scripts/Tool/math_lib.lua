@@ -24,4 +24,7 @@ function MathLib.Random(n, m)
     end
 end
 
+function MathLib.Error(value, compareValue)
+    return math.abs(value - compareValue)
+end
 return MathLib

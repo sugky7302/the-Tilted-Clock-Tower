@@ -81,7 +81,7 @@ function mt:Erase(node)
     if node.EIN == self.head.EIN then 
         self:PopFront()
     elseif node.EIN == self.tail.EIN then
-        self.PopBack()
+        self:PopBack()
     else
         local prevNode = node.prev
         local nextNode = node.next

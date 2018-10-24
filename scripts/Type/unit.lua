@@ -52,7 +52,7 @@ function Unit.Init()
 end
 
 function mt.KillUnit(unit)
-    cj.KillUnit(unit)
+    js.RemoveUnit(unit)
 end
 
 function Unit:__call(unit)
@@ -85,8 +85,6 @@ function mt:InitState()
     self['元素傷害%'] = 0
     self['元素抗性'] = 0
     self['攻擊範圍'] = data.rangeN1
-    self['移動速度'] = data.spd
-    self['轉身速度'] = data.turnRate
     self['魔力恢復'] = 0
     self['生命恢復'] = 0
     self['物理暴擊率'] = 0
@@ -371,6 +369,22 @@ set['攻擊速度'] = function(self, attackSpeed)
 		--当物理攻擊力速度小于0的时候,每点相当于攻擊間隔增加1%
 		japi.SetUnitState(self.object, 0x51, 1 + attackSpeed / (100 - attackSpeed))
 	end
+end
+
+get['移動速度'] = function(self)
+	return cj.GetUnitDefaultMoveSpeed(self.object)
+end
+
+set['移動速度'] = function(self, moveSpeed)
+	cj.SetUnitMoveSpeed(self.object, moveSpeed)
+end
+
+get['轉身速度'] = function(self)
+    return cj.GetUnitTurnSpeed(self.object)
+end
+
+set['轉身速度'] = function(self, val)
+    cj.SetUnitTurnSpeed(self.object, val)
 end
 
 function mt:Remove()

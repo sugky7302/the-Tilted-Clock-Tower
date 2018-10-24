@@ -21,13 +21,13 @@ Hero.type = "Hero"
 
 -- varaiables
 local _RegDropItemEvent, _RegObtainItemEvent, _RegReviveEvent, _RegSellItemEvent, _RegUseItemEvent, _RegSpellEffectEvent
-local _IsItem, _IsTypeSame
+local _IsItem, _IsTypeSame, _ChekMultiCast, _GenerateSkillObject, _IsShowMultiCast
 local set, get = {}, {}
 Hero.heroDatas = {}
 
 function Hero.Init()
     local orderTrg = War3.CreateTrigger(function()
-        Game:EventDispatch("單位-發布命令", cj.GetOrderedUnit(), cj.GetIssuedOrderId(), cj.GetOrderTarget())
+        Game:EventDispatch("單位-發布命令", Hero(cj.GetOrderedUnit()), cj.GetIssuedOrderId(), cj.GetOrderTarget())
         return true
     end)
     local unitIsCasted = War3.CreateTrigger(function()
@@ -38,10 +38,8 @@ function Hero.Init()
         -- 獲取技能
         for _, skill in pairs(hero.heroDatas[cj.GetUnitName(hero.object)].skillDatas) do
             if skill.orderId == Base.Id2String(id) then
-                skill.owner = hero
-                skill.targetUnit = targetUnit
-                skill.targetLoc = targetLoc
-                skill:_cast_start()
+                _ChekMultiCast(skill, hero)
+                _GenerateSkillObject(skill, hero, targetUnit, targetLoc)
                 return 
             end
         end
@@ -76,6 +74,60 @@ function Hero.Init()
             end
         end
     end)
+end
+
+_ChekMultiCast = function(skill, hero)
+    if skill.isMultiCast then
+        skill.multiCastCount = skill.multiCastCount + 1
+        local Texttag = require 'texttag'
+        if _IsShowMultiCast(skill) then
+            skill.multiCastText = Texttag{
+                msg = "|cffff0000" .. skill.multiCastCount .. "重施法|r",
+                loc = Point:GetUnitLoc(hero.object),
+                timeout = 2,
+                skill = skill,
+                multiCastCount = skill.multiCastCount,
+                isPermanant = false,
+                Initialize = function(obj)
+                    cj.SetTextTagText(obj.texttag, obj.msg, 0.04)
+                    cj.SetTextTagPos(obj.texttag, obj.loc.x, obj.loc.y, 10)
+                    cj.SetTextTagPermanent(obj.texttag, obj.isPermanant)
+                    cj.SetTextTagLifespan(obj.texttag, obj.timeout)
+                    cj.SetTextTagFadepoint(obj.texttag, 0.3)
+                end,
+                Update = function(obj)
+                    if obj.multiCastCount < obj.skill.multiCastCount then
+                        obj.msg = "|cffff0000" .. obj.skill.multiCastCount .. "重施法|r"
+                        cj.SetTextTagText(obj.texttag, obj.msg, 0.03)
+                        cj.SetTextTagPos(obj.texttag, obj.loc.x, obj.loc.y, 10)
+                        cj.SetTextTagLifespan(obj.texttag, 2)
+                        obj.timeout = 2
+                    end
+                end,
+                Remove = function(obj)
+                    Texttag.Remove(obj)
+                end
+            }
+        end
+    else
+        skill.multiCastCount = 0
+    end
+    skill.isMultiCast = false
+end
+
+_IsShowMultiCast = function(skill)
+    if not skill.multiCastText then
+        return true
+    elseif not skill.multiCastText.invalid then
+        return true
+    end
+    return false
+end
+
+_GenerateSkillObject = function(skill, hero, targetUnit, targetLoc)
+    local skillCopy = skill:New(hero, targetUnit, targetLoc)
+    table.insert(hero.eachCasting, skillCopy)
+    skillCopy:_cast_start()
 end
 
 _IsItem = function(item)
@@ -166,6 +218,7 @@ function Hero:__call(hero)
     local obj = self[js.H2I(hero) .. ""] -- TODO: 不確定Hero搜尋不到，會不會去搜尋Unit
     if not obj then
         obj = Unit(hero)
+        obj.eachCasting = {}
         setmetatable(obj, obj)
         obj.__index = self
         self[js.H2I(hero) .. ""] = obj

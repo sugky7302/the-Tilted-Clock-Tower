@@ -16,7 +16,7 @@ local PERIOD = 0.001
 -- variables
 local _currentFrame, _maxFrame, _backFrame = 0, 0, 0
 local _recycleQueue, _OnTick, _Wakeup, _SetTimeout, _GetQueue = Queue("timer")
-local _Loop, _Wait, _Count
+local _Loop, _Wait, _Count, _AddCnd
 
 --[[ 建立0.01秒一幀的中心計時器
 執行每幀的佇列(最多10個動作)，若因為計時器誤差而導致丟幀，就於下次進行補幀。
@@ -84,18 +84,14 @@ function Timer:__call(timeout, isPeriod, execution)
     }
     setmetatable(obj, self)
     obj.__index = obj
-    if isPeriod or (isPeriod == 0) then -- 如果週期設定成true或0，都視為循環觸發
-        _Loop(obj)
-    elseif not isPeriod then
+    if not isPeriod then -- 如果週期設定成true或0，都視為循環觸發
         _Wait(obj)
-    else
+    elseif (type(isPeriod) == "number") and (isPeriod > 0) then
         _Count(obj)
+    else
+        _Loop(obj)
     end
     return obj
-end
-
-_Loop = function(self)
-    _SetTimeout(self, self.timeout)
 end
 
 -- 單次計時器，因此不儲存timeout，讓_Wakeup能夠判斷是否循環
@@ -104,6 +100,23 @@ _Wait = function(self)
     self.timeout = nil
     _SetTimeout(self, timeout)
 end
+
+_Count = function(self)
+    local execution = self.execution
+    self.execution = function(self)
+        self.isPeriod = self.isPeriod - 1
+        execution(self)
+        if self.isPeriod < 1 then
+            self:Remove()
+        end
+    end
+    _SetTimeout(self, self.timeout)
+end
+
+_Loop = function(self)
+    _SetTimeout(self, self.timeout)
+end
+
 
 function mt:Resume()
     if self.pauseRemaining then
@@ -114,6 +127,7 @@ end
 
 -- 將循環動作插入新的幀的佇列中
 _SetTimeout = function(callback, timeout)
+    _AddCnd(callback)
     local newFrame = _currentFrame + timeout
     local callbackQueue = Timer[newFrame]
     -- 讀不到該幀的佇列，就新建一個
@@ -125,6 +139,15 @@ _SetTimeout = function(callback, timeout)
     callbackQueue:Insert(callback) -- 儲存回調
 end
 
+_AddCnd = function(self)
+    local execution = self.execution
+    self.execution = function(self)
+        if not (self.pauseRemaining or self.invalid) then
+            execution(self)
+        end
+    end
+end
+
 -- 獲得空白佇列
 _GetQueue = function()
     if _recycleQueue:IsEmpty() then
@@ -133,30 +156,6 @@ _GetQueue = function()
         local queue = _recycleQueue:Front()
         _recycleQueue:Pop()
         return queue
-    end
-end
-
-_Count = function(self)
-    local execution = self.execution
-    self.execution = function(self)
-        execution(self)
-        self.isPeriod = self.isPeriod - 1
-        if self.isPeriod < 1 then
-            self:Remove()
-        end
-    end
-end
-
-function mt:Pause()
-    self.pauseRemaining = self:GetRemaining()
-    local queue = Timer[self.timeoutFrame]
-    if queue then
-        for i = #queue, 1, -1 do
-            if queue[i] == self then -- 清除回調
-                queue[i] = nil
-                return 
-            end
-        end
     end
 end
 
@@ -178,6 +177,19 @@ function mt:Remove()
     self.invalid = nil
     self = nil
     collectgarbage("collect")
+end
+
+function mt:Pause()
+    self.pauseRemaining = self:GetRemaining()
+    local queue = Timer[self.timeoutFrame]
+    if queue then
+        for i = #queue, 1, -1 do
+            if queue[i] == self then -- 清除回調
+                queue[i] = nil
+                return 
+            end
+        end
+    end
 end
 
 function mt:Clock()

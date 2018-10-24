@@ -253,7 +253,7 @@ _Show = function(target, value, textType, scale)
     else
         text = math.modf(MathLib.Round(value))
     end
-    TextToAttachUnit(text, Point(cj.GetUnitX(target), cj.GetUnitY(target)), scale)
+    TextToAttachUnit(text, Point:GetUnitLoc(target), scale)
 end
 
 return Damage
