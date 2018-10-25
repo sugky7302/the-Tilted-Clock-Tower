@@ -14,7 +14,10 @@ Group.__index = mt
 local _QUANTITY, _recycleGroup = 128, Stack("group")
 
 function Group:__call(filter)
-    local obj = Object{units = Array("units")}
+    local obj = Object{
+        units = Array("units"),
+        ignoreUnits = {},
+    }
     if _recycleGroup:IsEmpty() then
         obj.object = cj.CreateGroup()
     else
@@ -35,6 +38,7 @@ function mt:Remove()
         _recycleGroup:Push(self.object)
     end
     self.units:Remove()
+    self.ignoreUnits = nil
     self.object = nil
     self = nil
 end
@@ -49,9 +53,15 @@ end
 
 function mt:Loop(action)
     for i = 1, self.units:GetSize() do
-        action(self, i)
+        if not self.ignoreUnits[js.H2I(self.units[i]) .. ""] then
+            action(self, i)
+        end
     end
 end
+
+function mt:Ignore(unit)
+    self.ignoreUnits[js.H2I(unit) .. ""] = true
+end 
 
 function mt:EnumUnitsInRange(x, y, r, cnd)
     local temp = cj.CreateGroup()

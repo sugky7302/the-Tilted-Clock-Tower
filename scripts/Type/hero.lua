@@ -198,7 +198,7 @@ end
 _RegSellItemEvent = function()
     -- 創建出售物品事件
     local _sellItemTrg = War3.CreateTrigger(function()
-        Game:EventDispatch("單位-出售物品", cj.GetTriggerUnit(), cj.GetManipulatedItem())
+        Game:EventDispatch("單位-出售物品", cj.GetTriggerUnit(), cj.GetSoldItem())
         return true
     end)
     Game:Event "單位-出售物品" (function(self, hero, item)

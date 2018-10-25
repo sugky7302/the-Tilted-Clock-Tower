@@ -11,7 +11,50 @@
 
 過程使**Evernote**來管理我的專案。
 
+## 未來可能會加入的想法
+- [2018-10-25] 暫時無法使用出售物品和強制按鍵模擬出充能施法，之後學習圖層混合再來考慮。
+
+## 注意事項
+### 修改地圖
+- 如果要修改地圖，請開啟TheTiltedClockTower.w3x，不要開啟.w3x。
+- 使用後，請先用vscode執行Lni一次。
+- 再使用vscode打開war3map.j，在InitGlobals輸入call Cheat("exec-lua: base")。
+- 最後用vscode執行obj一次後。
+### 新增/修改/移除物編數據
+- 打開table資料夾。
+- 根據類型開啟相應的ini檔。
+- 直接修改儲存。
+- 最後用vscode執行obj一次即可。
+### 導入檔案
+- 先把檔案放入resource裡面，根據檔案的類型放入不同資料夾。
+- 在imp.ini填入剛剛放入的資料夾的路徑。
+### 導入音效
+- 先把檔案放入sound\war3mapImported裡面。
+- 在imp.ini填入路徑。
+- 要在war3map.j的globals設定全域變量**sound gg_snd_檔案名 = null**。
+- 再去找InitSound函數，根據格式來調用函數，將音效檔初始化。
+### 通魔
+- 如果要播施法動作，請把施法持續時間和動作持續時間設定超過施法動作播一次的時間。
+
+## 資源
+- [技能音效] Hero Of the Storm\heros.stormmod\base.stormassets\assets\sounds\heros
+
 ## 更新日誌
+### Unreleased - 2018-10-25
+>#### Added:
+> - [group] 新增ignoreUnits變量，儲存已經被傷害過的單位。
+> - [group] 根據上條更新，loop現在會忽略ignoreUnits裡的單位。
+> - [jass_tool] 新增Sound函數，目前用於技能音效。
+> - [point] 新增angle函數，用於計算角度。
+> - [冰霜秘術師] 開放技能-寒冰箭、霜之環。
+>#### Changed:
+> - [point] 原angle函數改名為rad函數，以符合它的功能。
+>#### Fixed:
+> - [missile] 修正投射物出射方向只能水平的問題。
+> - [missile] 修正hitMode不起作用的問題。
+> - [point] 修正rotate函數換算錯誤的問題。
+> - [冰霜秘術師] 修正由於寒冰箭的**施法持續時間**及**動作持續時間**沒有超過施法動作播一次的時間，而導致動畫播放不出來的問題。
+
 ### 0.15.0 - 2018-10-24
 >#### Added:
 > - 新增bar庫，將castbar的核心功能摘出來，為之後的狀態條作準備。
@@ -20,7 +63,7 @@
 > - [skill] 新增定身施法，施法光環會隨秒數縮放。
 > - [skill] 新增多重施法。
 >#### Fixed:
-> - [list] 修正erase函數的popack無參數的問題。
+> - [list] 修正erase函數的popback無參數的問題。
 > - [skill] 修正由於[座標誤差][coordinate_error]而導致施法光環模型無法正確顯示在施法者腳下的問題。
 > - [skill] 修正多重施法時，某次觸發可能會獲取到轉身速度設定為0的數值，而導致多重施法結束後，角色無法轉身的問題。
 > - [skill] 修正多重施法提示文字無法顯示的問題，但目前仍未解決文字會莫名跳動的問題。
@@ -241,7 +284,7 @@
 > - 按日期降序排列，方便檢視最新的更新。
 > - 類別按照字母排列。
 >#### Added:
-> - 新增快速排序(quicksort)演算法。[2018-07-06]
+> - 新增快速排序(quicksort)演算法。
 
 [actboy168-lua-debug]:https://tieba.baidu.com/p/5902146836
 [coordinate_error]:https://tieba.baidu.com/p/5773334779?pid=120570865697&cid=0&red_tag=1133617129#120570865697

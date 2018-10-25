@@ -16,6 +16,7 @@ Skill.__index = mt
 -- defaultValues
 mt.type = 'skill'       -- 類型
 mt.name = ''            -- 技能名
+mt.hotkey = ""          -- 快捷鍵
 mt.castPulse = 1        -- 施法計時器間隔
 mt.castStartTime = 0    -- 施法開始
 mt.castChannelTime = 0  -- 施法引導
@@ -24,9 +25,9 @@ mt.castFinishTime = 0   -- 施法完成
 mt.breakMove = 1        -- 打斷移動
 mt.breakOrder = 0       -- 不恢復指令
 mt.castbar = nil        -- 施法時間條
-mt.canMultiCast = true -- 是否能多重施法
-mt.multiCastChance = 100  -- 多重施法機率，每次接獨立計算
-mt.multiCastCount = 0  -- 多重施法次數
+mt.canMultiCast = false -- 是否能多重施法
+mt.multiCastChance = 0  -- 多重施法機率，每次接獨立計算
+mt.multiCastCount = 0   -- 多重施法次數
 mt.isMultiCast = false  -- 是否在多重施法
 mt.multiCastText = nil  -- 多重施法漂浮文字
 
@@ -42,6 +43,7 @@ local _CallEvent, _ChangeTurnRate, _CreateDummy, _ReductTurnRate, _ZoomDummy, _R
 function Skill.Init()
     local Game = require 'game'
     Game:Event "單位-發布命令" (function(self, unit, order, target)
+        -- 中斷施法
         if (order == Base.String2OrderId('smart')) or (order == Base.String2OrderId('stop')) or (order == Base.String2OrderId('attack')) then
             for _, skill in ipairs(unit.eachCasting) do
                 skill:Break()
@@ -70,6 +72,7 @@ function Skill:__call(name)
         self[name] = obj
         obj.name = name
         obj.order = slk.ability[obj.orderId].Order
+        obj.order = (obj.order == "channel") and slk.ability[obj.orderId].DataF
         setmetatable(obj, self)
         obj.__index = obj
         return self[name]
@@ -106,10 +109,8 @@ function mt:_cast_start()
         -- 調用動作
         _CallEvent(self, "on_cast_start")
         -- 看能不能被打斷
-        self.castStartTimer = Timer(self.castPulse, self.castStartTime / self.castPulse, function(callback)
-            if callback.isPeriod == 0 then
-                self:_cast_channel()
-            end
+        self.castStartTimer = Timer(self.castStartTime, false, function(callback)
+            self:_cast_channel()
         end)
         
     else

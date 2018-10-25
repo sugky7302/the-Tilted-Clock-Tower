@@ -21,7 +21,7 @@ return {
         return cj.GetUnitTypeId(u)
     end,
     RemoveUnit = function(unit)
-        cj.UnitApplyTimedLife(unit, Base.String2Id('BHwe'), 0.1)
+        cj.UnitApplyTimedLife(unit, Base.String2Id('BHwe'), 0.03)
     end,
     -- 設定生命週期利用war3機制自動刪除，會比用RemoveUnit乾淨，內存絕不會漏掉
     Item2Id = function(item)
@@ -29,6 +29,15 @@ return {
     end,
     Item2Str = function(item)
         return Base.Id2String(cj.GetItemTypeId(item))
+    end,
+    PressHotkey = function(player, hotkey)
+        if cj.GetLocalPlayer() == player then
+            cj.ForceUIKey(hotkey)
+        end
+    end,
+    Sound = function(handle)
+        local gg = require 'jass.globals'
+        cj.StartSound(gg[handle])
     end,
 }
     

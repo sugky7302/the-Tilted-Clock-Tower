@@ -20,7 +20,12 @@ local _GetMissile, _GetStartingHeight, _At_EndCondition, _SetTrace
 
 -- object 包含 owner, modelName, startingPoint, targetPoint, maxDistance, traceMode, hitMode, execution
 -- traceMode可以調用trace_lib的函數或自己寫
--- hitMode有OneHit、DoubleHit、Pass
+-- 如果是要用trace_lib的函數，只要寫上函數名即可，不用寫結構名
+-- 如果要自己寫，請遵照此格式 function(self) 動作 end
+-- hitMode有1.2.3...或infinity
+-- 數字表示擊中數達預設目標即停止
+-- infinity表示投射物達最大距離才會停止
+-- execution為group的loop函數，因此格式一定要遵照 function(group, i) 動作 end
 function Missile:__call(obj)
     obj = Object(obj) -- 轉成Object
     setmetatable(obj, self)
@@ -29,15 +34,14 @@ function Missile:__call(obj)
     obj.unitDetermined = Group(obj.missile)
     obj.startingHeight = _GetStartingHeight(obj.startingPoint)
     obj.traceMode = (type(obj.traceMode) == 'string') and mt.traceLib[obj.traceMode] or obj.traceMode
-    obj.angle = Point.Angle(obj.startingPoint, obj.targetPoint)
+    obj.angle = Point.Rad(obj.startingPoint, obj.targetPoint)
     MissileTool.SetHeight(obj, 0)
     _SetTrace(obj)
     return obj
 end
 
 _GetMissile = function(obj)
-    --local missile = cj.CreateUnit(cj.GetOwningPlayer(obj.owner), Base.String2Id(_MISSILE_ID), obj.startingPoint.x, obj.startingPoint.y, cj.GetUnitFacing(obj.owner))
-    local missile = cj.CreateUnit(cj.Player(0), Base.String2Id(_MISSILE_ID), obj.startingPoint.x, obj.startingPoint.y, 0)
+    local missile = cj.CreateUnit(obj.owner.owner.object, Base.String2Id(_MISSILE_ID), obj.startingPoint.x, obj.startingPoint.y, cj.GetUnitFacing(obj.owner.object))
     cj.UnitAddAbility(missile, Base.String2Id(obj.modelName))
     return missile
 end
@@ -66,10 +70,11 @@ _SetTrace = function(self)
 end
 
 _At_EndCondition = function(self, currentDistance, hit)
-    local oneHit = (self.hitMode == "OneHit") and (hit > 0)
-    local arriveEndPoint = currentDistance >= self.maxDistance
-    local doubleHit = (self.hitMode == "DoubleHit") and (hit > 1)
-    return oneHit or arriveEndPoint or doubleHit
+    if type(self.hitMode) == "string" then
+        return currentDistance >= self.maxDistance
+    else
+        return hit >= self.hitMode
+    end
 end
 
 function mt:Remove()

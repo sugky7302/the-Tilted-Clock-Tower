@@ -1,4 +1,4 @@
-local sin, cos, rad, sqrt, atan = math.sin, math.cos, math.rad, math.sqrt, math.atan
+local sin, cos, deg, rad, sqrt, atan = math.sin, math.cos, math.deg, math.rad, math.sqrt, math.atan
 local setmetatable = setmetatable
 local cj = require 'jass.common'
 local Object = require 'object'
@@ -46,11 +46,17 @@ function Point.DistanceInSpace(p1, p2)
 end
 
 function Point.Angle(p1, p2)
+    return deg(Point.Rad(p1, p2))
+end
+
+function Point.Rad(p1, p2)
     return atan(p2.y - p1.y, p2.x - p1.x)
 end
 
+-- 假定極點為(0, 0)
 function mt:Rotate(val)
-    self.x, self.y = self.x * sin(rad(val)), self.y * cos(rad(val))
+    local theta, r = rad(val), sqrt(self.x^2 + self.y^2)
+    self.x, self.y = r * cos(rad(val)), r * sin(rad(val))
 end
 
 function Point:__tostring()

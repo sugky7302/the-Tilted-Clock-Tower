@@ -406,4 +406,8 @@ function mt:HasAbility(id)
     return cj.GetUnitAbilityLevel(self.object, id) > 0
 end
 
+function Unit.Create(player, id, loc, facing)
+    return cj.CreateUnit(player, Base.String2Id(id), loc.x, loc.y, facing)
+end
+
 return Unit

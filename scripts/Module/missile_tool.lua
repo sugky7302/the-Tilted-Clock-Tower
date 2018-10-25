@@ -20,7 +20,7 @@ function MissileTool.SetHeight(self, currentDistance)
     cj.UnitAddAbility(self.missile, Base.String2Id(_FLYSKILL_ID))
     cj.UnitRemoveAbility(self.missile, Base.String2Id(_FLYSKILL_ID))
     local height = self.startingHeight + currentDistance * slope - missile_z
-    if height > 0 then
+    if height >= 0 then
         cj.SetUnitFlyHeight(self.missile, height, 0.)
     else -- 如果投射物撞到牆，就把投射物刪除
         self:Remove()
