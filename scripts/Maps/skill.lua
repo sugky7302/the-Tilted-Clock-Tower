@@ -17,6 +17,12 @@ Skill.__index = mt
 mt.type = 'skill'       -- 類型
 mt.name = ''            -- 技能名
 mt.hotkey = ""          -- 快捷鍵
+mt.cool = 0             -- 冷卻時間
+mt.level = 1            -- 等級
+mt.maxLevel = 5         -- 最高等級
+mt.proficiency = 0      -- 當前熟練度
+mt.proficiencyNeed = 0  -- 所需熟練度
+mt.tip = ""             -- 技能說明
 mt.castPulse = 1        -- 施法計時器間隔
 mt.castStartTime = 0    -- 施法開始
 mt.castChannelTime = 0  -- 施法引導
@@ -38,7 +44,7 @@ mt.breakCastShot = 0
 mt.breakCastFinish = 1
 
 -- variables
-local _CallEvent, _ChangeTurnRate, _CreateDummy, _ReductTurnRate, _ZoomDummy, _ResetAbility, _CheckSkillOrder
+local _CallEvent, _ChangeTurnRate, _CreateDummy, _ReductTurnRate, _ZoomDummy, _ResetAbility, _CheckSkillOrder, _SetProficiency
 
 function Skill.Init()
     local Game = require 'game'
@@ -56,14 +62,17 @@ function mt:Break()
     if (self.breakCastStart == 1) and self.castStartTimer then
         self.castbar:Break()
         self.castStartTimer:Break()
+        self:Remove()
     end
     if (self.breakCastChannel == 1) and self.castChannelTimer then
         self.castbar:Break()
         self.castChannelTimer:Break()
+        self:Remove()
     end
     if (self.breakCastShot == 1) and self.castShotTimer then
         self.castbar:Break()
         self.castShotTimer:Break()
+        self:Remove()
     end
 end
 
@@ -73,6 +82,7 @@ function Skill:__call(name)
         obj.name = name
         obj.order = slk.ability[obj.orderId].Order
         obj.order = (obj.order == "channel") and slk.ability[obj.orderId].DataF
+        obj.cool = slk.ability[obj.orderId].Cool
         setmetatable(obj, self)
         obj.__index = obj
         return self[name]
@@ -86,7 +96,9 @@ function mt:New(hero, targetUnit, targetLoc)
         targetLoc = targetLoc,
         multiCastChance = multiCastChance,
     }
-    setmetatable(obj, self)
+    setmetatable(obj, obj)
+    obj.__index = self
+    obj.__newindex = self
     return obj
 end
 
@@ -208,8 +220,41 @@ end
 
 function mt:_cast_finish()
     _CallEvent(self, "on_cast_finish")
+    _SetProficiency(self)
     self:Remove()
     self:MultiCast()
+end
+
+_SetProficiency = function(self)
+    if self.level == self.maxLevel then
+        return 
+    end
+    self.proficiency = self.proficiency + 1
+    if self.proficiency >= self.proficiencyNeed[self.level] then
+        self.proficiency = self.proficiency % self.proficiencyNeed[self.level]
+        self.level = self.level + 1
+        self:UpdateTip()
+    end
+    self:UpdateName()
+    js.SelectUnitRemoveForPlayer(self.owner, self.owner.owner.object)
+    js.SelectUnitAddForPlayer(self.owner, self.owner.owner.object)
+end
+
+function mt:UpdateName()
+    local msg = self.name .. "(|cffffcc00" .. self.hotkey .. "|r) - [等級 |cffffcc00" .. self.level .. "|r"
+    if self.level == self.maxLevel then
+        msg = msg .."]"
+    else
+        msg = msg .. " - |cffffcc00" .. self.proficiency .. "|r/|cffffcc00" .. self.proficiencyNeed[self.level] .. "|r]"
+    end
+    japi.EXSetAbilityDataString(japi.EXGetUnitAbility(self.owner.object, Base.String2Id(self.orderId)), 1, 215, msg)
+end
+
+function mt:UpdateTip()
+    local string_gsub = string.gsub
+    local state = string_gsub(self.tip, "N", self.damage[self.level][1] .. "-" .. self.damage[self.level][2]) -- 基礎傷害
+    state = string_gsub(state, "P", self.proc .. "") -- 技能係數
+    japi.EXSetAbilityDataString(japi.EXGetUnitAbility(self.owner.object, Base.String2Id(self.orderId)), 1, 218, state)
 end
 
 function mt:Remove()
@@ -244,6 +289,6 @@ _CheckSkillOrder = function(source, order, target, targetLoc)
     local immediateOrder = cj.IssueImmediateOrder(source, order) or nil
     local pointOrder = cj.IssuePointOrder(source, order, targetLoc.x, targetLoc.y) or nil
     local targetOrder = cj.IssueTargetOrder(source, order, target) or nil
-end
+end  
 
 return Skill

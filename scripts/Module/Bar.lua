@@ -11,11 +11,11 @@ setmetatable(Bar, Bar)
 Bar.__index = mt
 
 -- constants
-Bar.SIZE = 0.015
-Bar.Z_OFFSET = 150
-Bar.motivation = Point(-40, 0)
-Bar.BarSize = 25
-Bar.BarModel = "l"
+mt.SIZE = 0.015
+mt.Z_OFFSET = 150
+mt.motivation = Point(-40, 0)
+mt.BarSize = 25
+mt.BarModel = "l"
 
 -- variables
 local _Initialize, _Update, _Remove, _GetBarModel
@@ -56,7 +56,7 @@ end
 _GetBarModel = function(current, timeout, color, isReverse)
     current = isReverse and (timeout - current) or current
     local dur = math_modf(Bar.BarSize * current / timeout)
-    return Color(color) .. string_rep(Bar.BarModel, dur) .. "|r" .. string_rep(Bar.BarModel, Bar.BarSize - dur)
+    return Color(color) .. string_rep(Bar.BarModel, dur) .. "|r|cffc0c0c0" .. string_rep(Bar.BarModel, Bar.BarSize - dur)
 end
 
 _Remove = function(data)
@@ -68,4 +68,3 @@ function mt:Break()
 end
 
 return Bar
-    

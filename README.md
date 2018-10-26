@@ -40,7 +40,21 @@
 - [技能音效] Hero Of the Storm\heros.stormmod\base.stormassets\assets\sounds\heros
 
 ## 更新日誌
-### Unreleased - 2018-10-25
+### 0.17.0 - 2018-10-26
+>#### Added:
+> - 新增shield庫。
+> - 新增pet庫，專門對召喚物作處理。
+> - 新增技能熟練度系統。
+> - [jass_tool] 新增TimeEffect函數，用於延遲刪除效果。
+> - [skill] 新增UpdateName、UpdateTip函數，針對技能熟練度系統作準備。
+> - [skill] 新增技能熟練度提示。
+> - [冰霜秘術師] 開放技能-召喚水元素，專長-霜寒刺骨。
+>#### Changed:
+> - [damage] 現在會自動捕捉技能傷害跟觸發係數。
+>#### Fixed:
+> - [skill] 修正連續施放技能，前一個技能不會被打斷的問題。
+
+### 0.16.0 - 2018-10-25
 >#### Added:
 > - [group] 新增ignoreUnits變量，儲存已經被傷害過的單位。
 > - [group] 根據上條更新，loop現在會忽略ignoreUnits裡的單位。

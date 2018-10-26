@@ -3,6 +3,7 @@ local cj = require 'jass.common'
 local js = require 'jass_tool'
 local Timer = require 'timer'
 local Array = require 'array'
+local Unit = require 'unit'
 
 local Buff = {}
 local mt = {}
@@ -13,10 +14,46 @@ Buff.__index = mt
 local _SetObject, _SetVariables, _FindQueue, _PushBuff, _SetBuff, _AddEffect, _AddArt, _RemoveArt
 
 -- obj含name, type, owner, remaining, art, coverMode, pulse, callback(添加/刪除屬性), execute(持續觸發函數)
-function Buff:__call(obj)
+function Buff:__call(name)
+    return function(obj)
+        self[name] = obj
+        obj.name = name
+        setmetatable(obj, self)
+        obj.__index = obj
+        return self[name]
+    end
+end
+
+function mt:add(name, timeout, at_end)
+    if not self[name].ont_set then
+        return 
+    end
+    at_end = at_end or false
+    if self.timer then
+        self.timer:Break()
+    end
+    self[name]:on_set(self:get(name) + timeout, at_end)
+end
+
+function mt:get(name)
+    if not self[name] then
+        return
+    end
+    return self[name].pulse * self[name].timer.isPeriod
+end
+
+function mt:set(name, timeout, at_end)
+    if not self[name].on_set then
+        return 
+    end
+    at_end = at_end or false
+    self[name]:on_set(timeout, at_end)
+end
+
+function Unit.__index:add()
     _SetObject(obj)
     _SetBuff(obj)
-    return obj
+    return 
 end
 
 -- 實行策略同event

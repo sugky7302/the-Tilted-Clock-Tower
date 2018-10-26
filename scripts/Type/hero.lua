@@ -35,6 +35,12 @@ function Hero.Init()
         return true
     end)
     Game:Event '單位-準備施放技能' (function(self, hero, id, targetUnit, targetLoc)
+        -- 打斷正在施法的技能
+        for _, skill in ipairs(hero.eachCasting) do
+            if skill.orderId ~= Base.Id2String(id) then
+                skill:Break()
+            end
+        end
         -- 獲取技能
         for _, skill in pairs(hero.heroDatas[cj.GetUnitName(hero.object)].skillDatas) do
             if skill.orderId == Base.Id2String(id) then
@@ -145,8 +151,9 @@ _RegReviveEvent = function()
         return true
     end)
     Game:Event "單位-復活" (function(self, obj)
+        local hero = obj.object
         Timer(10 * (1 + obj:get '等級'), false, function()
-            cj.ReviveHero(obj.object, obj.revivePoint.x, obj.revivePoint.y, true)
+            cj.ReviveHero(hero, obj.revivePoint.x, obj.revivePoint.y, true)
         end)
     end)
     return _reviveTrg
@@ -256,6 +263,7 @@ function Hero:InitState()
     self['特殊法術護甲'] = 0
     self['近戰減傷'] = 0
     self['遠程減傷'] = 0
+    self['護盾'] = 0
     for _, name in ipairs(Hero._RACE) do
         self[name .. '增傷'] = 0
         self[name .. '減傷'] = 0

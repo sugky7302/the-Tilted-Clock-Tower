@@ -11,6 +11,12 @@ local mt = Skill '寒冰箭' {
     orderId = 'A000',
     area = 100,
     range = 800,
+    damage = {{10, 15}, {20, 25}},
+    proc = 1,
+    hotkey = "Q",
+    proficiencyNeed = {100, 150},
+    tip = "冷卻時間: |Cffffcc004|r|n|n對目標造成|Cffffcc00N|r|Cff99ccff[+P]|r點冰寒傷害。" .. 
+    "寒冰箭對被冰凍的目標造成|Cffffcc002.25|r倍傷害。",
     castStartTime = 2,
 }
 
@@ -40,8 +46,6 @@ function mt:on_cast_shot()
                 name = "寒冰箭",
                 mustHit = true,
                 elementType = "水",
-                basicDamage = {10, 15},
-                proc = 1,
             }
             group:Ignore(group.units[i])
             js.Sound("gg_snd_jaina_blizzard_impact01")

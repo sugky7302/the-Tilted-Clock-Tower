@@ -39,5 +39,21 @@ return {
         local gg = require 'jass.globals'
         cj.StartSound(gg[handle])
     end,
+    TimeEffect = function(effect, timeout)
+        local Timer = require 'timer'
+        Timer(timeout, false, function()
+            cj.DestroyEffect(effect)
+        end)
+    end,
+    SelectUnitRemoveForPlayer = function(unit, player)
+        if cj.GetLocalPlayer() == player then
+            cj.SelectUnit(unit, false)
+        end
+    end,
+    SelectUnitAddForPlayer = function(unit, player)
+        if cj.GetLocalPlayer() == player then
+            cj.SelectUnit(unit, true)
+        end
+    end,
 }
     

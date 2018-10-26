@@ -27,6 +27,7 @@ function Color:Init()
     self["superpurple"] = "|cff9393ff"
     self["brown"] = "|cff804000"
     self["skin"] = "|cffffd8ae"
+    self["white"] = "|cffffffff"
 end
 
 function Color:__call(...) -- 可能會給 顏色的英文名字 或 RGB數字

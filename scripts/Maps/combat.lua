@@ -3,7 +3,7 @@ local cj = require 'jass.common'
 local japi = require 'jass.japi'
 local War3 = require 'api'
 local Game = require 'game'
-local Hero = require 'hero'
+local Unit = require 'unit'
 local Damage = require 'damage'
 
 local Combat = {}
@@ -20,8 +20,8 @@ function Combat:Init()
     Game:Event "單位-顯示傷害" (function(self, source, target)
         japi.EXSetEventDamage(0)
         Damage{
-            source = Hero(source),
-            target = Hero(target),
+            source = Unit(source),
+            target = Unit(target),
             type = "物理",
             name = "普通攻擊",
             elementType = "無",

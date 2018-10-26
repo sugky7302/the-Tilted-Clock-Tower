@@ -5,6 +5,7 @@ local js = require 'jass_tool'
 local TextToAttachUnit = require 'text_to_attach_unit'
 local Point = require 'point'
 local MathLib = require 'math_lib'
+local Skill = require 'skill'
 
 local Damage = {}
 setmetatable(Damage, Damage)
@@ -71,12 +72,16 @@ local _IsCriOrACT, _TransCriAndACT, _DeterminCriOrACT, _IsPntOrBlk, _TransPntOrB
 local _GetIndependentBonusInAtk, _GetWeakness, _GetEAtk, _GetTalentsBonusInAtk, _GetBuffInAtk
 local _GetTalentsBonusInDef, _GetBuffInDef, _GetIndependentBonusInDef, _GetAtk, _GetMatk, _GetDef, _GetMdef
 
--- obj 含 source(Hero type), target(Hero type), type, name, elementType, basicDamage(技能基礎傷害), proc(法術攻擊力係數), ratio(混合傷害的物法比例)
+-- obj 含 source(Hero type), target(Hero type), type, name, elementType, ratio(混合傷害的物法比例)
 function Damage:__call(obj)
     local atk, def = _ComputeAttack(obj), _ComputeDefense(obj)
     local dmg, textSize = _DamageDetermine(obj, atk, def)
     if type(dmg) ~= "string" then
-        _DealDamage(obj.target, dmg)
+        dmg = dmg - obj.target:get "護盾"
+        if dmg > 0 then
+            _DealDamage(obj.target, dmg)
+        end
+        obj.target:set("護盾", math.max(0, -dmg))
     end
     _Show(obj.target.object, dmg, obj.type, textSize)
 end
@@ -87,10 +92,12 @@ _ComputeAttack = function(obj)
         atk = _GetAtk(obj.source, obj.target)
         extraDmg = obj.source:get "特殊物理傷害"
     elseif obj.type == "法術" then
-        atk = _GetMatk(obj.source, obj.basicDamage, obj.proc)
+        local skill = Skill[obj.name]
+        atk = _GetMatk(obj.source, skill.damage[skill.level], skill.proc)
         extraDmg = obj.source:get "特殊法術傷害"
     elseif obj.type == "混合" then
-        atk = obj.ratio[1] * _GetAtk(obj.source, obj.target) + obj.ratio[2] * _GetMatk(obj.source, obj.basicDamage, obj.proc)
+        local skill = Skill[obj.name]
+        atk = obj.ratio[1] * _GetAtk(obj.source, obj.target) + obj.ratio[2] * _GetMatk(obj.source, skill.damage[skill.level], skill.proc)
         extraDmg = obj.ratio[1] * obj.source:get "特殊物理傷害" + obj.ratio[2] * obj.source:get "特殊法術傷害"
     end
     local eAtk = _GetEAtk(obj)
