@@ -77,7 +77,7 @@ end
 
 function Timer:__call(timeout, isPeriod, execution)
     local obj = Object{
-        timeout = max(floor(timeout / PERIOD) or 1, 1),
+        timeout = max(floor(timeout / PERIOD) or 1, 1), -- 這裡要把時間(秒)改成時間(幀)
         isPeriod = isPeriod,
         execution = execution,
         invalid = false
@@ -159,16 +159,6 @@ _GetQueue = function()
     end
 end
 
-function mt:GetRemaining()
-    if self.pauseRemaining then
-        return self.pauseRemaining
-    elseif self.timeoutFrame == _currentFrame then
-        return self.timeout or 0
-    else
-        return self.timeoutFrame - _currentFrame
-    end
-end
-
 function mt:Remove()
     self:Pause()
     self.timeout = nil
@@ -177,6 +167,13 @@ function mt:Remove()
     self.invalid = nil
     self = nil
     collectgarbage("collect")
+end
+
+function mt:SetRemaining(timeout)
+    if not self.invalid then
+        self:Pause()
+    end
+    self = Timer(timeout, self.isPeriod, self.execution)
 end
 
 function mt:Pause()
@@ -192,15 +189,24 @@ function mt:Pause()
     end
 end
 
+function mt:GetRemaining()
+    if self.pauseRemaining then
+        return self.pauseRemaining
+    elseif self.timeoutFrame == _currentFrame then
+        return self.timeout or 0
+    else
+        return self.timeoutFrame - _currentFrame
+    end
+end
+
+-- 提供計時器當前時間點(秒)
 function mt:Clock()
     return _currentFrame * PERIOD
 end
 
-function mt:SetRemaining(timeout)
-    if not self.invalid then
-        self:Pause()
-    end
-    self = Timer(timeout, self.isPeriod, self.execution)
+-- 提供計時器當前時間點(幀)
+function mt:Frame()
+    return _currentFrame
 end
 
 function mt:Break()

@@ -51,6 +51,7 @@ Base.AddPath 'Tool'
 Base.AddPath 'Type'
 Base.AddPath 'War3'
 Base.AddPath 'Database'
+Base.AddPath 'Buff'
 
 -- 初始化本地腳本
 require 'main'

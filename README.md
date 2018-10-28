@@ -40,6 +40,12 @@
 - [技能音效] Hero Of the Storm\heros.stormmod\base.stormassets\assets\sounds\heros
 
 ## 更新日誌
+### 0.18.0 - 2018-10-28
+>#### Added:
+> - 新增buff庫，可以設定/調用所有buff、debuff效果。
+>#### Changed:
+> - [Effect資料夾] 更名為Buff資料夾，儲存遊戲內所有buff/debuff效果。
+
 ### 0.17.0 - 2018-10-26
 >#### Added:
 > - 新增shield庫。

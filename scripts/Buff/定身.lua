@@ -1,7 +1,6 @@
 local Buff = require 'buff'
 
 local mt = Buff "定身" {
-    defaultTurnRate = 0.5,
     pulse = 0.1,
 }
 
@@ -22,5 +21,5 @@ end
 
 _ReductTurnRate = function(hero)
     japi.EXSetUnitMoveType(hero.object, 0x02)
-    hero:set("轉身速度", mt.defaultTurnRate)
+    hero:set("轉身速度", mt._TURN_RATE)
 end
