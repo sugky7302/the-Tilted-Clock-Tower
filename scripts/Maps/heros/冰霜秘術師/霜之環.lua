@@ -2,13 +2,14 @@ local Skill = require 'skill'
 local cj = require 'jass.common'
 local Group = require 'group'
 local Damage = require 'damage'
-local Hero = require 'hero'
+local Unit = require 'unit'
 local js = require 'jass_tool'
 local Point = require 'point'
 local Timer = require 'timer'
 
 local mt = Skill '霜之環' {
     orderId = 'A00U',
+    disBlp = 'A00Y',
     area = 400,
     hotkey = "E",
     damage = {{20, 30}},
@@ -56,13 +57,19 @@ function mt:on_cast_shot()
         if Point.Distance(self.targetLoc, p) > 250 then
             Damage{
                 source = self.owner,
-                target = Hero(group.units[i]),
+                target = Unit(group.units[i]),
                 type = "法術",
                 name = "霜之環",
                 mustHit = true,
                 elementType = "水",
             }
-            -- Unit(group.units[i]):set("定身", 1.5)
+            Unit(group.units[i]):AddBuff "定身"
+            {
+                dur = 3,
+                skill = self,
+                model = [[Abilities\Spells\Undead\FreezingBreath\FreezingBreathTargetArt.mdl]],
+            }
+            self.owner:get "專長":EventDispatch("擊中單位", false, self.owner, Unit(group.units[i]))
         end
     end)
     g:Remove()

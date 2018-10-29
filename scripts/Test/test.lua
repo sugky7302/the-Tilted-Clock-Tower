@@ -23,7 +23,6 @@ function Test.Add()
     local a = 0
     for i = 1, 10 do
         _Add(a)
-        print(a.."")
     end
 end
 -- 不改變原a，應是複製a的值

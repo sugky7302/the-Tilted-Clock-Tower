@@ -159,6 +159,10 @@ _GetQueue = function()
     end
 end
 
+function Timer:__tostring()
+    return self.EIN
+end
+
 function mt:Remove()
     self:Pause()
     self.timeout = nil

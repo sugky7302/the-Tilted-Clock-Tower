@@ -135,7 +135,9 @@ _GetTalentsBonusInAtk = function(source)
 end
 
 _GetBuffInAtk = function(source, target)
-    return 1
+    local bonus = 1
+    bonus = bonus + source:get("專長加成")
+    return bonus
 end
 
 _ComputeDefense = function(obj)

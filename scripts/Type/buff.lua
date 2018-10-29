@@ -1,10 +1,12 @@
 local setmetatable = setmetatable
 local cj = require 'jass.common'
+local js = require 'jass_tool'
 local Unit = require 'unit'
+local Point = require 'point'
 local Timer = require 'timer'
 local Game = require 'game'
 local table_insert = table.insert 
-local talbe_remove = table.remove 
+local table_remove = table.remove 
 
 local Buff = {}
 local mt = {}
@@ -15,21 +17,30 @@ Buff.__index = mt
 mt._TURN_RATE = 0.5
 
 -- variables
-mt.coverGlobal = 0 -- (0, 1) = (名字和來源都相同才視為同名狀態, 只要名字相同就是為同名狀態)
-mt.coverMax = 0    -- 當單位身上有多個同名狀態，最多可以同時生效的狀態數量。0為無限制。只有當coverType為共存模式才有意義
-mt.coverType = 0   -- (0, 1) = (只能同時保留一個同名狀態, 可以同時保留多個同名狀態)
-mt.keep = false    -- (true, false) = (死亡時保留狀態或可以添加給死亡單位，死亡時移除狀態或無法添加給死亡單位)
-mt.pulse = nil     -- 觸發週期事件(on_pulse)的頻率，單位為秒
-mt.dur = 0         -- 持續時間，單位為秒
-mt.timeout = 0     -- 剩餘時間，單位為秒
-mt.tip = ''        -- buff說明
-mt.isForce = false -- 是否無視暫停
-mt.isPause = false -- 是否為暫停狀態
-mt.on_add = nil    -- 添加事件
-mt.on_remove = nil -- 刪除事件
-mt.on_cover = nil  -- 覆蓋事件
-mt.on_finish = nil -- 結束事件
-mt.invalid = false
+mt.coverGlobal = 0       -- (0, 1) = (名字和來源都相同才視為同名狀態, 只要名字相同就是為同名狀態)
+mt.coverMax = 0          -- 當單位身上有多個同名狀態，最多可以同時生效的狀態數量。0為無限制。只有當coverType為共存模式才有意義
+mt.coverType = 0         -- (0, 1) = (只能同時保留一個同名狀態, 可以同時保留多個同名狀態)
+mt.keep = false          -- (true, false) = (死亡時保留狀態或可以添加給死亡單位，死亡時移除狀態或無法添加給死亡單位)
+mt.pulse = nil           -- 觸發週期事件(on_pulse)的頻率，單位為秒
+mt.dur = 0               -- 持續時間，單位為秒
+mt.timeout = 0           -- 剩餘時間，單位為秒
+mt.val = 0               -- 效果數值，用於某些要添加數值的效果
+mt.tip = ''              -- buff說明
+mt.tipSkill = nil        -- buff說明的相關技能
+mt.isForce = false       -- 是否無視暫停
+mt.isPause = false       -- 是否為暫停狀態
+mt.on_add = nil          -- 添加事件
+mt.on_remove = nil       -- 刪除事件
+mt.on_cover = nil        -- 覆蓋事件
+mt.on_finish = nil       -- 結束事件
+mt.on_stop = nil         -- 中止事件
+mt.target = nil          -- 獲得buff的單位
+mt.invalid = false       -- 是否失效
+mt.timer = nil           -- 關聯計時器
+mt.effect = nil          -- 特效
+mt.model = nil           -- 特效模型
+mt.modelPoint = "origin" -- 特效綁定點，預設為地面
+mt.beginTimestep = nil   -- 新增buff的時間點
 local set, get = {}, {}
 local _CallEvent, _CallSetFn, _InitValue, _HasTimerOrNot, _CreateTimer, _CheckDisable
 
@@ -38,13 +49,12 @@ local _CallEvent, _CallSetFn, _InitValue, _HasTimerOrNot, _CreateTimer, _CheckDi
 -- coverType = 0 -> (true, false) = (當前狀態被移除，新的狀態被添加)
 -- coverType = 1 -> (true, false) = (新的狀態排序到當前狀態之前，新的狀態排序到當前狀態之後)
 function Buff:__call(name)
-    return function(obj)
-        self[name] = obj
-        obj.name = name
-        setmetatable(obj, self)
-        obj.__index = obj
-        return self[name]
-    end
+    local obj = {}
+    self[name] = obj
+    obj.name = name
+    setmetatable(obj, self)
+    obj.__index = obj
+    return self[name]
 end
 
 function mt:add(name, val)
@@ -82,7 +92,9 @@ function mt:Pause()
     end
     if not self.isPause then
         self.isPause = true
-        self.timer:Pause()
+        if self.timer then
+            self.timer:Pause()
+        end
         _CallEvent(self, "on_remove")
     end
 end
@@ -98,10 +110,12 @@ function Unit.__index:AddBuff(name, delay)
         end
 
         -- 初始化數據
+        obj.name = obj.name or name
         obj.target = self
         if not obj.source then
             obj.source = self
         end
+        setmetatable(obj, data)
         if delay then
             Timer(delay, false, function()
                 if obj.invalid then
@@ -121,7 +135,7 @@ function mt:_Add()
         return 
     end
     if self.coverType == 0 then -- 獨佔模式
-        if this = self.target:FindBuff(self.name)
+        local this = self.target:FindBuff(self.name)
         if this then
             -- (true, false) = (新buff覆蓋, 新buff添加失敗)
             if _CallEvent(this, "on_cover", true, self) then
@@ -147,10 +161,10 @@ function mt:_Add()
                 break
             end
             -- true表示插入到當前位置，否則繼續查詢
-            if _CallEvent(this, "on_cover", true, self) then
+            if _CallEvent(this, "on_cover", false, self) then
                 table_insert(list, i, self)
                 -- 如果剛好把原來的buff擠出有效區，則禁用它
-                if self.target.coverMax == i then
+                if this.coverMax == i then
                     _CallEvent(this, "on_remove")
                 end
                 -- 如果自己不在有效區，則禁用
@@ -161,6 +175,12 @@ function mt:_Add()
     end
     self.target.buffs[self] = true
     self:set("剩餘時間", self.dur)
+    if self.model then
+        self.effect = cj.AddSpecialEffectTarget(self.model, self.target.object, self.modelPoint)
+    end
+    if self.tipSkill then
+        self.target:AddAbility(self.tipSkill)
+    end
     self.invalid = false
     _CallEvent(self, 'on_add')
     Game:EventDispatch("單位-獲得狀態", self.target, self)
@@ -190,8 +210,9 @@ set['剩餘時間'] = function(self, timeout)
         return 
     end
     self.timeout = timeout
+    self.beginTimestep = Timer.Clock()
     _HasTimerOrNot(self.timer)
-    self.timer = _CreateTimer(self)
+    _CreateTimer(self)
 end
 
 _HasTimerOrNot = function(timer)
@@ -202,7 +223,7 @@ end
 
 _CreateTimer = function(self)
     if self.pulse then
-        return Timer(self.pulse, self.timeout / self.pulse, function(callback)
+        self.timer = Timer(self.pulse, self.timeout / self.pulse, function(callback)
             if self.target then
                 _CallEvent(self, "on_pulse")
                 if callback.isPeriod < 1 then
@@ -214,19 +235,33 @@ _CreateTimer = function(self)
             end
         end)
     else
-        return Timer(self.timeout, false, function()
+        self.timer = Timer(self.timeout, false, function()
             _CallEvent(self, "on_finish")
             self:Remove()
         end)
     end
 end
 
+function Unit.__index.RemoveBuff(self, name)
+	if not self.buffs then
+		return
+	end
+	local tbl = {}
+	for _, buff in pairs(self.buffs) do
+		if buff.name == name then
+			tbl[#tbl + 1] = buff
+		end
+	end
+	for i = 1, #tbl do
+		tbl[i]:Remove()
+	end
+end
+
 function mt:Remove()
     if self.invalid then
         return 
     end
-    self.invalid = true
-    self.timer:Remove()
+    self.timer:Break()
     Game:EventDispatch("單位-失去狀態", self.target, self)
     -- 移除target身上的buff
     self.target.buffs[self] = nil
@@ -247,6 +282,13 @@ function mt:Remove()
         end
     end
     _CallEvent(self, "on_remove")
+    if self.effect then
+        cj.DestroyEffect(self.effect)
+    end
+    if self.tipSkill then
+        self.target:RemoveAbility(self.tipSkill)
+    end
+    self.invalid = true
     if newBuff then
         newBuff:Resume()
     end
@@ -261,21 +303,23 @@ function mt:Resume()
 end
 
 _CallEvent = function(self, name, default, ...)
+    default = default or false
     if self.invalid then
-        return default or false
+        return default
     end
     if self[name] then
-        return self[name](self, ...) or default or false
+        local result = self[name](self, ...)
+        return result or default
     else
-        return default or false
+        return default
     end
 end
 
 get['剩餘時間'] = function(self)
-    if self.pulse then
-        return self.timer.isPeriod * self.pulse
+    if self.beginTimestep then 
+        return self.timeout + self.beginTimestep - Timer.Clock()
     end
-    return self.timeout
+    return 0
 end
 
 return Buff

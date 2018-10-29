@@ -22,7 +22,6 @@ Hero.type = "Hero"
 -- varaiables
 local _RegDropItemEvent, _RegObtainItemEvent, _RegReviveEvent, _RegSellItemEvent, _RegUseItemEvent, _RegSpellEffectEvent
 local _IsItem, _IsTypeSame, _ChekMultiCast, _GenerateSkillObject, _IsShowMultiCast
-local set, get = {}, {}
 Hero.heroDatas = {}
 
 function Hero.Init()
@@ -31,7 +30,7 @@ function Hero.Init()
         return true
     end)
     local unitIsCasted = War3.CreateTrigger(function()
-        Game:EventDispatch("單位-準備施放技能", Hero(cj.GetTriggerUnit()), cj.GetSpellAbilityId(), Hero(cj.GetSpellTargetUnit()), Point:GetLoc(cj.GetSpellTargetLoc()))
+        Game:EventDispatch("單位-準備施放技能", Unit(cj.GetTriggerUnit()), cj.GetSpellAbilityId(), Unit(cj.GetSpellTargetUnit()), Point:GetLoc(cj.GetSpellTargetLoc()))
         return true
     end)
     Game:Event '單位-準備施放技能' (function(self, hero, id, targetUnit, targetLoc)
@@ -44,8 +43,12 @@ function Hero.Init()
         -- 獲取技能
         for _, skill in pairs(hero.heroDatas[cj.GetUnitName(hero.object)].skillDatas) do
             if skill.orderId == Base.Id2String(id) then
-                _ChekMultiCast(skill, hero)
-                _GenerateSkillObject(skill, hero, targetUnit, targetLoc)
+                if skill.canUse then
+                    _ChekMultiCast(skill, hero)
+                    _GenerateSkillObject(skill, hero, targetUnit, targetLoc)
+                else 
+                    hero:ResetAbility(skill.orderId)
+                end
                 return 
             end
         end
@@ -222,61 +225,20 @@ _RegSpellEffectEvent = function()
 end
 
 function Hero:__call(hero)
-    local obj = self[js.H2I(hero) .. ""] -- TODO: 不確定Hero搜尋不到，會不會去搜尋Unit
+    if not hero then
+        return 
+    end
+    local obj = self[js.H2I(hero) .. ""] -- Hero搜尋不到，會去搜尋Unit
     if not obj then
         obj = Unit(hero)
         obj.eachCasting = {}
+        obj["專長"] = Skill[self.heroDatas[obj.name].specialtyName]
         setmetatable(obj, obj)
         obj.__index = self
         self[js.H2I(hero) .. ""] = obj
-        obj:InitState()
+        obj:InitHeroState()
     end
     return obj
-end
-
-function Hero:InitState()
-    local data = slk.unit[Base.Id2String(cj.GetUnitTypeId(self.object))]
-    if not data then
-        return 
-    end
-    self['技巧'] = 0
-    self['感知'] = 0
-    self['耐力'] = 0
-    self['精神'] = 0
-    self['急速'] = 0
-    self['精通'] = 0
-    self['幸運'] = 0
-    self['靈敏'] = 0
-    self['傷害擴散'] = 0
-    self['減少魔力消耗'] = 0
-    self['固定物理傷害'] = 0
-    self['固定法術傷害'] = 0
-    self['額外物理傷害'] = 0
-    self['額外法術傷害'] = 0
-    self['特殊物理傷害'] = 0
-    self['特殊法術傷害'] = 0
-    self['物理護甲%'] = 0
-    self['法術護甲%'] = 0
-    self['額外物理護甲'] = 0
-    self['額外法術護甲'] = 0
-    self['特殊物理護甲'] = 0
-    self['特殊法術護甲'] = 0
-    self['近戰減傷'] = 0
-    self['遠程減傷'] = 0
-    self['護盾'] = 0
-    for _, name in ipairs(Hero._RACE) do
-        self[name .. '增傷'] = 0
-        self[name .. '減傷'] = 0
-        self['對' .. name .. '降傷'] = 0
-    end
-    for _, name in ipairs(Hero._LEVEL) do
-        self[name .. '增傷'] = 0
-        self[name .. '減傷'] = 0
-        self['對' .. name .. '降傷'] = 0
-    end
-    for _, name in ipairs(Hero._ELEMENTS) do
-        self[name .. '元素增傷'] = 0
-    end
 end
 
 function Hero.Create(name)
@@ -295,10 +257,6 @@ function Hero.Create(name)
         end
         return obj
     end
-end
-
-get['施法速度'] = function(self)
-    return 2 * self:get "急速" / (self:get "急速" + 100 + 50 * self.level)
 end
 
 return Hero

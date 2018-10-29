@@ -10,9 +10,13 @@ function Map.Init()
     require 'heros.init'
     -- 物品核心系統初始化
     require 'Item.init'
-    -- 遊戲初始化
+    -- 增益效果初始化
+    require 'Buff.init'
+    -- 技能系統初始化
     Skill.Init()
+    -- 戰鬥系統初始化
     Combat:Init()
+    -- 註冊單位
     _RegUnits()
 end
 

@@ -8,6 +8,7 @@ local Pet = require 'pet'
 
 local mt = Skill '召喚水元素' {
     orderId = 'A00V',
+    disBlp = 'A00Z',
     area = 300,
     hotkey = "R",
     dur = 20,
@@ -35,6 +36,7 @@ function mt:on_cast_shot()
             mustHit = true,
             elementType = "水",
         }
+        self.owner:get "專長":EventDispatch("擊中單位", false, self.owner, Unit(group.units[i]))
     end)
     g:Remove()
 end

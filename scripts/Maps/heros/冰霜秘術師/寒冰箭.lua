@@ -2,13 +2,14 @@ local Skill = require 'skill'
 local cj = require 'jass.common'
 local Group = require 'group'
 local Damage = require 'damage'
-local Hero = require 'hero'
+local Unit = require 'unit'
 local Missile = require 'missile'
 local Point = require 'point'
 local js = require 'jass_tool'
 
 local mt = Skill '寒冰箭' {
     orderId = 'A000',
+    disBlp = 'A00W',
     area = 100,
     range = 800,
     damage = {{10, 15}, {20, 25}},
@@ -41,12 +42,13 @@ function mt:on_cast_shot()
         execution = function(group, i)
             Damage{
                 source = self.owner,
-                target = Hero(group.units[i]),
+                target = Unit(group.units[i]),
                 type = "法術",
                 name = "寒冰箭",
                 mustHit = true,
                 elementType = "水",
             }
+            self.owner:get "專長":EventDispatch("擊中單位", false, self.owner, Unit(group.units[i]))
             group:Ignore(group.units[i])
             js.Sound("gg_snd_jaina_blizzard_impact01")
         end,

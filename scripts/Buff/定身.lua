@@ -1,25 +1,11 @@
-local Buff = require 'buff'
+local cj = require 'jass.common'
 
-local mt = Buff "定身" {
-    pulse = 0.1,
-}
+local mt = require 'buff' "定身"
 
-function mt:on_set(timeout, at_end)
-    _ChangeTurnRate(self.owner)
-    self.timer = Timer(self.pulse, timeout / self.pulse, function(callback)
-        if at_end or callback.isPeriod < 1 or self.timer.invalid then
-            _ReductTurnRate(self.owner, turnRate)
-            self.timer = nil
-        end
-    end)
+function mt:on_add()
+    cj.SetUnitPropWindow(self.target.object, 0)
 end
 
-_ChangeTurnRate = function(hero)
-    japi.EXSetUnitMoveType(hero.object, 0x01)
-    hero:set("轉身速度", 0)
-end
-
-_ReductTurnRate = function(hero)
-    japi.EXSetUnitMoveType(hero.object, 0x02)
-    hero:set("轉身速度", mt._TURN_RATE)
+function mt:on_remove()
+    cj.SetUnitPropWindow(self.target.object, cj.GetUnitDefaultPropWindow(self.target.object))
 end

@@ -1,0 +1,7 @@
+require 'Buff.定身'
+require 'Buff.暈眩'
+require 'Buff.減速'
+require 'Buff.減攻速'
+require 'Buff.沉默'
+require 'Buff.繳械'
+require 'Buff.束縛'

@@ -2,11 +2,12 @@ local Skill = require 'skill'
 local cj = require 'jass.common'
 local Group = require 'group'
 local Damage = require 'damage'
-local Hero = require 'hero'
+local Unit = require 'unit'
 local js = require 'jass_tool'
 
 local mt = Skill '暴風雪' {
     orderId = 'A00H',
+    disBlp = 'A00X',
     area = 200,
     hotkey = "w",
     damage = {{18, 24}},
@@ -23,12 +24,13 @@ function mt:on_cast_channel()
     g:Loop(function(group, i)
         Damage{
             source = self.owner,
-            target = Hero(group.units[i]),
+            target = Unit(group.units[i]),
             type = "法術",
             name = "暴風雪",
             mustHit = true,
             elementType = "水",
         }
+        self.owner:get "專長":EventDispatch("擊中單位", false, self.owner, Unit(group.units[i]))
         js.Sound("gg_snd_jaina_blizzard_impact01")
     end)
 end

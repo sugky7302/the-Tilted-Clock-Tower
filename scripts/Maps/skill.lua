@@ -23,6 +23,8 @@ mt.maxLevel = 5         -- 最高等級
 mt.proficiency = 0      -- 當前熟練度
 mt.proficiencyNeed = 0  -- 所需熟練度
 mt.tip = ""             -- 技能說明
+mt.disBlp = nil         -- 暗圖標
+mt.canUse = true        -- 判斷能否使用
 mt.castPulse = 1        -- 施法計時器間隔
 mt.castStartTime = 0    -- 施法開始
 mt.castChannelTime = 0  -- 施法引導
@@ -44,7 +46,15 @@ mt.breakCastShot = 0
 mt.breakCastFinish = 1
 
 -- variables
-local _CallEvent, _ChangeTurnRate, _CreateDummy, _ReductTurnRate, _ZoomDummy, _ResetAbility, _CheckSkillOrder, _SetProficiency
+local _ChangeTurnRate, _CreateDummy, _ReductTurnRate, _ZoomDummy, _ResetAbility, _CheckSkillOrder, _SetProficiency
+local _EventName = {
+    ['施法開始'] = 'on_cast_start',
+    ['施法引導'] = 'on_cast_channel',
+    ['施法出手'] = 'on_cast_shot',
+    ['施法完成'] = 'on_cast_finish',
+    ['擊中單位'] = 'on_hit',
+    ['造成傷害'] = 'on_deal_damage',
+}
 
 function Skill.Init()
     local Game = require 'game'
@@ -83,10 +93,15 @@ function Skill:__call(name)
         obj.order = slk.ability[obj.orderId].Order
         obj.order = (obj.order == "channel") and slk.ability[obj.orderId].DataF
         obj.cool = slk.ability[obj.orderId].Cool
+        obj.blp = slk.ability[obj.orderId].Art
         setmetatable(obj, self)
         obj.__index = obj
         return self[name]
     end
+end
+
+function Skill:__tostring()
+    return self.name
 end
 
 function mt:New(hero, targetUnit, targetLoc)
@@ -119,14 +134,14 @@ function mt:_cast_start()
             self:RootCast(self.castStartTime)
         end
         -- 調用動作
-        _CallEvent(self, "on_cast_start")
+        self:EventDispatch "施法開始"
         -- 看能不能被打斷
         self.castStartTimer = Timer(self.castStartTime, false, function(callback)
             self:_cast_channel()
         end)
         
     else
-        _CallEvent(self, "on_cast_start")
+        self:EventDispatch "施法開始"
         self:_cast_channel()
     end
 end
@@ -139,13 +154,13 @@ function mt:_cast_channel()
             self:RootCast(self.castChannelTime)
         end
         self.castChannelTimer = Timer(self.castPulse, self.castChannelTime / self.castPulse, function(callback)
-            _CallEvent(self, "on_cast_channel")
+            self:EventDispatch "施法引導"
             if callback.isPeriod == 0 then
                 self:_cast_shot()
             end
         end)
     else
-        _CallEvent(self, "on_cast_channel")
+        self:EventDispatch "施法引導"
         self:_cast_shot()
     end
 end
@@ -159,13 +174,13 @@ function mt:_cast_shot()
         end
         -- 看能不能被打斷
         self.castShotTimer = Timer(self.castPulse, self.castShotTime / self.castPulse, function(callback)
-            _CallEvent(self, "on_cast_shot")
+            self:EventDispatch "施法出手"
             if callback.isPeriod < 1 then
                 self:_cast_finish()
             end
         end)
     else
-        _CallEvent(self, "on_cast_shot")
+        self:EventDispatch "施法出手"
         self:_cast_finish()
     end
 end
@@ -204,25 +219,26 @@ _ReductTurnRate = function(hero, turnRate)
     hero:set("轉身速度", turnRate)
 end
 
-_CallEvent = function(self, name, force)
+function mt:_cast_finish()
+    self:EventDispatch "施法完成"
+    _SetProficiency(self)
+    self:Remove()
+    self:MultiCast()
+end
+
+function mt:EventDispatch(name, force, ...)
     force = force or false
     if not force then
         if self.invalid then
             return false
         end
     end
+    name = _EventName[name]
     if self[name] then
-        self[name](self)
+        self[name](self, ...)
     else
         return false
     end
-end
-
-function mt:_cast_finish()
-    _CallEvent(self, "on_cast_finish")
-    _SetProficiency(self)
-    self:Remove()
-    self:MultiCast()
 end
 
 _SetProficiency = function(self)
