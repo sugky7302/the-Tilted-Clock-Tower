@@ -46,7 +46,6 @@ function mt:on_cast_channel()
         offset:Remove()
         p:Remove()
     end
-    js.TimeEffect(cj.AddSpecialEffect("war3mapImported\\186.mdx", self.targetLoc.x, self.targetLoc.y), 1.5)
 end 
 
 function mt:on_cast_shot()
@@ -60,7 +59,6 @@ function mt:on_cast_shot()
                 target = Unit(group.units[i]),
                 type = "法術",
                 name = "霜之環",
-                mustHit = true,
                 elementType = "水",
             }
             Unit(group.units[i]):AddBuff "定身"

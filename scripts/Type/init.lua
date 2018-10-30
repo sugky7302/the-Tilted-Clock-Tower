@@ -12,3 +12,6 @@ require 'hero'.Init()
 
 -- 初始化裝備
 require 'equipment'.Init()
+
+-- 初始化天賦
+require 'talent'.Init()

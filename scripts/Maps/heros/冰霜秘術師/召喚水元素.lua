@@ -21,7 +21,7 @@ local mt = Skill '召喚水元素' {
 
 function mt:on_cast_shot()
     js.Sound("gg_snd_jaina_water_elemental_birth")
-    js.TimeEffect(cj.AddSpecialEffect("war3mapImported\\188.mdx", self.targetLoc.x, self.targetLoc.y), 0.5)
+    js.TimeEffect(cj.AddSpecialEffect("war3mapImported\\186.mdx", self.targetLoc.x, self.targetLoc.y), 0.5)
     local dummy = Pet:New('hwat', self.owner, self.targetLoc, self.dur)
     dummy:set("最大物理攻擊力", self.owner:get "最大物理攻擊力" * 0.5)
     dummy:set("最小物理攻擊力", self.owner:get "最小物理攻擊力" * 0.5)
@@ -33,7 +33,6 @@ function mt:on_cast_shot()
             target = Unit(group.units[i]),
             type = "法術",
             name = "召喚水元素",
-            mustHit = true,
             elementType = "水",
         }
         self.owner:get "專長":EventDispatch("擊中單位", false, self.owner, Unit(group.units[i]))

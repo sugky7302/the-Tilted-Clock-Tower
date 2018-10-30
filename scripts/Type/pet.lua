@@ -2,6 +2,7 @@ local setmetatable = setmetatable
 local js = require 'jass_tool'
 local cj = require 'jass.common'
 local Unit = require 'unit'
+local Game = require 'game'
 
 local Pet = {}
 setmetatable(Pet, Pet)
@@ -29,6 +30,7 @@ function Pet:New(id, owner, loc, dur)
     setmetatable(obj, obj)
     obj.__index = self
     self[js.H2I(pet) .. ""] = obj
+    Game:EventDispatch("單位-創建", pet)
     return obj
 end
 

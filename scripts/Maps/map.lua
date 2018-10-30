@@ -12,6 +12,8 @@ function Map.Init()
     require 'Item.init'
     -- 增益效果初始化
     require 'Buff.init'
+    -- 天賦初始化
+    require 'Talent.init'
     -- 技能系統初始化
     Skill.Init()
     -- 戰鬥系統初始化

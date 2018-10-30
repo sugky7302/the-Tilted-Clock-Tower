@@ -53,9 +53,7 @@ end
 
 function mt:Loop(action)
     for i = 1, self.units:GetSize() do
-        if not self.ignoreUnits[js.H2I(self.units[i]) .. ""] then
-            action(self, i)
-        end
+        action(self, i)
     end
 end
 
@@ -68,7 +66,7 @@ function mt:EnumUnitsInRange(x, y, r, cnd)
     cj.GroupEnumUnitsInRange(temp, x, y, r+10, nil) -- 選取比原先範圍大一些的區域，好讓有些處在範圍邊緣的單位能夠被正確選取
     local u = cj.FirstOfGroup(temp)
     while js.H2I(u) ~= 0 do
-    if cnd(u, self.filter) then
+    if cnd(u, self.filter) and (not self.ignoreUnits[js.H2I(u) .. ""]) then
         self:AddUnit(u)
     end
     cj.GroupRemoveUnit(temp, u)

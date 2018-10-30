@@ -66,15 +66,17 @@ _SetTrace = function(self)
         if _At_EndCondition(self, currentDistance, hit) then
             self:Remove()
         end
+        self.unitDetermined:Clear() -- 清空單位組，不然先前保存的單位會一直存留，導致判定會失準
     end)
 end
 
 _At_EndCondition = function(self, currentDistance, hit)
-    if type(self.hitMode) == "string" then
-        return currentDistance >= self.maxDistance
-    else
-        return hit >= self.hitMode
+    if currentDistance >= self.maxDistance then
+        return true
+    elseif type(self.hitMode) == "number" and hit >= self.hitMode then
+        return true
     end
+    return false
 end
 
 function mt:Remove()

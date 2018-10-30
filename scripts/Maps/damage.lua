@@ -180,7 +180,7 @@ end
 
 _DamageDetermine = function(obj, atk, def)
     -- 命中與閃避判定
-    if obj.mustHit or _IsHitOrDodge(obj.source:get "命中", obj.target:get "閃避") then
+    if _IsHitOrDodge(obj.source:get "命中", obj.target:get "閃避") then
         -- 暴擊與韌性判定
         local criProc = _DeterminCriOrACT(obj.source:get(obj.type .. "暴擊率"), obj.target:get(obj.type .. "韌性"), obj.source:get "等級", obj.target:get "等級")
         if _IsPntOrBlk(obj.source:get(obj.type .. "穿透"), obj.target:get(obj.type .. "格擋"), atk, def) then

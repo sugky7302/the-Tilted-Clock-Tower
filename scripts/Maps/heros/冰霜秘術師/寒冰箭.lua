@@ -6,6 +6,7 @@ local Unit = require 'unit'
 local Missile = require 'missile'
 local Point = require 'point'
 local js = require 'jass_tool'
+local Talent = require 'talent'
 
 local mt = Skill '寒冰箭' {
     orderId = 'A000',
@@ -38,19 +39,23 @@ function mt:on_cast_shot()
         targetPoint = self.targetLoc,
         maxDistance = self.range,
         traceMode = "StraightLine",
-        hitMode = 1,
+        hitMode = self.owner:EventDispatch "寒冰碎片" ("天賦-呼叫") or 1,
         execution = function(group, i)
             Damage{
                 source = self.owner,
                 target = Unit(group.units[i]),
                 type = "法術",
                 name = "寒冰箭",
-                mustHit = true,
                 elementType = "水",
             }
             self.owner:get "專長":EventDispatch("擊中單位", false, self.owner, Unit(group.units[i]))
+            self.owner:EventDispatch "冰槍術" "天賦-添加"
             group:Ignore(group.units[i])
             js.Sound("gg_snd_jaina_blizzard_impact01")
         end,
     }
+end
+
+function mt:on_cast_finish()
+    self.owner:EventDispatch "冰槍術" "天賦-呼叫"
 end

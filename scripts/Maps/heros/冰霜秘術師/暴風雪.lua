@@ -27,7 +27,6 @@ function mt:on_cast_channel()
             target = Unit(group.units[i]),
             type = "法術",
             name = "暴風雪",
-            mustHit = true,
             elementType = "水",
         }
         self.owner:get "專長":EventDispatch("擊中單位", false, self.owner, Unit(group.units[i]))

@@ -73,16 +73,19 @@ end
 
 function mt:AddAbility(id, lv)
     lv = lv or 1
-    cj.UnitAddAbility(self.object, Base.String2Id(id))
-    cj.SetUnitAbilityLevel(self.object, Base.String2Id(id), lv)
+    id = (type(id) == "number") and id or Base.String2Id(id)
+    cj.UnitAddAbility(self.object, id)
+    cj.SetUnitAbilityLevel(self.object, id, lv)
 end
 
 function mt:RemoveAbility(id)
-    cj.UnitRemoveAbility(self.object, Base.String2Id(id))
+    id = (type(id) == "number") and id or Base.String2Id(id)
+    cj.UnitRemoveAbility(self.object, id)
 end
 
 function mt:HasAbility(id)
-    return cj.GetUnitAbilityLevel(self.object, Base.String2Id(id)) > 0
+    id = (type(id) == "number") and id or Base.String2Id(id)
+    return cj.GetUnitAbilityLevel(self.object, id) > 0
 end
 
 function mt:ResetAbility(id)
@@ -95,11 +98,13 @@ function Unit.Create(player, id, loc, facing)
 end
 
 function mt:AbilityDisable(id)
-    cj.SetPlayerAbilityAvailable(self.owner.object, Base.String2Id(id), false)
+    id = (type(id) == "number") and id or Base.String2Id(id)
+    cj.SetPlayerAbilityAvailable(self.owner.object, id, false)
 end
 
 function mt:AbilityEnable(id)
-    cj.SetPlayerAbilityAvailable(self.owner.object, Base.String2Id(id), true)
+    id = (type(id) == "number") and id or Base.String2Id(id)
+    cj.SetPlayerAbilityAvailable(self.owner.object, id, true)
 end
 
 return Unit

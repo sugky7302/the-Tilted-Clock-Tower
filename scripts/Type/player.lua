@@ -72,11 +72,11 @@ get['黃金'] = function(self)
     return cj.GetPlayerState(self.object, cj.PLAYER_STATE_RESOURCE_GOLD)
 end
 
-set['木頭'] = function(self, val)
+set['天賦點'] = function(self, val)
     cj.SetPlayerState(self.object, cj.PLAYER_STATE_RESOURCE_LUMBER, val)
 end
 
-get['木頭'] = function(self)
+get['天賦點'] = function(self)
     return cj.GetPlayerState(self.object, cj.PLAYER_STATE_RESOURCE_LUMBER)
 end
 

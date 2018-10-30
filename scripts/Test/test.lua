@@ -17,6 +17,7 @@ function Test:__call()
     -- self.Damage()
     -- self.Enchanted()
     -- self.Combine()
+    self.Player()
 end
 
 function Test.Add()
@@ -141,6 +142,12 @@ function Test.Combine()
     for i = 1, 5 do
         Item.Create('asbl', p)
     end
+end
+
+function Test.Player()
+    local Player = require 'player'
+    local cj = require 'jass.common'
+    Player(cj.Player(0)):set("天賦點", 2)
 end
 
 return Test

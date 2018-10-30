@@ -42,7 +42,8 @@ mt.model = nil           -- 特效模型
 mt.modelPoint = "origin" -- 特效綁定點，預設為地面
 mt.beginTimestep = nil   -- 新增buff的時間點
 local set, get = {}, {}
-local _CallEvent, _CallSetFn, _InitValue, _HasTimerOrNot, _CreateTimer, _CheckDisable
+local _CallEvent, _CallSetFn, _InitValue, _HasTimerOrNot, _CreateTimer, _CheckDisable, _Delay, _GetBuffList 
+local _AddEffect, _RemoveEffect
 
 -- 事件有on_add, on_cover, on_finish, on_pulse, on_remove
 -- on_cover根據buff的coverType做不同處理
@@ -117,17 +118,21 @@ function Unit.__index:AddBuff(name, delay)
         end
         setmetatable(obj, data)
         if delay then
-            Timer(delay, false, function()
-                if obj.invalid then
-                    return 
-                end
-                obj:_Add()
-            end)
+            _Delay(obj, delay)
             return obj
         else
             return obj:_Add()
         end
     end
+end
+
+_Delay = function(obj, delay)
+    Timer(delay, false, function()
+        if obj.invalid then
+            return 
+        end
+        obj:_Add()
+    end)
 end
 
 function mt:_Add()
@@ -145,13 +150,7 @@ function mt:_Add()
             end
         end
     elseif self.coverType == 1 then -- 共存模式
-        if not self.target.buffList then
-            self.target.buffList = {}
-        end
-        if not self.target.buffList[self.name] then
-            self.target.buffList[self.name] = {}
-        end
-        local list = self.target.buffList[self.name]
+        local list = _GetBuffList(self)
         for i = 1, #list + 1 do 
             local this = list[i]
             if not this then
@@ -175,12 +174,7 @@ function mt:_Add()
     end
     self.target.buffs[self] = true
     self:set("剩餘時間", self.dur)
-    if self.model then
-        self.effect = cj.AddSpecialEffectTarget(self.model, self.target.object, self.modelPoint)
-    end
-    if self.tipSkill then
-        self.target:AddAbility(self.tipSkill)
-    end
+    _AddEffect(self)
     self.invalid = false
     _CallEvent(self, 'on_add')
     Game:EventDispatch("單位-獲得狀態", self.target, self)
@@ -197,6 +191,16 @@ function Unit.__index:FindBuff(name)
         end
     end
     return nil
+end
+
+_GetBuffList = function(self)
+    if not self.target.buffList then
+        self.target.buffList = {}
+    end
+    if not self.target.buffList[self.name] then
+        self.target.buffList[self.name] = {}
+    end
+    return self.target.buffList[self.name]
 end
 
 _CheckDisable = function(self, i)
@@ -242,6 +246,15 @@ _CreateTimer = function(self)
     end
 end
 
+_AddEffect = function(self)
+    if self.model then
+        self.effect = cj.AddSpecialEffectTarget(self.model, self.target.object, self.modelPoint)
+    end
+    if self.tipSkill then
+        self.target:AddAbility(self.tipSkill)
+    end
+end
+
 function Unit.__index.RemoveBuff(self, name)
 	if not self.buffs then
 		return
@@ -282,15 +295,19 @@ function mt:Remove()
         end
     end
     _CallEvent(self, "on_remove")
+    _RemoveEffect(self)
+    self.invalid = true
+    if newBuff then
+        newBuff:Resume()
+    end
+end
+
+_RemoveEffect = function(self)
     if self.effect then
         cj.DestroyEffect(self.effect)
     end
     if self.tipSkill then
         self.target:RemoveAbility(self.tipSkill)
-    end
-    self.invalid = true
-    if newBuff then
-        newBuff:Resume()
     end
 end
 
