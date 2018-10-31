@@ -32,10 +32,11 @@ function Missile:__call(obj)
     obj.__index = obj
     obj.missile = _GetMissile(obj)
     obj.unitDetermined = Group(obj.missile)
-    obj.startingHeight = _GetStartingHeight(obj.startingPoint)
+    obj.startingHeight = obj.startingHeight or _GetStartingHeight(obj.startingPoint)
     obj.traceMode = (type(obj.traceMode) == 'string') and mt.traceLib[obj.traceMode] or obj.traceMode
-    obj.angle = Point.Rad(obj.startingPoint, obj.targetPoint)
-    MissileTool.SetHeight(obj, 0)
+    obj.angle = obj.angle or Point.Rad(obj.startingPoint, obj.targetPoint)
+    obj.SetHeight = obj.SetHeight or MissileTool.SetHeight
+    obj:SetHeight(0)
     _SetTrace(obj)
     return obj
 end
@@ -58,6 +59,7 @@ _SetTrace = function(self)
     self.timer = Timer(0.03, true, function()
         currentDistance = currentDistance + _MOTIVATION
         self:traceMode() -- 調用軌跡函數，設定投射物軌跡
+        self:SetHeight(currentDistance)
         self.unitDetermined:EnumUnitsInRange(cj.GetUnitX(self.missile), cj.GetUnitY(self.missile), 50., Group.IsEnemy)
         if not self.unitDetermined:IsEmpty() then
             hit = hit + 1
@@ -80,10 +82,15 @@ _At_EndCondition = function(self, currentDistance, hit)
 end
 
 function mt:Remove()
-    self.timer:Remove()
+    self.timer:Break()
     js.RemoveUnit(self.missile)
     self.missile = nil
-    self.targetPoint:Remove()
+    if self.startingPoint then
+        self.startingPoint:Remove()
+    end
+    if self.targetPoint then
+        self.targetPoint:Remove()
+    end
     self.unitDetermined:Remove()
     self = nil
 end

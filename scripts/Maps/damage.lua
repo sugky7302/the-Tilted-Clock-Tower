@@ -6,6 +6,7 @@ local TextToAttachUnit = require 'text_to_attach_unit'
 local Point = require 'point'
 local MathLib = require 'math_lib'
 local Skill = require 'skill'
+local Game = require 'game'
 
 local Damage = {}
 setmetatable(Damage, Damage)
@@ -67,13 +68,18 @@ local _ELEMENT_TYPE = {
 }
 
 -- variables 
-local _ComputeAttack, _ComputeDamageDefense, _DealDamage, _TransHitAndDodge, _IsHitOrDodge
+local _SetDamageType, _ComputeAttack, _ComputeDamageDefense, _DealDamage, _TransHitAndDodge, _IsHitOrDodge
 local _IsCriOrACT, _TransCriAndACT, _DeterminCriOrACT, _IsPntOrBlk, _TransPntOrBlk
-local _GetIndependentBonusInAtk, _GetWeakness, _GetEAtk, _GetTalentsBonusInAtk, _GetBuffInAtk
-local _GetTalentsBonusInDef, _GetBuffInDef, _GetIndependentBonusInDef, _GetAtk, _GetMatk, _GetDef, _GetMdef
+local _GetIndependentBonusInAtk, _GetWeakness, _GetEAtk, _GetTalentsBonusInAtk, _GetBuffInAtk, _GetTalentsBonusInMatk, _GetBuffInMatk
+local _GetTalentsBonusInDef, _GetBuffInDef, _GetIndependentBonusInDef, _GetAtk, _GetMatk, _GetDef, _GetMdef, _GetTalentsBonusInMdef, _GetBuffInMdef
 
 -- obj 含 source(Hero type), target(Hero type), type, name, elementType, ratio(混合傷害的物法比例)
 function Damage:__call(obj)
+    if obj.source == obj.target then -- _DealDamge的扣血可能會造成damage，來源 = 目標即可排除
+        return 
+    end
+
+    _SetDamageType(obj)
     local atk, def = _ComputeAttack(obj), _ComputeDefense(obj)
     local dmg, textSize = _DamageDetermine(obj, atk, def)
     if type(dmg) ~= "string" then
@@ -82,52 +88,45 @@ function Damage:__call(obj)
             _DealDamage(obj.target, dmg)
         end
         obj.target:set("護盾", math.max(0, -dmg))
+        obj.source:set("最後造成的傷害", dmg)
     end
     _Show(obj.target.object, dmg, obj.type, textSize)
+    obj.target.isSpellDamaged = false -- 關閉判定，以免傷害函數無法執行
+    Game:EventDispatch("天賦-傷害結算", obj)
+end
+
+_SetDamageType = function(self)
+    if self.type == "法術" then
+        self.target.isSpellDamaged = true
+    end  
 end
 
 _ComputeAttack = function(obj)
     local atk, extraDmg
     if obj.type == "物理" then
-        atk = _GetAtk(obj.source, obj.target)
+        atk = _GetAtk(obj.source, obj.target, _GetEAtk(obj))
         extraDmg = obj.source:get "特殊物理傷害"
     elseif obj.type == "法術" then
-        local skill = Skill[obj.name]
-        atk = _GetMatk(obj.source, skill.damage[skill.level], skill.proc)
+        atk = _GetMatk(obj.source, obj.target, Skill[obj.name], _GetEAtk(obj))
         extraDmg = obj.source:get "特殊法術傷害"
     elseif obj.type == "混合" then
-        local skill = Skill[obj.name]
-        atk = obj.ratio[1] * _GetAtk(obj.source, obj.target) + obj.ratio[2] * _GetMatk(obj.source, skill.damage[skill.level], skill.proc)
+        local eAtk = _GetEAtk(obj)
+        atk = obj.ratio[1] * _GetAtk(obj.source, obj.target, eAtk) + obj.ratio[2] * _GetMatk(obj.source, obj.target, Skill[obj.name], eAtk)
         extraDmg = obj.ratio[1] * obj.source:get "特殊物理傷害" + obj.ratio[2] * obj.source:get "特殊法術傷害"
     end
-    local eAtk = _GetEAtk(obj)
-    local part1 = (atk + eAtk) * _GetTalentsBonusInAtk(obj.source) * _GetBuffInAtk(obj.source, obj.target)
     local part2 = obj.source:get(obj.target:get "種族" .. "增傷")  * obj.source:get(obj.target:get "階級" .. "增傷") * obj.source:get "精通" 
     local part3 = obj.target:get("對" .. obj.source:get "種族" .. "降傷")  * obj.target:get("對" .. obj.source:get "階級" .. "降傷")
-    return part1 * (1 + part2) * (1 + part3) * _GetIndependentBonusInAtk(obj.source) + extraDmg
-end
-
-_GetAtk = function(source, target)
-    local basic = MathLib.Random(source:get "最小物理攻擊力", source:get "最大物理攻擊力") + source:get "增強物理攻擊力"
-    return (basic + source:get "固定傷害") * _BODY_TYPE[source:get "體型"][target:get "體型"] + source:get "額外物理傷害"
-end
-
-_GetMatk = function(source, basicDamage, proc)
-    if type(basicDamage) == "table" then
-        basicDamage = MathLib.Random(basicDamage[1], basicDamage[2])
-    end
-    return basicDamage + proc * source:get "法術攻擊力" + source:get "額外法術傷害"
-end
-
-_GetIndependentBonusInAtk = function(source)
-    -- local part1 = source:get "元素戒"
-    -- local part2 = source:get "空虛之戒"
-    -- return part1 * part2
-    return 1
+    return atk * (1 + part2) * (1 + part3) * _GetIndependentBonusInAtk(obj.source) + extraDmg
 end
 
 _GetEAtk = function(obj)
     return obj.source:get "元素傷害" * (1 - obj.target:get "元素抗性") * _ELEMENT_TYPE[obj.elementType][obj.target:get "元素屬性"]
+end
+
+_GetAtk = function(source, target, eAtk)
+    local basic = MathLib.Random(source:get "最小物理攻擊力", source:get "最大物理攻擊力") + source:get "增強物理攻擊力"
+    local atk = (basic + source:get "固定傷害") * _BODY_TYPE[source:get "體型"][target:get "體型"] + source:get "額外物理傷害"
+    return (atk + eAtk) * _GetTalentsBonusInAtk(source) * _GetBuffInAtk(source, target)
 end
 
 _GetTalentsBonusInAtk = function(source)
@@ -135,9 +134,33 @@ _GetTalentsBonusInAtk = function(source)
 end
 
 _GetBuffInAtk = function(source, target)
+    return 1
+end
+
+_GetMatk = function(source, target, skill, eAtk)
+    local basicDamage = skill.damage[skill.level]
+    if type(basicDamage) == "table" then
+        basicDamage = MathLib.Random(basicDamage[1], basicDamage[2])
+    end
+    local matk = basicDamage + skill.proc * source:get "法術攻擊力" + source:get "額外法術傷害"
+    return (matk + eAtk) * _GetTalentsBonusInMatk(source) * _GetBuffInMatk(source, target)
+end
+
+_GetTalentsBonusInMatk = function(source)
+    return 1
+end
+
+_GetBuffInMatk = function(source, target)
     local bonus = 1
-    bonus = bonus + source:get("專長加成")
+    bonus = bonus + source:get("霜寒刺骨")
     return bonus
+end
+
+_GetIndependentBonusInAtk = function(source)
+    -- local part1 = source:get "元素戒"
+    -- local part2 = source:get "空虛之戒"
+    -- return part1 * part2
+    return 1
 end
 
 _ComputeDefense = function(obj)
@@ -152,18 +175,15 @@ _ComputeDefense = function(obj)
         def = obj.ratio[1] * _GetDef(obj.source, obj.target) + obj.ratio[2] * _GetMdef(obj.target)
         extraAmr = obj.ratio[1] * obj.target:get("特殊物理護甲") + obj.ratio[2] * obj.target:get("特殊法術護甲")
     end
-    local part1 = def * _GetTalentsBonusInDef(obj.source) * _GetBuffInDef(obj.source, obj.target) * _GetIndependentBonusInDef(obj.source)
+    local part1 = def * _GetIndependentBonusInDef(obj.source)
     local part2 = obj.target:get(obj.source:get "種族" .. "減傷")  * obj.target:get(obj.source:get "階級" .. "減傷")
     local part3 = obj.source:get("對" .. obj.target:get "種族" .. "降傷")  * obj.source:get("對" .. obj.target:get "階級" .. "降傷")
     return part1 * (1 + part2) * (1 + part3) + extraAmr
 end
 
 _GetDef = function(source, target)
-    return target:get "物理護甲" * _BODY_TYPE[source:get "體型"][target:get "體型"] + target:get("額外物理護甲")
-end
-
-_GetMdef = function(target)
-    return target:get "法術護甲" + target:get("額外法術護甲")
+    local def = target:get "物理護甲" * _BODY_TYPE[source:get "體型"][target:get "體型"] + target:get("額外物理護甲")
+    return def * _GetTalentsBonusInDef(source) * _GetBuffInDef(source, target)
 end
 
 _GetTalentsBonusInDef = function(source)
@@ -171,6 +191,19 @@ _GetTalentsBonusInDef = function(source)
 end
 
 _GetBuffInDef = function(source, target)
+    return 1
+end
+
+_GetMdef = function(target)
+    local mdef = target:get "法術護甲" + target:get("額外法術護甲")
+    return mdef * _GetTalentsBonusInMdef(source) * _GetBuffInMdef(source, target)
+end
+
+_GetTalentsBonusInMdef = function(source)
+    return 1
+end
+
+_GetBuffInMdef = function(source, target)
     return 1
 end
 

@@ -110,7 +110,7 @@ function Attribute:InitHeroState()
 end
 
 function Attribute:add(name, value)
-    local v1, v2 = 0, 0
+    local v1, v2 = 0, nil
     -- 判斷是否為定值
 	if name:sub(-1, -1) == '%' then
 		v2 = value
@@ -151,7 +151,7 @@ function Attribute:add(name, value)
 end
 
 function Attribute:set(name, value)
-    local v1, v2 = 0, 0
+    local v1, v2 = 0, nil
     -- 判斷是否為定值
 	if name:sub(-1, -1) == '%' then
 		v2 = value

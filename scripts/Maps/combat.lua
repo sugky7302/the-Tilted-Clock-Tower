@@ -14,11 +14,14 @@ Combat.__index = mt
 function Combat:Init()
     local unitIsAttacked = War3.CreateTrigger(function()
         local source, target = cj.GetEventDamageSource(), cj.GetTriggerUnit()
-        Game:EventDispatch("單位-顯示傷害", source, target)
+        japi.EXSetEventDamage(0)
+        if Unit(source).isSpellDamaged == false then
+            Game:EventDispatch("單位-造成傷害", source, target)
+            Game:EventDispatch("天賦-傷害完成", source, target)
+        end
         return true
     end)
-    Game:Event "單位-顯示傷害" (function(self, source, target)
-        japi.EXSetEventDamage(0)
+    Game:Event "單位-造成傷害" (function(self, source, target)
         Damage{
             source = Unit(source),
             target = Unit(target),

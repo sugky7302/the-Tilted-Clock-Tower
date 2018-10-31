@@ -9,6 +9,7 @@ local mt = Skill '暴風雪' {
     orderId = 'A00H',
     disBlp = 'A00X',
     area = 200,
+    range = 600,
     hotkey = "w",
     damage = {{18, 24}},
     proc = 0.5,

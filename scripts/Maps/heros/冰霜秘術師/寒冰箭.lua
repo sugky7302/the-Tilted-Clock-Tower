@@ -39,7 +39,7 @@ function mt:on_cast_shot()
         targetPoint = self.targetLoc,
         maxDistance = self.range,
         traceMode = "StraightLine",
-        hitMode = self.owner:EventDispatch "寒冰碎片" ("天賦-呼叫") or 1,
+        hitMode = self.owner:TalentDispatch("冰晶裂片", "呼叫") or 1,
         execution = function(group, i)
             Damage{
                 source = self.owner,
@@ -49,13 +49,14 @@ function mt:on_cast_shot()
                 elementType = "水",
             }
             self.owner:get "專長":EventDispatch("擊中單位", false, self.owner, Unit(group.units[i]))
-            self.owner:EventDispatch "冰槍術" "天賦-添加"
+            self.owner:TalentDispatch("冰霜長矛", "添加")
             group:Ignore(group.units[i])
             js.Sound("gg_snd_jaina_blizzard_impact01")
         end,
     }
+    self.owner:TalentDispatch("冰晶", "呼叫", self.targetLoc, self.range)
 end
 
 function mt:on_cast_finish()
-    self.owner:EventDispatch "冰槍術" "天賦-呼叫"
+    self.owner:TalentDispatch("冰霜長矛", "呼叫")
 end

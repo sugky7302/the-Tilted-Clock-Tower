@@ -17,6 +17,7 @@ Unit.__index = mt
 
 -- constants
 mt.type = "Unit"
+mt.isSpellDamaged = false
 
 function Unit.Init()
     -- 註冊單位死亡要刷新的事件
@@ -54,6 +55,7 @@ function Unit:__call(unit)
     if not obj then
         obj = {
             object = unit,
+            handle = js.H2I(unit),
             name = cj.GetUnitName(unit),
             owner = Player(cj.GetOwningPlayer(unit)),
             revivePoint = Point:GetUnitLoc(unit)
@@ -105,6 +107,29 @@ end
 function mt:AbilityEnable(id)
     id = (type(id) == "number") and id or Base.String2Id(id)
     cj.SetPlayerAbilityAvailable(self.owner.object, id, true)
+end
+
+function mt:Event(eventName)
+    return Event(self, eventName)
+end
+
+function mt:EventDispatch(eventName, ...)
+	local res = Event.Dispatch(self, eventName, ...)
+	if res ~= nil then
+		return res
+	end
+	local player = self.owner
+	if player then
+		local res = Event.Dispatch(self, eventName, ...)
+		if res ~= nil then
+			return res
+		end
+	end
+	local res = Event.Dispatch(Game, eventName, ...)
+	if res ~= nil then
+		return res
+	end
+	return nil
 end
 
 return Unit

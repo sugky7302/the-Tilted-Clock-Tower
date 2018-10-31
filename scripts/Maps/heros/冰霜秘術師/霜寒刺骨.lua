@@ -16,6 +16,7 @@ function mt:on_hit(source, target)
     target:AddBuff "霜寒刺骨debuff"
     {
         dur = 4,
+        moveSpeed = 25,
         skill = self,
     }
 end
@@ -23,11 +24,11 @@ end
 local mt = Buff "霜寒刺骨buff"
 
 function mt:on_add()
-    self.target:set("專長加成", 0.35)
+    self.target:set("霜寒刺骨", 0.35)
 end
 
 function mt:on_remove()
-    self.target:set("專長加成", 0)
+    self.target:set("霜寒刺骨", 0)
 end
 
 local mt = Buff "霜寒刺骨debuff"
@@ -36,9 +37,9 @@ mt.model = [[Abilities\Spells\Other\FrostDamage\FrostDamage.mdl]]
 mt.modelPoint = 'chest'
 
 function mt:on_add()
-    self.target:add("移動速度%", - self.val)
+    self.target:add("移動速度%", - self.moveSpeed)
 end
 
 function mt:on_remove()
-    self.target:add("移動速度%", self.val)
+    self.target:add("移動速度%", self.moveSpeed)
 end

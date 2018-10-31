@@ -12,10 +12,10 @@ Talent.__index = mt
 
 -- constants
 local _EVENT_NAME = {
-    ['天賦-初始化'] = 'on_init',
-    ['天賦-添加'] = 'on_add',
-    ['天賦-呼叫'] = 'on_call',
-    ['天賦-刪除'] = 'on_remove'
+    ['初始化'] = 'on_init',
+    ['添加'] = 'on_add',
+    ['呼叫'] = 'on_call',
+    ['刪除'] = 'on_remove'
 }
 
 -- variables
@@ -59,16 +59,14 @@ _CompareFn = function(a, b)
     return a.cost < b.cost
 end
 
-function Unit.__index:EventDispatch(name)
-    return function(event, ...)
-        if not Talent[name] then
-            return false
-        end
-        if _HasTalent(self, Talent[name]) then
-            return _CallEvent(Talent[name], _EVENT_NAME[event], self, ...)
-        end
+function Unit.__index:TalentDispatch(name, event, ...)
+    if not Talent[name] then
         return false
     end
+    if _HasTalent(self, Talent[name]) then
+        return _CallEvent(Talent[name], _EVENT_NAME[event], self, ...)
+    end
+    return false
 end
 
 _HasTalent = function(self, talent)

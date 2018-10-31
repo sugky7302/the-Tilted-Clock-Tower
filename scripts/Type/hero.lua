@@ -150,6 +150,9 @@ end
 _RegReviveEvent = function()
     -- 註冊英雄死亡等待復活的事件
     local _reviveTrg = War3.CreateTrigger(function()
+        for _, skill in ipairs(Hero(cj.GetTriggerUnit()).eachCasting) do
+            skill:Break()
+        end
         Game:EventDispatch("單位-復活", Hero(cj.GetTriggerUnit()))
         return true
     end)

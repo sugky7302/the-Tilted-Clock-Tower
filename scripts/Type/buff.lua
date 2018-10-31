@@ -47,6 +47,7 @@ local _AddEffect, _RemoveEffect
 
 -- 事件有on_add, on_cover, on_finish, on_pulse, on_remove
 -- on_cover根據buff的coverType做不同處理
+-- 如果要做多層數的buff，可以在on_cover內，將新buff的數據複製給舊buff，並要不要更新時間，最後回傳false即可
 -- coverType = 0 -> (true, false) = (當前狀態被移除，新的狀態被添加)
 -- coverType = 1 -> (true, false) = (新的狀態排序到當前狀態之前，新的狀態排序到當前狀態之後)
 function Buff:__call(name)

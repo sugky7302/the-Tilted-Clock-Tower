@@ -267,9 +267,13 @@ function mt:UpdateName()
 end
 
 function mt:UpdateTip()
-    local string_gsub = string.gsub
-    local state = string_gsub(self.tip, "N", self.damage[self.level][1] .. "-" .. self.damage[self.level][2]) -- 基礎傷害
-    state = string_gsub(state, "P", self.proc .. "") -- 技能係數
+    local string_gsub, state = string.gsub
+    if self.damage then
+        state = string_gsub(self.tip, "N", self.damage[self.level][1] .. "-" .. self.damage[self.level][2]) -- 基礎傷害
+        state = string_gsub(state, "P", self.proc .. "") -- 技能係數
+    else
+        state = self.tip
+    end
     if self.owner.talents and self.owner.talents[self.hotkey] then -- 天賦
         state = state .. "|n"
         for _, talent in ipairs(self.owner.talents[self.hotkey]) do 

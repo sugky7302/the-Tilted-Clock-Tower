@@ -147,7 +147,7 @@ end
 function Test.Player()
     local Player = require 'player'
     local cj = require 'jass.common'
-    Player(cj.Player(0)):set("天賦點", 2)
+    Player(cj.Player(0)):set("天賦點", 100)
 end
 
 return Test
