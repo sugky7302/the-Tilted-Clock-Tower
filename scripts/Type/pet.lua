@@ -14,6 +14,11 @@ Pet.type = "Pet"
 -- variables
 local _SetPetLifePeriod
 
+Game:Event "寵物-清除" (function(self, pet)
+    pet.owner.pet = nil
+    pet:Remove()
+end)
+
 function Pet:__call(pet)
     return self[js.H2I(pet) .. ""]
 end
@@ -39,5 +44,11 @@ _SetPetLifePeriod = function(pet, dur)
         cj.UnitApplyTimedLife(pet, Base.String2Id('BHwe'), dur)
     end
 end
+
+function Pet:Remove()
+    Unit[js.H2I(self.object) .. ""] = nil -- 清除實例
+    Pet[js.H2I(self.object) .. ""] = nil -- 清除實例
+    self = nil
+end 
 
 return Pet

@@ -20,7 +20,7 @@ Hero.__index = Unit
 Hero.type = "Hero"
 
 -- varaiables
-local _RegDropItemEvent, _RegObtainItemEvent, _RegReviveEvent, _RegSellItemEvent, _RegUseItemEvent, _RegSpellEffectEvent
+local _RegDropItemEvent, _RegObtainItemEvent, _RegSellItemEvent, _RegUseItemEvent, _RegSpellEffectEvent
 local _IsItem, _IsTypeSame, _ChekMultiCast, _GenerateSkillObject, _IsShowMultiCast
 Hero.heroDatas = {}
 
@@ -60,7 +60,6 @@ function Hero.Init()
             cj.TriggerRegisterUnitEvent(orderTrg, target, cj.EVENT_UNIT_ISSUED_TARGET_ORDER)
             cj.TriggerRegisterUnitEvent(orderTrg, target, cj.EVENT_UNIT_ISSUED_POINT_ORDER)
             cj.TriggerRegisterUnitEvent(orderTrg, target, cj.EVENT_UNIT_ISSUED_ORDER)
-            cj.TriggerRegisterUnitEvent(_RegReviveEvent(), target, cj.EVENT_UNIT_DEATH) -- 死亡事件
             cj.TriggerRegisterUnitEvent(_RegUseItemEvent(), target, cj.EVENT_UNIT_USE_ITEM) -- 使用物品事件
             cj.TriggerRegisterUnitEvent(_RegObtainItemEvent(), target, cj.EVENT_UNIT_PICKUP_ITEM) -- 獲得物品事件
             cj.TriggerRegisterUnitEvent(_RegDropItemEvent(), target, cj.EVENT_UNIT_DROP_ITEM) -- 丟棄物品事件
@@ -82,6 +81,18 @@ function Hero.Init()
                 end
             end
         end
+    end)
+
+    Game:Event "英雄-復活" (function(self, obj)
+        for _, skill in ipairs(obj.eachCasting) do
+            skill:Break()
+        end
+        cj.UnitPauseTimedLife(hero, true) -- 解除js.RemoveUnit設置的水元素週期
+        local hero = obj.object
+        Timer(10 + 5 * obj:get "等級", false, function()
+            cj.ReviveHero(hero, obj.revivePoint.x, obj.revivePoint.y, true)
+            obj:set("生命", obj:get "生命上限") -- 不然獲取到的生命值會跟死亡前的生命值相同，導致dealdamage會判定擊殺
+        end)
     end)
 end
 
@@ -145,24 +156,6 @@ end
 
 _IsTypeSame = function(bagItem, target)
     return (js.Item2Id(bagItem) == js.Item2Id(target)) and (bagItem ~= target)
-end
-
-_RegReviveEvent = function()
-    -- 註冊英雄死亡等待復活的事件
-    local _reviveTrg = War3.CreateTrigger(function()
-        for _, skill in ipairs(Hero(cj.GetTriggerUnit()).eachCasting) do
-            skill:Break()
-        end
-        Game:EventDispatch("單位-復活", Hero(cj.GetTriggerUnit()))
-        return true
-    end)
-    Game:Event "單位-復活" (function(self, obj)
-        local hero = obj.object
-        Timer(10 * (1 + obj:get '等級'), false, function()
-            cj.ReviveHero(hero, obj.revivePoint.x, obj.revivePoint.y, true)
-        end)
-    end)
-    return _reviveTrg
 end
 
 _RegUseItemEvent = function()

@@ -8,12 +8,12 @@ function Map.Init()
     local Skill = require 'skill'
 	-- 英雄初始化
     require 'heros.init'
-    -- 物品核心系統初始化
-    require 'Item.init'
     -- 增益效果初始化
-    require 'Buff.init'
+    require 'buffs.init'
     -- 天賦初始化
-    require 'Talent.init'
+    require 'talents.init'
+    -- 任務初始化
+    require 'quests.init'
     -- 技能系統初始化
     Skill.Init()
     -- 戰鬥系統初始化

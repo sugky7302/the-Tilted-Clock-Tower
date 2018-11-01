@@ -32,7 +32,7 @@ end
 
 function mt:on_cast_shot()
     js.Sound("gg_snd_jaina_frostbolt_launch01")
-    Missile{
+    local missile = Missile{
         owner = self.owner,
         modelName = 'A00T',
         startingPoint = Point:GetUnitLoc(self.owner.object),
@@ -49,14 +49,15 @@ function mt:on_cast_shot()
                 elementType = "水",
             }
             self.owner:get "專長":EventDispatch("擊中單位", false, self.owner, Unit(group.units[i]))
-            self.owner:TalentDispatch("冰霜長矛", "添加")
+            self.owner:TalentDispatch("冰霜長矛", "呼叫", Unit(group.units[i]))
             group:Ignore(group.units[i])
             js.Sound("gg_snd_jaina_blizzard_impact01")
         end,
     }
     self.owner:TalentDispatch("冰晶", "呼叫", self.targetLoc, self.range)
+    self.owner:TalentDispatch("冬之蕭瑟", "呼叫", self.orderId, missile)
 end
 
 function mt:on_cast_finish()
-    self.owner:TalentDispatch("冰霜長矛", "呼叫")
+    self.owner:TalentDispatch("冰霜長矛", "添加")
 end

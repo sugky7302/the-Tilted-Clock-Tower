@@ -15,7 +15,8 @@ local _EVENT_NAME = {
     ['初始化'] = 'on_init',
     ['添加'] = 'on_add',
     ['呼叫'] = 'on_call',
-    ['刪除'] = 'on_remove'
+    ['刪除'] = 'on_remove',
+    ['施法'] = 'on_cast',
 }
 
 -- variables

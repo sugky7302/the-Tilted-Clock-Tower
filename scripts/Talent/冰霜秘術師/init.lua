@@ -1,6 +1,0 @@
-require '冰霜秘術師.冰晶裂片'
-require '冰霜秘術師.冰霜長矛'
-require '冰霜秘術師.嚴寒壓境'
-require '冰霜秘術師.冰晶'
-require '冰霜秘術師.冰雪襲境'
-require '冰霜秘術師.霜雪暴'

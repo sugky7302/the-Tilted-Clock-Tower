@@ -42,6 +42,19 @@
 - [技能音效] Hero Of the Storm\mods\heros.stormmod\base.stormassets\assets\sounds\heros
 
 ## 更新日誌
+### 0.22.0 - 2018-11-01
+>#### Added:
+> - 新增quest庫，用於任務系統。
+> - [pet] 新增remove函數，用於刪除死亡的寵物。
+> - [unit] 添加IsAlive函數，判斷是否存活。
+> - [冰霜秘術師] 新增**天賦-冬之蕭瑟**，水元素現在會模仿英雄施放寒冰箭、暴風雪。
+>#### Changed:
+> - 更改目錄，將talents、buffs放入maps目錄底下，item放入module目錄底下。
+>#### Fixed:
+> - [hero] 修復英雄復活後，會被一擊必殺的問題。
+> - [冰霜秘術師] 修正冰霜長矛天賦無法觸發的問題。
+> - [冰霜秘術師] 修正寒冰箭施放時，冰晶不會消失的問題。
+
 ### 0.21.0 - 2018-10-31
 >#### Added:
 > - [buff] 新增多層buff的說明。

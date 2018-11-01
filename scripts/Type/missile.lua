@@ -30,19 +30,19 @@ function Missile:__call(obj)
     obj = Object(obj) -- 轉成Object
     setmetatable(obj, self)
     obj.__index = obj
-    obj.missile = _GetMissile(obj)
-    obj.unitDetermined = Group(obj.missile)
     obj.startingHeight = obj.startingHeight or _GetStartingHeight(obj.startingPoint)
     obj.traceMode = (type(obj.traceMode) == 'string') and mt.traceLib[obj.traceMode] or obj.traceMode
     obj.angle = obj.angle or Point.Rad(obj.startingPoint, obj.targetPoint)
     obj.SetHeight = obj.SetHeight or MissileTool.SetHeight
+    obj.missile = _GetMissile(obj)
+    obj.unitDetermined = Group(obj.missile)
     obj:SetHeight(0)
     _SetTrace(obj)
     return obj
 end
 
 _GetMissile = function(obj)
-    local missile = cj.CreateUnit(obj.owner.owner.object, Base.String2Id(_MISSILE_ID), obj.startingPoint.x, obj.startingPoint.y, cj.GetUnitFacing(obj.owner.object))
+    local missile = cj.CreateUnit(cj.GetOwningPlayer(obj.owner.object), Base.String2Id(_MISSILE_ID), obj.startingPoint.x, obj.startingPoint.y, math.deg(obj.angle))
     cj.UnitAddAbility(missile, Base.String2Id(obj.modelName))
     return missile
 end

@@ -23,6 +23,9 @@ return {
     RemoveUnit = function(unit)
         cj.UnitApplyTimedLife(unit, Base.String2Id('BHwe'), 0.03)
     end,
+    SetTimedLife = function(unit, timeout)
+        cj.UnitApplyTimedLife(unit, Base.String2Id('BHwe'), timeout)
+    end,
     -- 設定生命週期利用war3機制自動刪除，會比用RemoveUnit乾淨，內存絕不會漏掉
     Item2Id = function(item)
         return cj.GetItemTypeId(item)
@@ -54,6 +57,15 @@ return {
         if cj.GetLocalPlayer() == player then
             cj.SelectUnit(unit, true)
         end
+    end,
+    ClearMessage = function(player)
+        force = cj.CreateForce()
+        cj.ForceAddPlayer(force, player)
+        if cj.IsPlayerInForce(GetLocalPlayer(), force) then
+            cj.ClearTextMessages()
+        end
+        cj.ForceClear(force)
+        cj.DestroyForce(force)
     end,
 }
     

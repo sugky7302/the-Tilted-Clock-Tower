@@ -22,7 +22,14 @@ mt.isSpellDamaged = false
 function Unit.Init()
     -- 註冊單位死亡要刷新的事件
     local trg = War3.CreateTrigger(function()
-        Game:EventDispatch("單位-刷新", Unit(cj.GetTriggerUnit()))
+        local target = Unit(cj.GetTriggerUnit())
+        if target.type == "Unit" then
+            Game:EventDispatch("單位-刷新", target)
+        elseif target.type == 'Pet' then
+            Game:EventDispatch("寵物-清除", target)
+        elseif target.type == "Hero" then
+            Game:EventDispatch("英雄-復活", target)
+        end
         return true
     end)
     Game:Event "單位-刷新" (function(self, obj)
@@ -37,9 +44,7 @@ function Unit.Init()
         end)
     end)
     Game:Event "單位-創建" (function(self, target)
-        if Unit(target).type == "Unit" then
-            cj.TriggerRegisterUnitEvent(trg, target, cj.EVENT_UNIT_DEATH)
-        end
+        cj.TriggerRegisterUnitEvent(trg, target, cj.EVENT_UNIT_DEATH)
     end)
 end
 
@@ -130,6 +135,10 @@ function mt:EventDispatch(eventName, ...)
 		return res
 	end
 	return nil
+end
+
+function mt:IsAlive()
+    return self:get "生命" > 0.3
 end
 
 return Unit

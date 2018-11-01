@@ -23,6 +23,7 @@ function mt:on_cast_shot()
     js.Sound("gg_snd_jaina_water_elemental_birth")
     js.TimeEffect(cj.AddSpecialEffect("war3mapImported\\186.mdx", self.targetLoc.x, self.targetLoc.y), 0.5)
     local dummy = Pet:New('hwat', self.owner, self.targetLoc, self.dur)
+    self.owner.pet = dummy
     dummy:set("最大物理攻擊力", self.owner:get "最大物理攻擊力" * 0.5)
     dummy:set("最小物理攻擊力", self.owner:get "最小物理攻擊力" * 0.5)
     local g = Group(self.owner.object)

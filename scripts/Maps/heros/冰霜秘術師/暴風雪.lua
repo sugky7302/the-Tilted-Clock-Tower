@@ -33,4 +33,5 @@ function mt:on_cast_channel()
         self.owner:get "專長":EventDispatch("擊中單位", false, self.owner, Unit(group.units[i]))
         js.Sound("gg_snd_jaina_blizzard_impact01")
     end)
+    self.owner:TalentDispatch("冬之蕭瑟", "呼叫", self.orderId, self)
 end
