@@ -18,6 +18,7 @@ function Test:__call()
     -- self.Enchanted()
     -- self.Combine()
     self.Player()
+    self.Quest()
 end
 
 function Test.Add()
@@ -148,6 +149,19 @@ function Test.Player()
     local Player = require 'player'
     local cj = require 'jass.common'
     Player(cj.Player(0)):set("天賦點", 100)
+end
+
+function Test.Quest()
+    local Item = require 'item'
+    local cj = require 'jass.common'
+    local Unit = require 'unit'
+    local Point = require 'point'
+    local MathLib = require 'math_lib'
+    local p = Point(15009, 9869)
+    local item = Item.Create('tstr', p)
+    for i = 1, 6 do 
+        local u = Unit.Create(cj.Player(cj.PLAYER_NEUTRAL_AGGRESSIVE), 'nbrg', p + Point(MathLib.Random(500), MathLib.Random(500)), 0)
+    end
 end
 
 return Test

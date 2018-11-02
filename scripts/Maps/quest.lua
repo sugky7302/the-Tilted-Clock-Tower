@@ -1,20 +1,135 @@
 local setmetatable = setmetatable
+local table_insert = table.insert
 local cj = require 'jass.common'
 local js = require 'jass_tool'
 local Timer = require 'timer'
 local Unit = require 'unit'
+local Group = require 'group'
+local Game = require 'game'
+local Item = require 'item'
+local Point = require 'point'
 
 local Quest, mt = {}, {}
 setmetatable(Quest, Quest)
 Quest.__index = mt
-require 'quest_database'
 
 -- constants
 mt.isUnique = false  -- 任務是否唯一
 mt.canAccept = true  -- 可否接取任務
 local _announceDur = 6
 
-function Quest:__call(questName)
+-- varaibles
+local _IsHero, _LookupQuests, _AccepteMessage, _CreateQuestList, _Generate, _SetNewQuest, _FinishMessage
+local _UpdateDemands, _UpdateMessage, _CanRepeat, _IsFinished, _CheckQuestHasNumber, _CheckQuestNoNumber
+
+function Quest.Init()
+    Game:Event "任務-更新" (function(self, target)
+        if _IsHero(target.killer) then
+            _LookupQuests(target.killer.quests, target.id)
+        end
+    end)
+end
+
+_IsHero = function(unit)
+    return not (not unit.quests)
+end
+
+_LookupQuests = function(quests, id)
+    for _, quest in ipairs(quests) do 
+        if quest.demands[id] then
+            quest:Update(id)
+        end
+    end
+end
+
+function mt:Update(id)
+    _CheckQuestHasNumber(self, id)
+    _CheckQuestNoNumber(self, id)
+    if _IsFinished(self) then
+        _FinishMessage(self)
+        _CanRepeat(self)
+        self:on_reward()
+        self:Remove()
+    else
+        _UpdateMessage(self)
+    end
+end
+
+_CheckQuestHasNumber = function(self, id)
+    if type(self.demands[id]) == 'number' then
+        self.demands[id] = self.demands[id] - 1
+        if self.demands[id] == 0 then
+            self.demands[id] = false
+        end
+    end
+end
+
+_CheckQuestNoNumber = function(self, id)
+    if self.demands[id] then
+        self.demands[id] = false
+    end
+end
+
+_IsFinished = function(self)
+    for _, cnd in pairs(self.demands) do
+        if cnd then -- cnd = 數字或true，都代表還沒做完任務
+            return false
+        end
+    end
+    return true
+end
+
+_FinishMessage = function(self)
+    js.ClearMessage(self.receiver.owner.object)
+    js.Sound("gg_snd_QuestCompleted")
+    self:Announce "|cff00ff00v|r|cffffcc00完成任務"
+    self:Announce("|cff999999" .. self.name)
+    self:Announce("   " .. self.talk)
+    for _, required in ipairs(self.required) do 
+        self:Announce("|cff999999- " .. required)
+    end
+    for _, reward in ipairs(self.rewards) do
+        self:Announce("|cffffcc00獎勵|r - " .. reward)
+    end
+end
+
+_CanRepeat = function(self)
+    self.receiver.quests[self.name] = self.isUnique
+end
+
+function mt:Remove()
+    self.receiver = nil
+    self.demands = nil
+    self = nil
+end
+
+_UpdateMessage = function(self)
+    js.ClearMessage(self.receiver.owner.object)
+    js.Sound("gg_snd_QuestLog")
+    self:Announce "|cffff6600!|r|cffffcc00更新任務"
+    self:Announce(self.name)
+    _UpdateDemands(self, self.__index)
+end
+
+_UpdateDemands = function(self, parent)
+    for i, cnd in ipairs(parent.demands) do
+        if type(cnd) == 'table' then
+            if self.demands[cnd[1]] == false then
+                self:Announce("|cff999999- " .. parent.required[i] .. "(" .. cnd[2] .. "/" .. cnd[2] .. ")")
+            else
+                self:Announce("- " .. parent.required[i] .. "(" .. (cnd[2] - self.demands[cnd[1]]) .. "/" .. cnd[2] .. ")")
+            end
+        else
+            if self.demands[cnd] == false then
+                self:Announce("|cff999999- " .. parent.required[i])
+            else
+                self:Announce("- " .. parent.required[i])
+            end
+        end
+    end
+end
+
+function Quest:__call(questName) -- 單一任務的子任務不能出現相同的任務怪，創建會出問題
     return function(quest)
         self[questName] = quest
         quest.name = questName
@@ -24,34 +139,72 @@ function Quest:__call(questName)
 end
 
 function Unit.__index:AcceptQuest(questName)
-    -- TODO:添加任務給接受任務的人
     -- 已接取任務就跳出
-    for _, quest in ipairs(self.quests) do 
-        if Quest[questName] == quest then
-            return 
+    for _, quest in ipairs(_CreateQuestList(self)) do 
+        if questName == quest.name then
+            return false
         end
     end
-    local quest = _NewQuest(questName)
+    -- 確認此任務是否為接過的唯一任務
+    if not self.quests[questName] then
+        _SetNewQuest(self, Quest[questName])
+        return true
+    end
+    return false
 end
 
-_NewQuest = function(unit, questName)
-    Quest[questName].
+_CreateQuestList = function(self)
+    if not self.quests then
+        self.quests = {}
+    end
+    return self.quests
 end
 
-function mt:Update()
-    -- TODO:更新任務
+_SetNewQuest = function(unit, quest)
+    local questCopy = _Generate(unit, quest)
+    _AccepteMessage(questCopy)
+    js.Sound("gg_snd_QuestNew")
 end
 
-function mt:Remove()
-    -- TODO:刪除任務(已完成或放棄)
+_Generate = function(unit, quest)
+    local questCopy = {}
+    setmetatable(questCopy, questCopy)
+    questCopy.__index = quest
+    questCopy.receiver = unit
+    questCopy.demands = {}
+    for _, demand in ipairs(quest.demands) do
+        if type(demand) == 'table' then
+            questCopy.demands[demand[1]] = demand[2] 
+        else
+            questCopy.demands[demand] = true
+        end
+    end
+    table_insert(unit.quests, questCopy)
+    return questCopy
+end
+
+_AccepteMessage = function(quest)
+    js.ClearMessage(quest.receiver.owner.object)
+    quest:Announce "|cffff0000?|r|cffffcc00獲得任務"
+    quest:Announce(quest.name)
+    quest:Announce("   " .. quest.detail)
+    for _, required in ipairs(quest.required) do 
+        quest:Announce("- " .. required)
+    end
 end
 
 function mt:Announce(msg)
-    cj.DisplayTimedTextToPlayer(self.receiver, 0., 0., _announceDur, msg)
+    cj.DisplayTimedTextToPlayer(self.receiver.owner.object, 0., 0., _announceDur, msg)
 end
 
-function mt:HandIn()
-    -- TODO:提交任務。多數任務採自動提交機制，因此會使用到計時器
+function mt:ChainTask(triggerItem)
+    local triggerUnit = self.receiver.object
+    local p = Point:GetUnitLoc(triggerUnit)
+    Timer(0.1, false, function()
+        local item = Item.Create(triggerItem, p)
+        cj.UnitAddItem(triggerUnit, item)
+        p:Remove()
+    end)
 end
 
 function Unit.__index:SyncQuest(syncer)

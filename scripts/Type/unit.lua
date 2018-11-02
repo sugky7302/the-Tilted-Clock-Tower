@@ -30,6 +30,7 @@ function Unit.Init()
         elseif target.type == "Hero" then
             Game:EventDispatch("英雄-復活", target)
         end
+        Game:EventDispatch("任務-更新", target)
         return true
     end)
     Game:Event "單位-刷新" (function(self, obj)
@@ -60,6 +61,7 @@ function Unit:__call(unit)
     if not obj then
         obj = {
             object = unit,
+            id = Base.Id2String(js.U2Id(unit)),
             handle = js.H2I(unit),
             name = cj.GetUnitName(unit),
             owner = Player(cj.GetOwningPlayer(unit)),

@@ -1,0 +1,1 @@
+require 'quests.初入時鐘塔'

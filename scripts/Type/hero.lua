@@ -178,6 +178,9 @@ _RegObtainItemEvent = function()
         return true
     end)
     Game:Event "單位-獲得物品" (function(self, hero, item)
+        if Hero(hero):AcceptQuest(string.sub(cj.GetItemName(item), 10)) then
+            return 
+        end
         if Item.IsEquipment(item) then
             Equipment(item).owner = Hero(hero)
             Equipment(item).ownPlayer = Player(cj.GetOwningPlayer(hero))

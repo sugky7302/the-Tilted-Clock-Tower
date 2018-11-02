@@ -61,7 +61,7 @@ return {
     ClearMessage = function(player)
         force = cj.CreateForce()
         cj.ForceAddPlayer(force, player)
-        if cj.IsPlayerInForce(GetLocalPlayer(), force) then
+        if cj.IsPlayerInForce(cj.GetLocalPlayer(), force) then
             cj.ClearTextMessages()
         end
         cj.ForceClear(force)

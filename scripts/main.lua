@@ -14,9 +14,10 @@ local function _Main()
     require 'Tool.init'
     -- 模塊初始化
     require 'Module.init'
+    -- 測試模組
+    Test()
     -- 地圖機制初始化
     Map.Init() -- 因為要替所有單位註冊事件，因此一定要放在最後
-    Test()
 end
 
 _Main()

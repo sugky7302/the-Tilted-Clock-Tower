@@ -91,6 +91,7 @@ function Damage:__call(obj)
         obj.source:set("最後造成的傷害", dmg)
     end
     _Show(obj.target.object, dmg, obj.type, textSize)
+    obj.target.killer = obj.source
     obj.target.isSpellDamaged = false -- 關閉判定，以免傷害函數無法執行
     Game:EventDispatch("天賦-傷害結算", obj)
 end

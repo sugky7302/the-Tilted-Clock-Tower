@@ -6,6 +6,7 @@ local _RegUnits
 function Map.Init()
     local Combat = require 'combat'
     local Skill = require 'skill'
+    local Quest = require 'quest'
 	-- 英雄初始化
     require 'heros.init'
     -- 增益效果初始化
@@ -18,6 +19,8 @@ function Map.Init()
     Skill.Init()
     -- 戰鬥系統初始化
     Combat:Init()
+    -- 任務系統初始化
+    Quest.Init()
     -- 註冊單位
     _RegUnits()
 end
