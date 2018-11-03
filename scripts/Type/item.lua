@@ -1,6 +1,9 @@
 local setmetatable = setmetatable
 local cj = require 'jass.common'
 local js = require 'jass_tool'
+local Game = require 'game'
+local MathLib = require 'math_lib'
+local Point = require 'point'
 
 local Item, mt = {}, {}
 setmetatable(Item, Item)
@@ -8,6 +11,21 @@ Item.__index = mt
 
 -- varaibles
 local set, add, get = {}, {}, {}
+
+function Item.Init()
+    Game:Event "單位-掉落物品" (function(self, unit)
+        if not unit.dropList then
+            return
+        end
+        local p = Point:GetUnitLoc(unit.object)
+        for _, data in ipairs(unit.dropList) do 
+            if MathLib.Random(100) < data[2] then
+                Item.Create(data[1], p)
+            end
+        end
+        p:Remove()
+    end)
+end
 
 function Item:__call(item)
     local obj = self[js.H2I(item) .. ""]

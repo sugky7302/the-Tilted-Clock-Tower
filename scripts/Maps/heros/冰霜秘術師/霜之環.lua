@@ -65,7 +65,6 @@ function mt:on_cast_shot()
             {
                 dur = 3,
                 skill = self,
-                model = [[Abilities\Spells\Undead\FreezingBreath\FreezingBreathTargetArt.mdl]],
             }
             self.owner:get "專長":EventDispatch("擊中單位", false, self.owner, Unit(group.units[i]))
         end

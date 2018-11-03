@@ -18,7 +18,7 @@ function Test:__call()
     -- self.Enchanted()
     -- self.Combine()
     self.Player()
-    self.Quest()
+    -- self.Quest()
 end
 
 function Test.Add()

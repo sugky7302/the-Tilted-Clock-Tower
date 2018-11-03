@@ -44,6 +44,15 @@
 - [技能音效] Hero Of the Storm\mods\heros.stormmod\base.stormassets\assets\sounds\heros
 
 ## 更新日誌
+### Unreleased - 2018-11-03
+>#### Added:
+> - [buff] 新增冰凍效果。
+> - [item] 添加"單位-物品掉落'事件。
+>#### Changed:
+> - [霜之環] 移除霜之環的定身效果的特效，以免和冰東效果衝突。
+>#### Fixed:
+> - [buff] 修改暈眩效果。
+
 ### 0.23.0 - 2018-11-02
 >#### Fixed:
 > - [quest] 完善庫。

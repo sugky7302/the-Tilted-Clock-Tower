@@ -51,11 +51,13 @@ local _AddEffect, _RemoveEffect
 -- coverType = 0 -> (true, false) = (當前狀態被移除，新的狀態被添加)
 -- coverType = 1 -> (true, false) = (新的狀態排序到當前狀態之前，新的狀態排序到當前狀態之後)
 function Buff:__call(name)
-    local obj = {}
-    self[name] = obj
-    obj.name = name
-    setmetatable(obj, self)
-    obj.__index = obj
+    if not self[name] then
+        local obj = {}
+        self[name] = obj
+        obj.name = name
+        setmetatable(obj, self)
+        obj.__index = obj
+    end
     return self[name]
 end
 
