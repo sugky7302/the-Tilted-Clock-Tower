@@ -22,9 +22,9 @@ function Intensify.Init()
     local Game = require 'game'
     local Hero = require 'hero'
 
-    Game:Event "單位-使用物品" (function(self, unit, item)
-        Intensify(Hero(unit))
-    end)
+    -- Game:Event "單位-使用物品" (function(self, unit, item)
+    --     Intensify(Hero(unit))
+    -- end)
 end
 
 function Intensify:__call(hero)

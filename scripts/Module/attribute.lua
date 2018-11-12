@@ -33,8 +33,8 @@ function Attribute:InitUnitState()
     self['攻擊範圍'] = data.rangeN1
     self['魔力恢復'] = 0
     self['生命恢復'] = 0
-    self['物理暴擊率'] = 0
-    self['法術暴擊率'] = 0
+    self['物理暴擊'] = 0
+    self['法術暴擊'] = 0
     self['種族'] = Attribute._RACE[data.goldcost]
     self['物理韌性'] = 0
     self['法術韌性'] = 0

@@ -10,6 +10,7 @@ local Item = require 'item'
 local Player = require 'player'
 local Prefix = require 'prefix'
 require 'attribute_database'
+require 'equipment_database'
 
 local Equipment = {}
 Equipment.__index = Item
@@ -19,7 +20,7 @@ setmetatable(Equipment, Equipment)
 local _DROP_CHANCE = {{55, 40, 4, 1}, {35, 50, 12, 3}, {12, 35, 41, 12}, {0, 20, 55, 25}}
 
 -- varaibles
-local _CompareFn, _RandRingCount, _SetAttributeState, _GetDisplayedInfo, _DialogDisplay
+local _CompareFn, _RandRingCount, _SetAttributeState, _GetDisplayedInfo, _DialogDisplay, _GetAttribute, _GetLevel
 
 function Equipment.Init()
     local Game = require 'game'
@@ -27,6 +28,7 @@ function Equipment.Init()
     
     Game:Event "單位-使用物品" (function(self, unit, item)
         if Item.IsEquipment(item) then
+            Equipment(item):Update()
             Equipment(item):Display()
         end
     end)
@@ -52,46 +54,32 @@ _DialogDisplay = function(player, displayedInfo)
 end
 
 _GetDisplayedInfo = function(self)
-    local max = math.max
-    local string_len = string.len
-
-    local len = 0 -- 計算裝備評分前面要幾個空格，顯示框才會比較方
     -- 名稱
     local bigSecretOrderPrefix = self.bigSecretOrderPrefix and "|cff804000" .. self.bigSecretOrderPrefix .. "|r|n" or ""
     local smallSecretOrderPrefix = self.smallSecretOrderPrefix and "|cffff8d00" .. self.smallSecretOrderPrefix .. "|r|n" or ""
     local prefix = self.prefix and self.prefix or ""
     local intensifyLevel = (self.intensifyLevel > 0) and "|cff00ff00+" .. self.intensifyLevel .. " " or ""
     local name = bigSecretOrderPrefix .. smallSecretOrderPrefix .. intensifyLevel .. self.color .. prefix .. self.name .. "|n"
-    len = max(len, string_len(name))
     -- 基本資料
-    local basicInfo = "|cffffffff物品等級 |r" .. (self.level + self.intensifyLevel) .. "|n"
-    len = max(len, string_len(basicInfo))
+    local basicInfo = "|cff808080Lv " .. (self.level + self.intensifyLevel) .. " / Gs " .. self:GetGearScore() .. "|r|n"
     -- 屬性
     local attributes = ""
     for i = 1, self.attributeCountLimit do
         local str = (self.attribute[i] and "|cff3366ff◆|r|cff99ccff" .. self.attribute[i][3] or "|cff3366ff◇") .. "|r|n"
         attributes = attributes .. str
-        len = max(len, string_len(str))
     end
     for i = 1, #self.additionalEffect do
         local additionalEffect = "|cff3366ff◆|r" .. self.additionalEffect[i].state .. "|n"
         attributes = attributes .. additionalEffect
-        len = max(len, string_len(additionalEffect))
     end
     local inscriptions = (self.inscriptions.state and "|cff3366ff◆|r" .. self.inscriptions.state .. "|n" or "")
     attributes = attributes .. inscriptions
-    len = max(len, string_len(inscriptions))
     -- 秘物序列
     local smallSecretOrderState = self.smallSecretOrder.prefix and "|cffff8d00" .. self.smallSecretOrder.state .. "|r|n" or ""
     local bigSecretOrderState = self.bigSecretOrder.prefix and "|cff804000" .. self.bigSecretOrder.state .. "|r|n" or ""
     local secretOrderState = smallSecretOrderState .. bigSecretOrderState
-    len = max(len, string_len(smallSecretOrderState))
-    len = max(len, string_len(bigSecretOrderState))
-    -- 裝備評分
-    local gs = "裝備評分 " .. self:GetGearScore()
-    local gearScore = "|cff808080" .. string.rep(" ", max(0, len - string_len(gs) - 9)) .. gs .. "|r"
 
-    local returnString = name .. basicInfo .. attributes .. secretOrderState .. gearScore
+    local returnString = name .. basicInfo .. attributes .. secretOrderState
 
     return returnString
 end
@@ -112,13 +100,13 @@ function Equipment:__call(item)
         obj.prefix = nil 
         obj.bigSecretOrder= {}
         obj.smallSecretOrder = {}
-        obj.fixAttribute = nil
-        obj.attribute = {} -- 每個元素包含index, value, states
+        obj.attribute = _GetAttribute(obj.id) -- 每個元素包含index, value, states, fixed
+        obj.level = _GetLevel(obj.id)
         obj.additionalEffect = {} -- 額外效果
         obj.inscriptions = {} -- 銘文
         obj.color = "|cffffffff"
-        obj.attributeCount = 0
-        obj.attributeCountLimit = 0
+        obj.attributeCount = #obj.attribute
+        obj.attributeCountLimit = #obj.attribute + (EQUIPMENT_TEMPLATE[obj.id].ringCount or 0)
         obj.intensifyLevel = 0
         obj.intensifyFailTimes = 0
         obj.stability = 0
@@ -133,7 +121,25 @@ function Equipment:__call(item)
     return obj
 end
 
+_GetAttribute = function(id)
+    local obj = {}
+    if EQUIPMENT_TEMPLATE[id] and EQUIPMENT_TEMPLATE[id].attribute then
+        for i, v in pairs(EQUIPMENT_TEMPLATE[id].attribute) do
+            table.insert(obj, {i, v, "", true})
+        end
+    end
+    return obj
+end
+
+_GetLevel = function(id)
+    if EQUIPMENT_TEMPLATE[id] then
+        return EQUIPMENT_TEMPLATE[id].level
+    end 
+    return 1
+end
+
 function Equipment:Update()
+    self:Sort()
     _SetAttributeState(self)
     Prefix(self)
 end
@@ -166,7 +172,7 @@ end
 
 function Equipment:Rand(lv, layer)
     self.level = MathLib.Random(math.modf(lv + layer / 2), lv + layer)
-    self.layer = layer
+    self.layer = layer -- 掉落的強度
     _RandRingCount(self)
 end
 

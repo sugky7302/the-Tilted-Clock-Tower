@@ -24,7 +24,6 @@ function Unit.Init()
     local trg = War3.CreateTrigger(function()
         local target = Unit(cj.GetTriggerUnit())
         if target.type == "Unit" then
-            Game:EventDispatch("單位-掉落物品", target)
             Game:EventDispatch("單位-刷新", target)
         elseif target.type == 'Pet' then
             Game:EventDispatch("寵物-清除", target)

@@ -19,6 +19,7 @@ function Test:__call()
     -- self.Combine()
     self.Player()
     -- self.Quest()
+    self.QuestChain()
 end
 
 function Test.Add()
@@ -149,6 +150,7 @@ function Test.Player()
     local Player = require 'player'
     local cj = require 'jass.common'
     Player(cj.Player(0)):set("天賦點", 100)
+    Player(cj.Player(0)):set("黃金", 10000)
 end
 
 function Test.Quest()
@@ -162,6 +164,13 @@ function Test.Quest()
     for i = 1, 6 do 
         local u = Unit.Create(cj.Player(cj.PLAYER_NEUTRAL_AGGRESSIVE), 'nbrg', p + Point(MathLib.Random(500), MathLib.Random(500)), 0)
     end
+end
+
+function Test.QuestChain()
+    local Item = require 'item'
+    local Point = require 'point'
+    local p = Point(-3279, -3306)
+    local item = Item.Create('tstr', p)
 end
 
 return Test

@@ -19,7 +19,7 @@
 - 如果要修改地圖，請開啟TheTiltedClockTower.w3x，不要開啟.w3x。
 - 使用後，請先用vscode執行Lni一次。
 - 再使用vscode打開war3map.j，在InitGlobals輸入call Cheat("exec-lua: base")。
-- 最後用vscode執行obj一次後。
+- 最後用vscode執行obj一次。
 ### 新增/修改/移除物編數據
 - 打開table資料夾。
 - 根據類型開啟相應的ini檔。
@@ -44,7 +44,32 @@
 - [技能音效] Hero Of the Storm\mods\heros.stormmod\base.stormassets\assets\sounds\heros
 
 ## 更新日誌
-### Unreleased - 2018-11-03
+### 0.27.0 - 2018-11-12
+>#### Added:
+> - 完成**領取物資**3環任務。
+>#### Changed:
+> - [equipment] 修改裝備顯示樣式。
+
+### 0.26.0 - 2018-11-11
+>#### Added:
+> - 新增**領取物資**任務。
+
+### 0.25.0 - 2018-11-10
+>#### Added:
+> - 完成訓練營地形。
+> - 新增equipment_database，用於儲存商店的裝備的數據。
+> - [attribute_database] 完善敘述。
+> - [equipment] 新增固定屬性及非固定屬性，後者可以被拆除，但前者無法。
+> - [quest] 添加搜尋型任務的功能。
+>#### Changed:
+> - [damage] 修改元素傷害公式。
+> - [equipment] 修正固定屬性也會顯示詞綴的問題。
+>#### Deprecated:
+> - intensify 或 extend_hole某個模塊會導致死亡面罩的屬性複製給能量之書。
+>#### Fixed:
+> - [prefix] 修正沒有屬性時，也會設定前綴的問題。
+
+### 0.24.0 - 2018-11-03
 >#### Added:
 > - [buff] 新增冰凍效果。
 > - [item] 添加"單位-物品掉落'事件。

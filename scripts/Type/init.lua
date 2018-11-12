@@ -15,6 +15,3 @@ require 'equipment'.Init()
 
 -- 初始化天賦
 require 'talent'.Init()
-
--- 初始化物品
-require 'item'.Init()

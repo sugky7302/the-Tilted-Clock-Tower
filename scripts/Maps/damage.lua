@@ -121,7 +121,9 @@ _ComputeAttack = function(obj)
 end
 
 _GetEAtk = function(obj)
-    return obj.source:get "元素傷害" * (1 - obj.target:get "元素抗性") * _ELEMENT_TYPE[obj.elementType][obj.target:get "元素屬性"]
+    local basic = math.max(obj.source:get(obj.elementType .. "元素傷害") - obj.target:get(obj.elementType .. "元素抗性"), 0)
+    local bonus = _ELEMENT_TYPE[obj.elementType][obj.target:get "元素屬性"] * obj.source:get(obj.elementType .. "元素增傷")
+    return basic * bonus
 end
 
 _GetAtk = function(source, target, eAtk)
@@ -216,7 +218,7 @@ _DamageDetermine = function(obj, atk, def)
     -- 命中與閃避判定
     if _IsHitOrDodge(obj.source:get "命中", obj.target:get "閃避") then
         -- 暴擊與韌性判定
-        local criProc = _DeterminCriOrACT(obj.source:get(obj.type .. "暴擊率"), obj.target:get(obj.type .. "韌性"), obj.source:get "等級", obj.target:get "等級")
+        local criProc = _DeterminCriOrACT(obj.source:get(obj.type .. "暴擊"), obj.target:get(obj.type .. "韌性"), obj.source:get "等級", obj.target:get "等級")
         if _IsPntOrBlk(obj.source:get(obj.type .. "穿透"), obj.target:get(obj.type .. "格擋"), atk, def) then
             return _BoundaryDetermine(obj.target:get "生命上限", atk, 0, criProc), criProc
         else

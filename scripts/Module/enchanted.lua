@@ -43,7 +43,7 @@ function Enchanted.Insert(item, secrets, isFixed)
             break
         end
         item.attributeCount = item.attributeCount + 1
-        item.attribute[item.attributeCount] = {name, val}
+        item.attribute[item.attributeCount] = {name, val, "", false}
     end
     item:Sort()
     item:Update()

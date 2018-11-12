@@ -139,6 +139,9 @@ function Quest:__call(questName) -- 單一任務的子任務不能出現相同�
 end
 
 function Unit.__index:AcceptQuest(questName)
+    if not Quest[questName] then
+        return 
+    end
     -- 已接取任務就跳出
     for _, quest in ipairs(_CreateQuestList(self)) do 
         if questName == quest.name then
@@ -164,6 +167,11 @@ _SetNewQuest = function(unit, quest)
     local questCopy = _Generate(unit, quest)
     _AccepteMessage(questCopy)
     js.Sound("gg_snd_QuestNew")
+    if questCopy.on_timer then
+        questCopy.timer = Timer(1, true, function(callback)
+            questCopy:on_timer(callback)
+        end)
+    end
 end
 
 _Generate = function(unit, quest)
@@ -197,14 +205,26 @@ function mt:Announce(msg)
     cj.DisplayTimedTextToPlayer(self.receiver.owner.object, 0., 0., _announceDur, msg)
 end
 
-function mt:ChainTask(triggerItem)
-    local triggerUnit = self.receiver.object
+function mt:GiveItem(triggerItem, count)
+    local triggerUnit = self.receiver.object -- 防止任務被刪除後，搜尋不到單位的問題
     local p = Point:GetUnitLoc(triggerUnit)
     Timer(0.1, false, function()
-        local item = Item.Create(triggerItem, p)
-        cj.UnitAddItem(triggerUnit, item)
+        count = count or 1
+        for i = 1, count do
+            local item = Item.Create(triggerItem, p)
+            cj.UnitAddItem(triggerUnit, item)
+        end
         p:Remove()
     end)
+end
+
+function mt:Near(x, y)
+    local sourcePoint = Point:GetUnitLoc(self.receiver.object)
+    local targetPoint = Point(x, y)
+    local isNear = Point.Distance(sourcePoint, targetPoint) < 200
+    sourcePoint:Remove()
+    targetPoint:Remove()
+    return isNear
 end
 
 function Unit.__index:SyncQuest(syncer)

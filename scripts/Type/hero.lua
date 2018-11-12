@@ -69,17 +69,8 @@ function Hero.Init()
     end)
 
     Game:Event "單位-發布命令" (function(self, hero, order, target)
-        if _IsItem(target) and (order == Base.String2OrderId('smart')) then
-            if cj.GetItemCharges(target) > 0 then
-                for i = 0, 5 do
-                    local bagItem = cj.UnitItemInSlot(hero, i)
-                    if _IsTypeSame(bagItem, target) then
-                        cj.SetItemCharges(bagItem, cj.GetItemCharges(bagItem) + cj.GetItemCharges(target))
-                        cj.RemoveItem(target)
-                        return
-                    end
-                end
-            end
+        if order == Base.String2OrderId('smart') then
+            _StackItem(hero, target)
         end
     end)
 
@@ -150,14 +141,6 @@ _GenerateSkillObject = function(skill, hero, targetUnit, targetLoc)
     skillCopy:_cast_start()
 end
 
-_IsItem = function(item)
-    return cj.GetItemName(item)
-end
-
-_IsTypeSame = function(bagItem, target)
-    return (js.Item2Id(bagItem) == js.Item2Id(target)) and (bagItem ~= target)
-end
-
 _RegUseItemEvent = function()
     -- 創建使用物品事件
     local _useItemTrg = War3.CreateTrigger(function()
@@ -178,21 +161,45 @@ _RegObtainItemEvent = function()
         return true
     end)
     Game:Event "單位-獲得物品" (function(self, hero, item)
-        if Hero(hero):AcceptQuest(string.sub(cj.GetItemName(item), 10)) then
-            return 
-        end
         if Item.IsEquipment(item) then
             Equipment(item).owner = Hero(hero)
             Equipment(item).ownPlayer = Player(cj.GetOwningPlayer(hero))
         elseif Item.IsSecrets(item) then
             Secrets(item).owner = Hero(hero)
             Secrets(item).ownPlayer = Player(cj.GetOwningPlayer(hero))
+        elseif Hero(hero):AcceptQuest(string.sub(cj.GetItemName(item), 10)) then
+                return 
         else
             Item(item).owner = Hero(hero)
             Item(item).ownPlayer = Player(cj.GetOwningPlayer(hero))
         end
+        _StackItem(hero, item)
     end)
     return _obtainItemTrg
+end
+
+_StackItem = function(hero, item)
+    if _IsItem(item) and cj.GetItemCharges(item) > 0 then
+        print "1"
+        for i = 0, 5 do
+            local bagItem = cj.UnitItemInSlot(hero, i)
+        print(js.H2I(bagItem) .. " / " .. js.H2I(item))
+            if _IsTypeSame(bagItem, item) then
+                print "ok"
+                cj.SetItemCharges(bagItem, cj.GetItemCharges(bagItem) + cj.GetItemCharges(item))
+                cj.RemoveItem(item)
+                return
+            end
+        end
+    end
+end
+
+_IsItem = function(item)
+    return cj.GetItemLevel(item) == 1
+end
+
+_IsTypeSame = function(bagItem, target)
+    return (js.Item2Id(bagItem) == js.Item2Id(target)) and (bagItem ~= target)
 end
 
 _RegDropItemEvent = function()
