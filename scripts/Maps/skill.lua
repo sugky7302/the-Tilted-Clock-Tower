@@ -56,18 +56,6 @@ local _EventName = {
     ['造成傷害'] = 'on_deal_damage',
 }
 
-function Skill.Init()
-    local Game = require 'game'
-    Game:Event "單位-發布命令" (function(self, unit, order, target)
-        -- 中斷施法
-        if (order == Base.String2OrderId('smart')) or (order == Base.String2OrderId('stop')) or (order == Base.String2OrderId('attack')) then
-            for _, skill in ipairs(unit.eachCasting) do
-                skill:Break()
-            end
-        end
-    end)
-end
-
 function mt:Break()
     if (self.breakCastStart == 1) and self.castStartTimer then
         self.castbar:Break()
@@ -120,7 +108,7 @@ end
 function mt:ChangeModel(unit, model)
     local slk = require 'jass.slk'
     slk.ability.AEme.DataA1 = model
-    slk.ability.AEme.UnitID1 = Base.Id2String(U2Id(unit))
+    slk.ability.AEme.UnitID1 = Base.Id2String(js.U2Id(unit))
     slk.ability.AEme.DataE1 = 0
     cj.UnitAddAbility(unit, Base.String2Id('AEme'))
     cj.UnitRemoveAbility(unit, Base.String2Id('AEme'))
@@ -173,7 +161,9 @@ function mt:_cast_shot()
             self:RootCast(self.castShotTime)
         end
         -- 看能不能被打斷
+        print "1."
         self.castShotTimer = Timer(self.castPulse, self.castShotTime / self.castPulse, function(callback)
+            print "1.."
             self:EventDispatch "施法出手"
             if callback.isPeriod < 1 then
                 self:_cast_finish()

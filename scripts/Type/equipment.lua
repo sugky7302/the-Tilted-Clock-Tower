@@ -23,17 +23,14 @@ local _DROP_CHANCE = {{55, 40, 4, 1}, {35, 50, 12, 3}, {12, 35, 41, 12}, {0, 20,
 local _CompareFn, _RandRingCount, _SetAttributeState, _GetDisplayedInfo, _DialogDisplay, _GetAttribute, _GetLevel
 
 function Equipment.Init()
-    local Game = require 'game'
-    local Equipment = require 'equipment'
-    
-    Game:Event "單位-使用物品" (function(self, unit, item)
+    Unit:Event "單位-使用物品" (function(trigger, unit, item)
         if Item.IsEquipment(item) then
             Equipment(item):Update()
             Equipment(item):Display()
         end
     end)
     -- 裝備顯示框被點擊事件
-    Game:Event "玩家-對話框被點擊" (function(self, player, button)
+    Player:Event "玩家-對話框被點擊" (function(trigger, player, button)
         -- 關閉對話框
         if player.dialog:Find("關閉") == button then
             player.dialog:Show(false)

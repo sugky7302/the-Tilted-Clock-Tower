@@ -24,16 +24,16 @@ function Unit.Init()
     local trg = War3.CreateTrigger(function()
         local target = Unit(cj.GetTriggerUnit())
         if target.type == "Unit" then
-            Game:EventDispatch("單位-刷新", target)
+            target:EventDispatch("單位-刷新")
         elseif target.type == 'Pet' then
-            Game:EventDispatch("寵物-清除", target)
+            target:EventDispatch("寵物-清除")
         elseif target.type == "Hero" then
-            Game:EventDispatch("英雄-復活", target)
+            target:EventDispatch("英雄-復活")
         end
-        Game:EventDispatch("任務-更新", target)
+        target:EventDispatch("任務-更新")
         return true
     end)
-    Game:Event "單位-刷新" (function(self, obj)
+    Unit:Event "單位-刷新" (function(trigger, obj)
         local id = js.U2Id(obj.object) -- 移除單位前先存單位id才不會讀不到
         Unit.KillUnit(obj.object)
         -- Timer(obj:get '刷新時間', false, function()
@@ -44,7 +44,15 @@ function Unit.Init()
             obj:Remove() -- 移除實例
         end)
     end)
-    Game:Event "單位-創建" (function(self, target)
+    Unit:Event "單位-發布命令" (function(trigger, unit, order, target)
+        -- 中斷施法
+        if (order == Base.String2OrderId('smart')) or (order == Base.String2OrderId('stop')) or (order == Base.String2OrderId('attack')) then
+            for _, skill in ipairs(unit.eachCasting) do
+                skill:Break()
+            end
+        end
+    end)
+    Game:Event "單位-創建" (function(trigger, target)
         cj.TriggerRegisterUnitEvent(trg, target, cj.EVENT_UNIT_DEATH)
     end)
 end
@@ -121,13 +129,13 @@ function mt:Event(eventName)
 end
 
 function mt:EventDispatch(eventName, ...)
-	local res = Event.Dispatch(self, eventName, ...)
+	local res = Event.Dispatch(Unit, eventName, self, ...)
 	if res ~= nil then
 		return res
 	end
 	local player = self.owner
 	if player then
-		local res = Event.Dispatch(self, eventName, ...)
+		local res = Event.Dispatch(Player, eventName, player, ...)
 		if res ~= nil then
 			return res
 		end

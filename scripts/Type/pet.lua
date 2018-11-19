@@ -14,7 +14,7 @@ Pet.type = "Pet"
 -- variables
 local _SetPetLifePeriod
 
-Game:Event "寵物-清除" (function(self, pet)
+Unit:Event "寵物-清除" (function(trigger, pet)
     pet.owner.pet = nil
     pet:Remove()
 end)

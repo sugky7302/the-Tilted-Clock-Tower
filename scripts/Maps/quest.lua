@@ -5,7 +5,6 @@ local js = require 'jass_tool'
 local Timer = require 'timer'
 local Unit = require 'unit'
 local Group = require 'group'
-local Game = require 'game'
 local Item = require 'item'
 local Point = require 'point'
 
@@ -20,12 +19,12 @@ local _announceDur = 6
 
 -- varaibles
 local _IsHero, _LookupQuests, _AccepteMessage, _CreateQuestList, _Generate, _SetNewQuest, _FinishMessage
-local _UpdateDemands, _UpdateMessage, _CanRepeat, _IsFinished, _CheckQuestHasNumber, _CheckQuestNoNumber
+local _UpdateDemands, _UpdateMessage, _CanRepeat, _IsFinished, _CheckQuest
 
 function Quest.Init()
-    Game:Event "任務-更新" (function(self, target)
-        if _IsHero(target.killer) then
-            _LookupQuests(target.killer.quests, target.id)
+    Unit:Event "任務-更新" (function(trigger, self)
+        if _IsHero(self.killer) then
+            _LookupQuests(self.killer.quests, self.id)
         end
     end)
 end
@@ -43,8 +42,7 @@ _LookupQuests = function(quests, id)
 end
 
 function mt:Update(id)
-    _CheckQuestHasNumber(self, id)
-    _CheckQuestNoNumber(self, id)
+    _CheckQuest(self, id)
     if _IsFinished(self) then
         _FinishMessage(self)
         _CanRepeat(self)
@@ -55,17 +53,13 @@ function mt:Update(id)
     end
 end
 
-_CheckQuestHasNumber = function(self, id)
+_CheckQuest = function(self, id)
     if type(self.demands[id]) == 'number' then
         self.demands[id] = self.demands[id] - 1
         if self.demands[id] == 0 then
             self.demands[id] = false
         end
-    end
-end
-
-_CheckQuestNoNumber = function(self, id)
-    if self.demands[id] then
+    elseif self.demands[id] then
         self.demands[id] = false
     end
 end

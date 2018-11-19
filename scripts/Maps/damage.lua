@@ -6,7 +6,6 @@ local TextToAttachUnit = require 'text_to_attach_unit'
 local Point = require 'point'
 local MathLib = require 'math_lib'
 local Skill = require 'skill'
-local Game = require 'game'
 
 local Damage = {}
 setmetatable(Damage, Damage)
@@ -93,7 +92,7 @@ function Damage:__call(obj)
     _Show(obj.target.object, dmg, obj.type, textSize)
     obj.target.killer = obj.source
     obj.target.isSpellDamaged = false -- 關閉判定，以免傷害函數無法執行
-    Game:EventDispatch("天賦-傷害結算", obj)
+    obj.source:EventDispatch("單位-傷害結算", obj.name)
 end
 
 _SetDamageType = function(self)

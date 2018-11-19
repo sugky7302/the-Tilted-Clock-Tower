@@ -1,7 +1,6 @@
 local setmetatable = setmetatable
 local cj = require 'jass.common'
 local Unit = require 'unit'
-local Game = require 'game'
 local Skill = require 'skill'
 local table_insert = table.insert
 local table_sort = table.sort
@@ -26,7 +25,7 @@ mt.on_call = nil   -- 呼叫事件
 local _CompareFn, _GetTalentList, _HasTalent, _CallEvent
 
 function Talent.Init()
-    Game:Event "單位-發動技能效果" (function(self, target, id)
+    Unit:Event "單位-發動技能效果" (function(trigger, target, id)
         Unit(target):LearnTalent(id)
     end)
 end

@@ -180,7 +180,7 @@ function mt:_Add()
     _AddEffect(self)
     self.invalid = false
     _CallEvent(self, 'on_add')
-    Game:EventDispatch("單位-獲得狀態", self.target, self)
+    self.target:EventDispatch("單位-獲得狀態", self)
     return self
 end
 
@@ -278,7 +278,7 @@ function mt:Remove()
         return 
     end
     self.timer:Break()
-    Game:EventDispatch("單位-失去狀態", self.target, self)
+    self.target:EventDispatch("單位-失去狀態", self)
     -- 移除target身上的buff
     self.target.buffs[self] = nil
     local newBuff

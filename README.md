@@ -9,7 +9,7 @@
 - 以業界工程師的標準撰寫程式碼
 - 根據玩家的回饋修正遊戲
 
-過程使**Evernote**來管理我的專案。
+過程使用**Evernote**來管理我的專案。
 
 ## 未來可能會加入的想法
 - [2018-10-25] 暫時無法使用出售物品和強制按鍵模擬出充能施法，之後學習圖層混合再來考慮。
@@ -44,6 +44,19 @@
 - [技能音效] Hero Of the Storm\mods\heros.stormmod\base.stormassets\assets\sounds\heros
 
 ## 更新日誌
+### 0.28.0 - 2018-11-19
+>#### Added:
+> - 新增polygon庫，用於處理多邊形，例如區域。
+> - [unit] 添加Event、EventDispatch函數。注意，Event的第一個參數self指的是"trigger"，不是EventDispatch呼叫的那個東西。
+> - [hero] 調整事件觸發。
+>#### Fixed:
+> - [hero] 修正"單位-創建"，會註冊多個相同觸發，導致EventDispatch調用冗餘的問題。
+> - [hero] 修正'獲得物品'事件，string_sub有時會無法獲取itemName的問題。
+> - [quest] 修正還未達到要求數量，任務就會完成的問題。
+>#### Bug:
+> - [jass_tool] 施放技能時，lua會告知U2Id內的GetUnitTypeId崩潰。
+> - [missile] 某些地形投射物的軌跡會變形。
+
 ### 0.27.0 - 2018-11-12
 >#### Added:
 > - 完成**領取物資**3環任務。

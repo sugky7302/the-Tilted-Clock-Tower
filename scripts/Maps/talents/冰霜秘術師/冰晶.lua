@@ -3,7 +3,6 @@ local Pet = require 'pet'
 local Point = require 'point'
 local cj = require 'jass.common'
 local js = require 'jass_tool'
-local Game = require 'game'
 local Timer = require 'timer'
 local Unit = require 'unit'
 local TraceLib = require 'trace_lib'
@@ -21,16 +20,16 @@ local mt = require 'talent' "冰晶"
 mt.dmg = 0
 mt.max = 5
 
-Game:Event "天賦-傷害完成" (function(self, source, target)
+Unit:Event "單位-傷害完成" (function(trigger, source, target)
     if Pet(source).name == '水元素' and Unit(target):FindBuff('霜寒刺骨debuff') then
         local water = Pet(source)
         water.owner:TalentDispatch("冰晶", "添加", water:get "最後造成的傷害")
     end
 end)
 
-Game:Event "天賦-傷害結算" (function(self, obj)
-    if obj.name == "寒冰箭" then
-        obj.source:TalentDispatch("冰晶", "刪除")
+Unit:Event "單位-傷害結算" (function(trigger, source, name)
+    if name == "寒冰箭" then
+        source:TalentDispatch("冰晶", "刪除")
     end
 end)
 

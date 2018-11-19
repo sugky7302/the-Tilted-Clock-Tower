@@ -1,6 +1,7 @@
 local setmetatable = setmetatable
 local cj = require 'jass.common'
 local Dialog = require 'dialog'
+local Event = require 'event'
 
 local Player, mt = {}, {}
 setmetatable(Player, Player)
@@ -12,10 +13,9 @@ local set, get = {}, {}
 function Player.Init()
     -- 設定點擊事件
     local War3 = require 'api'
-    local Game = require 'game'
 
     local _clickTrg = War3.CreateTrigger(function()
-        Game:EventDispatch("玩家-對話框被點擊", Player(cj.GetTriggerPlayer()), cj.GetClickedButton())
+        Player(cj.GetTriggerPlayer()):EventDispatch("玩家-對話框被點擊", cj.GetClickedButton())
         return true
     end) 
     -- 設定玩家
@@ -40,7 +40,23 @@ function Player:__call(player)
         obj.__index = obj
     end
     return obj
-end 
+end
+
+function mt:Event(eventName)
+    return Event(self, eventName)
+end
+
+function mt:EventDispatch(eventName, ...)
+	local res = Event.Dispatch(Player, eventName, self, ...)
+	if res ~= nil then
+		return res
+	end
+	local res = Event.Dispatch(Game, eventName, ...)
+	if res ~= nil then
+		return res
+	end
+	return nil
+end
 
 function mt:add(name, val)
     if not set[name] then

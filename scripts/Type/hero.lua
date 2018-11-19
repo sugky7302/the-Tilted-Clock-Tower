@@ -1,4 +1,5 @@
 local setmetatable = setmetatable
+local string_sub = string.sub
 local Unit = require 'unit'
 local cj = require 'jass.common'
 local js = require 'jass_tool'
@@ -20,20 +21,25 @@ Hero.__index = Unit
 Hero.type = "Hero"
 
 -- varaiables
-local _RegDropItemEvent, _RegObtainItemEvent, _RegSellItemEvent, _RegUseItemEvent, _RegSpellEffectEvent
 local _IsItem, _IsTypeSame, _ChekMultiCast, _GenerateSkillObject, _IsShowMultiCast
 Hero.heroDatas = {}
 
 function Hero.Init()
     local orderTrg = War3.CreateTrigger(function()
-        Game:EventDispatch("單位-發布命令", Hero(cj.GetOrderedUnit()), cj.GetIssuedOrderId(), cj.GetOrderTarget())
+        Unit(cj.GetOrderedUnit()):EventDispatch("單位-發布命令", cj.GetIssuedOrderId(), cj.GetOrderTarget())
         return true
     end)
+    Unit:Event "單位-發布命令" (function(trigger, hero, order, target)
+        if order == Base.String2OrderId('smart') then
+            _StackItem(hero.object, target)
+        end
+    end)
+
     local unitIsCasted = War3.CreateTrigger(function()
-        Game:EventDispatch("單位-準備施放技能", Unit(cj.GetTriggerUnit()), cj.GetSpellAbilityId(), Unit(cj.GetSpellTargetUnit()), Point:GetLoc(cj.GetSpellTargetLoc()))
+        Unit(cj.GetTriggerUnit()):EventDispatch("單位-準備施放技能", cj.GetSpellAbilityId(), Unit(cj.GetSpellTargetUnit()), Point:GetLoc(cj.GetSpellTargetLoc()))
         return true
     end)
-    Game:Event '單位-準備施放技能' (function(self, hero, id, targetUnit, targetLoc)
+    Unit:Event '單位-準備施放技能' (function(trigger, hero, id, targetUnit, targetLoc)
         -- 打斷正在施法的技能
         for _, skill in ipairs(hero.eachCasting) do
             if skill.orderId ~= Base.Id2String(id) then
@@ -53,28 +59,8 @@ function Hero.Init()
             end
         end
     end)
-    -- 添加事件
-    Game:Event "單位-創建" (function(self, target)
-        if Hero(target).type == "Hero" then
-            cj.TriggerRegisterUnitEvent(unitIsCasted, target, cj.EVENT_UNIT_SPELL_CHANNEL)
-            cj.TriggerRegisterUnitEvent(orderTrg, target, cj.EVENT_UNIT_ISSUED_TARGET_ORDER)
-            cj.TriggerRegisterUnitEvent(orderTrg, target, cj.EVENT_UNIT_ISSUED_POINT_ORDER)
-            cj.TriggerRegisterUnitEvent(orderTrg, target, cj.EVENT_UNIT_ISSUED_ORDER)
-            cj.TriggerRegisterUnitEvent(_RegUseItemEvent(), target, cj.EVENT_UNIT_USE_ITEM) -- 使用物品事件
-            cj.TriggerRegisterUnitEvent(_RegObtainItemEvent(), target, cj.EVENT_UNIT_PICKUP_ITEM) -- 獲得物品事件
-            cj.TriggerRegisterUnitEvent(_RegDropItemEvent(), target, cj.EVENT_UNIT_DROP_ITEM) -- 丟棄物品事件
-            cj.TriggerRegisterUnitEvent(_RegSellItemEvent(), target, cj.EVENT_UNIT_SELL_ITEM) -- 出售物品事件
-            cj.TriggerRegisterUnitEvent(_RegSpellEffectEvent(), target, cj.EVENT_UNIT_SPELL_EFFECT)
-        end
-    end)
 
-    Game:Event "單位-發布命令" (function(self, hero, order, target)
-        if order == Base.String2OrderId('smart') then
-            _StackItem(hero, target)
-        end
-    end)
-
-    Game:Event "英雄-復活" (function(self, obj)
+    Unit:Event "英雄-復活" (function(trigger, obj)
         for _, skill in ipairs(obj.eachCasting) do
             skill:Break()
         end
@@ -84,6 +70,71 @@ function Hero.Init()
             cj.ReviveHero(hero, obj.revivePoint.x, obj.revivePoint.y, true)
             obj:set("生命", obj:get "生命上限") -- 不然獲取到的生命值會跟死亡前的生命值相同，導致dealdamage會判定擊殺
         end)
+    end)
+
+    -- 創建使用物品事件
+    local _useItemTrg = War3.CreateTrigger(function()
+        Hero(cj.GetTriggerUnit()):EventDispatch("單位-使用物品", cj.GetManipulatedItem())
+        return true
+    end)
+    Unit:Event "單位-使用物品" (function(trigger, hero, item)
+    end)
+
+    -- 創建獲得物品事件
+    local _obtainItemTrg = War3.CreateTrigger(function()
+        if cj.GetManipulatedItem() ~= nil then
+            Hero(cj.GetTriggerUnit()):EventDispatch("單位-獲得物品", cj.GetManipulatedItem())
+        end
+        return true
+    end)
+    Unit:Event "單位-獲得物品" (function(trigger, hero, item)
+        if Item.IsEquipment(item) then
+            Equipment(item).owner = hero
+            Equipment(item).ownPlayer = hero.owner
+        elseif Item.IsSecrets(item) then
+            Secrets(item).owner = hero
+            Secrets(item).ownPlayer = hero.owner
+        elseif hero:AcceptQuest(string_sub(cj.GetItemName(item), 10)) then
+                return 
+        else
+            Item(item).owner = hero
+            Item(item).ownPlayer = hero.owner
+        end
+        _StackItem(hero.object, item)
+    end)
+    
+    -- 創建丟棄物品事件
+    local _dropItemTrg = War3.CreateTrigger(function()
+        Hero(cj.GetTriggerUnit()):EventDispatch("單位-丟棄物品", cj.GetManipulatedItem())
+        return true
+    end)
+    
+    -- 創建出售物品事件
+    local _sellItemTrg = War3.CreateTrigger(function()
+        Hero(cj.GetTriggerUnit()):EventDispatch("單位-出售物品", cj.GetSoldItem())
+        return true
+    end)
+    Unit:Event "單位-出售物品" (function(trigger, hero, item)
+    end)
+
+    local _spellEffectTrg = War3.CreateTrigger(function()
+        Hero(cj.GetTriggerUnit()):EventDispatch("單位-發動技能效果", cj.GetSpellAbilityId(), cj.GetSpellTargetUnit(), cj.GetSpellTargetItem(), cj.GetSpellTargetLoc())
+        return true
+    end)
+
+    -- 添加事件
+    Game:Event "單位-創建" (function(trigger, target)
+        if Hero(target).type == "Hero" then
+            cj.TriggerRegisterUnitEvent(unitIsCasted, target, cj.EVENT_UNIT_SPELL_CHANNEL)
+            cj.TriggerRegisterUnitEvent(orderTrg, target, cj.EVENT_UNIT_ISSUED_TARGET_ORDER)
+            cj.TriggerRegisterUnitEvent(orderTrg, target, cj.EVENT_UNIT_ISSUED_POINT_ORDER)
+            cj.TriggerRegisterUnitEvent(orderTrg, target, cj.EVENT_UNIT_ISSUED_ORDER)
+            cj.TriggerRegisterUnitEvent(_useItemTrg, target, cj.EVENT_UNIT_USE_ITEM) -- 使用物品事件
+            cj.TriggerRegisterUnitEvent(_obtainItemTrg, target, cj.EVENT_UNIT_PICKUP_ITEM) -- 獲得物品事件
+            cj.TriggerRegisterUnitEvent(_dropItemTrg, target, cj.EVENT_UNIT_DROP_ITEM) -- 丟棄物品事件
+            cj.TriggerRegisterUnitEvent(_sellItemTrg, target, cj.EVENT_UNIT_SELL_ITEM) -- 出售物品事件
+            cj.TriggerRegisterUnitEvent(_spellEffectTrg, target, cj.EVENT_UNIT_SPELL_EFFECT)
+        end
     end)
 end
 
@@ -141,51 +192,11 @@ _GenerateSkillObject = function(skill, hero, targetUnit, targetLoc)
     skillCopy:_cast_start()
 end
 
-_RegUseItemEvent = function()
-    -- 創建使用物品事件
-    local _useItemTrg = War3.CreateTrigger(function()
-        Game:EventDispatch("單位-使用物品", cj.GetTriggerUnit(), cj.GetManipulatedItem())
-        return true
-    end)
-    Game:Event "單位-使用物品" (function(self, hero, item)
-    end)
-    return _useItemTrg
-end
-
-_RegObtainItemEvent = function()
-    -- 創建獲得物品事件
-    local _obtainItemTrg = War3.CreateTrigger(function()
-        if cj.GetManipulatedItem() ~= nil then
-            Game:EventDispatch("單位-獲得物品", cj.GetTriggerUnit(), cj.GetManipulatedItem())
-        end
-        return true
-    end)
-    Game:Event "單位-獲得物品" (function(self, hero, item)
-        if Item.IsEquipment(item) then
-            Equipment(item).owner = Hero(hero)
-            Equipment(item).ownPlayer = Player(cj.GetOwningPlayer(hero))
-        elseif Item.IsSecrets(item) then
-            Secrets(item).owner = Hero(hero)
-            Secrets(item).ownPlayer = Player(cj.GetOwningPlayer(hero))
-        elseif Hero(hero):AcceptQuest(string.sub(cj.GetItemName(item), 10)) then
-                return 
-        else
-            Item(item).owner = Hero(hero)
-            Item(item).ownPlayer = Player(cj.GetOwningPlayer(hero))
-        end
-        _StackItem(hero, item)
-    end)
-    return _obtainItemTrg
-end
-
 _StackItem = function(hero, item)
     if _IsItem(item) and cj.GetItemCharges(item) > 0 then
-        print "1"
         for i = 0, 5 do
             local bagItem = cj.UnitItemInSlot(hero, i)
-        print(js.H2I(bagItem) .. " / " .. js.H2I(item))
             if _IsTypeSame(bagItem, item) then
-                print "ok"
                 cj.SetItemCharges(bagItem, cj.GetItemCharges(bagItem) + cj.GetItemCharges(item))
                 cj.RemoveItem(item)
                 return
@@ -200,34 +211,6 @@ end
 
 _IsTypeSame = function(bagItem, target)
     return (js.Item2Id(bagItem) == js.Item2Id(target)) and (bagItem ~= target)
-end
-
-_RegDropItemEvent = function()
-    -- 創建丟棄物品事件
-    local _dropItemTrg = War3.CreateTrigger(function()
-        Game:EventDispatch("單位-丟棄物品", cj.GetTriggerUnit(), cj.GetManipulatedItem())
-        return true
-    end)
-    return _dropItemTrg
-end
-
-_RegSellItemEvent = function()
-    -- 創建出售物品事件
-    local _sellItemTrg = War3.CreateTrigger(function()
-        Game:EventDispatch("單位-出售物品", cj.GetTriggerUnit(), cj.GetSoldItem())
-        return true
-    end)
-    Game:Event "單位-出售物品" (function(self, hero, item)
-    end)
-    return _sellItemTrg
-end
-
-_RegSpellEffectEvent = function()
-    local _spellEffectTrg = War3.CreateTrigger(function()
-        Game:EventDispatch("單位-發動技能效果", cj.GetTriggerUnit(), cj.GetSpellAbilityId(), cj.GetSpellTargetUnit(), cj.GetSpellTargetItem(), cj.GetSpellTargetLoc())
-        return true
-    end)
-    return _spellEffectTrg
 end
 
 function Hero:__call(hero)

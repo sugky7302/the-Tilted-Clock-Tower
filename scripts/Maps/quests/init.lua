@@ -1,4 +1,5 @@
 require 'quests.報到'
-require 'quests.領取物資1'
-require 'quests.領取物資2'
-require 'quests.領取物資3'
+require 'quests.領取物資-1'
+require 'quests.領取物資-2'
+require 'quests.領取物資-3'
+require 'quests.清掃'
