@@ -77,7 +77,6 @@ function Damage:__call(obj)
     if obj.source == obj.target then -- _DealDamge的扣血可能會造成damage，來源 = 目標即可排除
         return 
     end
-
     _SetDamageType(obj)
     local atk, def = _ComputeAttack(obj), _ComputeDefense(obj)
     local dmg, textSize = _DamageDetermine(obj, atk, def)
@@ -230,11 +229,11 @@ end
 
 _IsHitOrDodge = function(hit, dodge)
     if hit > dodge then
-        return MathLib.Random() < 0.8 + _TransHitAndDodge(hit, dodge)
+        return MathLib.Random(100) < 80 + 100 * _TransHitAndDodge(hit, dodge)
     elseif hit == dodge then
-        return MathLib.Random() < 0.5
+        return MathLib.Random(100) < 51
     else
-        return not(MathLib.Random() < 0.8 + _TransHitAndDodge(dodge, hit))
+        return not(MathLib.Random(100) < 80 + 100 * _TransHitAndDodge(dodge, hit))
     end
 end
 

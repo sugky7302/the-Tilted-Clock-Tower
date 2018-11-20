@@ -44,6 +44,14 @@
 - [技能音效] Hero Of the Storm\mods\heros.stormmod\base.stormassets\assets\sounds\heros
 
 ## 更新日誌
+### Unreleased - 2018-11-20
+>#### Added:
+> - 新增drop_list庫，儲存單位掉落的物品類型。
+> - [unit] 新增"單位-掉落物品"事件。
+>#### Fixed:
+> - [damage] 修正MathLib.Random()只產生{0, 1}，導致命中判定不正確的問題。
+> - [hero] 修正拾取裝備卻無法獲得屬性的問題。
+
 ### 0.28.0 - 2018-11-19
 >#### Added:
 > - 新增polygon庫，用於處理多邊形，例如區域。

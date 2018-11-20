@@ -77,8 +77,6 @@ function Hero.Init()
         Hero(cj.GetTriggerUnit()):EventDispatch("單位-使用物品", cj.GetManipulatedItem())
         return true
     end)
-    Unit:Event "單位-使用物品" (function(trigger, hero, item)
-    end)
 
     -- 創建獲得物品事件
     local _obtainItemTrg = War3.CreateTrigger(function()
@@ -91,6 +89,7 @@ function Hero.Init()
         if Item.IsEquipment(item) then
             Equipment(item).owner = hero
             Equipment(item).ownPlayer = hero.owner
+            hero:UpdateAttributes("增加", Equipment(item))
         elseif Item.IsSecrets(item) then
             Secrets(item).owner = hero
             Secrets(item).ownPlayer = hero.owner
@@ -108,13 +107,17 @@ function Hero.Init()
         Hero(cj.GetTriggerUnit()):EventDispatch("單位-丟棄物品", cj.GetManipulatedItem())
         return true
     end)
+
+    Unit:Event "單位-丟棄物品" (function(trigger, hero, item)
+        if Item.IsEquipment(item) then
+            hero:UpdateAttributes("減少", Equipment(item))
+        end
+    end)
     
     -- 創建出售物品事件
     local _sellItemTrg = War3.CreateTrigger(function()
         Hero(cj.GetTriggerUnit()):EventDispatch("單位-出售物品", cj.GetSoldItem())
         return true
-    end)
-    Unit:Event "單位-出售物品" (function(trigger, hero, item)
     end)
 
     local _spellEffectTrg = War3.CreateTrigger(function()
@@ -245,6 +248,13 @@ function Hero.Create(name)
 			end
         end
         return obj
+    end
+end
+
+function Hero:UpdateAttributes(sign, equipment)
+    sign = (sign == "增加") and 1 or -1
+    for _, tb in ipairs(equipment.attribute) do 
+        self:add(tb[1], sign * tb[2])
     end
 end
 

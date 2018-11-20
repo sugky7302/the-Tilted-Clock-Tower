@@ -9,6 +9,9 @@ local Game = require 'game'
 local War3 = require 'api'
 local Event = require 'event'
 local Player = require 'player'
+local Item = require 'item'
+local MathLib = require 'math_lib'
+require 'drop_list'
 
 local Unit = {}
 local mt = require 'attribute'
@@ -24,6 +27,7 @@ function Unit.Init()
     local trg = War3.CreateTrigger(function()
         local target = Unit(cj.GetTriggerUnit())
         if target.type == "Unit" then
+            target:EventDispatch("單位-掉落物品")
             target:EventDispatch("單位-刷新")
         elseif target.type == 'Pet' then
             target:EventDispatch("寵物-清除")
@@ -32,6 +36,18 @@ function Unit.Init()
         end
         target:EventDispatch("任務-更新")
         return true
+    end)
+    Unit:Event "單位-掉落物品" (function(trigger, unit)
+        if not DROP_LIST[unit.id] then
+            return
+        end
+        local p = Point:GetUnitLoc(unit.object)
+        for _, data in ipairs(DROP_LIST[unit.id]) do 
+            if MathLib.Random(100) < data[2] then
+                Item.Create(data[1], p)
+            end
+        end
+        p:Remove()
     end)
     Unit:Event "單位-刷新" (function(trigger, obj)
         local id = js.U2Id(obj.object) -- 移除單位前先存單位id才不會讀不到

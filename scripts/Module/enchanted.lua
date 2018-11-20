@@ -21,6 +21,7 @@ function Enchanted.Init()
         -- 如果是能獲得附魔目標才觸發
         if Hero(unit).manipulatedItem and Item.IsSecrets(item) then
             Enchanted.Insert(Hero(unit).manipulatedItem, Secrets(item), false)
+            Hero(unit):UpdateAttributes()
         end
     end)
 end

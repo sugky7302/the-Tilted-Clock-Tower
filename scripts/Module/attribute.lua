@@ -26,9 +26,6 @@ function Attribute:InitUnitState()
     self['等級'] = data.level
     self['骰子面數'] = 7
     self['法術攻擊力'] = 0
-    self['法術護甲'] = 0
-    self['元素傷害'] = 0
-    self['元素傷害%'] = 0
     self['元素抗性'] = 0
     self['攻擊範圍'] = data.rangeN1
     self['魔力恢復'] = 0
@@ -85,8 +82,6 @@ function Attribute:InitHeroState()
     self['額外法術傷害'] = 0
     self['特殊物理傷害'] = 0
     self['特殊法術傷害'] = 0
-    self['物理護甲%'] = 0
-    self['法術護甲%'] = 0
     self['額外物理護甲'] = 0
     self['額外法術護甲'] = 0
     self['特殊物理護甲'] = 0
@@ -309,20 +304,15 @@ set['最小物理攻擊力'] = function(self, attack)
 end
 
 get['物理攻擊力'] = function(self)
-    return math.modf(self:get "最小物理攻擊力" + self:get "最大物理攻擊力")
+    self['最小物理攻擊力暫存'] = self:get "最小物理攻擊力"
+    self['最大物理攻擊力暫存'] = self:get "最大物理攻擊力"
+    return self['物理攻擊力'] or 0
 end
 
 set['物理攻擊力'] = function(self, attack)
-    self:set("最大物理攻擊力", self:get "最大物理攻擊力" + attack)
-    self:set("最小物理攻擊力", self:get "最小物理攻擊力" + attack)
-end
-
-get['增強物理攻擊力'] = function(self)
-    return japi.GetUnitState(self.object, 0x13)
-end
-
-set['增強物理攻擊力'] = function(self, value)
-    cj.SetUnitState(self.object, 0x13, value)
+    print(self["最小物理攻擊力暫存"] .. "-" .. self["最大物理攻擊力暫存"])
+    self:set("最大物理攻擊力", self["最大物理攻擊力暫存"] + attack)
+    self:set("最小物理攻擊力", self["最小物理攻擊力暫存"] + attack)
 end
 
 get['物理護甲'] = function(self)
