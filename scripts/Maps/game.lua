@@ -4,6 +4,9 @@ local Event = require 'event'
 local Game = {}
 setmetatable(Game, Game)
 
+-- constatns
+Game.type = "Game"
+
 function Game:Event(eventName)
     return Event(self, eventName)
 end

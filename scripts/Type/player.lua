@@ -2,10 +2,14 @@ local setmetatable = setmetatable
 local cj = require 'jass.common'
 local Dialog = require 'dialog'
 local Event = require 'event'
+local Game = require 'game'
 
 local Player, mt = {}, {}
 setmetatable(Player, Player)
 Player.__index = mt
+
+-- constants
+mt.type = "Player"
 
 -- vairables
 local set, get = {}, {}
@@ -50,8 +54,8 @@ function mt:EventDispatch(eventName, ...)
 	local res = Event.Dispatch(Player, eventName, self, ...)
 	if res ~= nil then
 		return res
-	end
-	local res = Event.Dispatch(Game, eventName, ...)
+    end
+	local res = Event.Dispatch(Game, eventName, self, ...)
 	if res ~= nil then
 		return res
 	end

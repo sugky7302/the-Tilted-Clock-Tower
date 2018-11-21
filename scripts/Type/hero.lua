@@ -22,11 +22,11 @@ Hero.type = "Hero"
 
 -- varaiables
 local _IsItem, _IsTypeSame, _ChekMultiCast, _GenerateSkillObject, _IsShowMultiCast
-Hero.heroDatas = {}
+Hero.heroDatas = {} -- 儲存所有英雄資料
 
 function Hero.Init()
     local orderTrg = War3.CreateTrigger(function()
-        Unit(cj.GetOrderedUnit()):EventDispatch("單位-發布命令", cj.GetIssuedOrderId(), cj.GetOrderTarget())
+        Hero(cj.GetOrderedUnit()):EventDispatch("單位-發布命令", cj.GetIssuedOrderId(), cj.GetOrderTarget())
         return true
     end)
     Unit:Event "單位-發布命令" (function(trigger, hero, order, target)
@@ -36,7 +36,7 @@ function Hero.Init()
     end)
 
     local unitIsCasted = War3.CreateTrigger(function()
-        Unit(cj.GetTriggerUnit()):EventDispatch("單位-準備施放技能", cj.GetSpellAbilityId(), Unit(cj.GetSpellTargetUnit()), Point:GetLoc(cj.GetSpellTargetLoc()))
+        Hero(cj.GetTriggerUnit()):EventDispatch("單位-準備施放技能", cj.GetSpellAbilityId(), Unit(cj.GetSpellTargetUnit()), Point:GetLoc(cj.GetSpellTargetLoc()))
         return true
     end)
     Unit:Event '單位-準備施放技能' (function(trigger, hero, id, targetUnit, targetLoc)
@@ -47,7 +47,7 @@ function Hero.Init()
             end
         end
         -- 獲取技能
-        for _, skill in pairs(hero.heroDatas[cj.GetUnitName(hero.object)].skillDatas) do
+        for _, skill in ipairs(hero.heroDatas[hero.name].skillDatas) do
             if skill.orderId == Base.Id2String(id) then
                 if skill.canUse then
                     _ChekMultiCast(skill, hero)
@@ -201,7 +201,7 @@ _StackItem = function(hero, item)
             local bagItem = cj.UnitItemInSlot(hero, i)
             if _IsTypeSame(bagItem, item) then
                 cj.SetItemCharges(bagItem, cj.GetItemCharges(bagItem) + cj.GetItemCharges(item))
-                cj.RemoveItem(item)
+                Item(item):Remove()
                 return
             end
         end

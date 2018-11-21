@@ -44,15 +44,15 @@ end
 function Event.Dispatch(self, eventName, ...)
     local events = self.events
     if not events then
-        return
+        return false
     end
     local event = events[eventName]
     if not event then
-        return
+        return false
     end
     for i = #event, 1, -1 do
         local callback = event[i]:Run(...)
-        if callback then
+        if callback ~= nil then
             return callback
         end
     end

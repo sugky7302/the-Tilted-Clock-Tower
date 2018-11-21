@@ -26,7 +26,7 @@ local _CompareFn, _GetTalentList, _HasTalent, _CallEvent
 
 function Talent.Init()
     Unit:Event "單位-發動技能效果" (function(trigger, target, id)
-        Unit(target):LearnTalent(id)
+        target:LearnTalent(id)
     end)
 end
 

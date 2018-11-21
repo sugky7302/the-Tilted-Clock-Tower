@@ -42,6 +42,7 @@ function mt:In(p)
             if x > p.x then
                 crossNum = crossNum + 1
             end
+        end
     end
     return crossNum % 2 == 1
 end

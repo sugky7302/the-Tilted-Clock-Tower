@@ -18,8 +18,11 @@ function MathLib.Random(n, m)
     if not n then
         return math.random()
     elseif not m  then
+        n = math.modf(n)
         return math.random(n)
     else
+        n = math.modf(n)
+        m = math.modf(m)
         return math.random(n, m)
     end
 end

@@ -33,7 +33,7 @@ _GenerateAttributes = function(self)
 end
 
 function Secrets:set(name, val)
-    if not SecretsDatabase[self.id][name] then
+    if (not SecretsDatabase[self.id]) or (not SecretsDatabase[self.id][name]) then
         Item.set(self, name, val)
         return 
     end
@@ -44,7 +44,7 @@ function Secrets:set(name, val)
 end
 
 function Secrets:get(name)
-    if not SecretsDatabase[self.id][name] then
+    if (not SecretsDatabase[self.id]) or (not SecretsDatabase[self.id][name]) then
         return Item.get(self, name) or nil
     end
     if not self.attribute[name] then

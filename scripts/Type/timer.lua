@@ -15,8 +15,8 @@ local PERIOD = 0.001
 
 -- variables
 local _currentFrame, _maxFrame, _backFrame = 0, 0, 0
-local _recycleQueue, _OnTick, _Wakeup, _SetTimeout, _GetQueue = Queue("timer")
-local _Loop, _Wait, _Count, _AddCnd
+local _recycleQueue = Queue("timer")
+local _Loop, _Wait, _Count, _AddCndToExecution, _OnTick, _Wakeup, _SetTimeout, _GetQueue
 
 --[[ 建立0.01秒一幀的中心計時器
 執行每幀的佇列(最多10個動作)，若因為計時器誤差而導致丟幀，就於下次進行補幀。
@@ -80,15 +80,16 @@ function Timer:__call(timeout, isPeriod, execution)
         timeout = max(floor(timeout / PERIOD) or 1, 1), -- 這裡要把時間(秒)改成時間(幀)
         isPeriod = isPeriod,
         execution = execution,
-        invalid = false
+        invalid = false,
+        execIsReg = false
     }
     setmetatable(obj, self)
     obj.__index = obj
-    if not isPeriod then -- 如果週期設定成true或0，都視為循環觸發
+    if not isPeriod then
         _Wait(obj)
     elseif (type(isPeriod) == "number") and (isPeriod > 0) then
         _Count(obj)
-    else
+    else -- 如果週期設定成true或0，都視為循環觸發
         _Loop(obj)
     end
     return obj
@@ -121,13 +122,20 @@ end
 function mt:Resume()
     if self.pauseRemaining then
         _SetTimeout(self, self.pauseRemaining)
-        self.pauseRemaining = nil
+        self.pauseRemaining = false
     end
+end
+
+function mt:SetRemaining(timeout)
+    if not self.invalid then
+        self:Pause()
+    end
+    _SetTimeout(self, timeout)
 end
 
 -- 將循環動作插入新的幀的佇列中
 _SetTimeout = function(callback, timeout)
-    _AddCnd(callback)
+    _AddCndToExecution(callback)
     local newFrame = _currentFrame + timeout
     local callbackQueue = Timer[newFrame]
     -- 讀不到該幀的佇列，就新建一個
@@ -139,8 +147,12 @@ _SetTimeout = function(callback, timeout)
     callbackQueue:Insert(callback) -- 儲存回調
 end
 
-_AddCnd = function(self)
+_AddCndToExecution = function(self)
     local execution = self.execution
+    if self.execIsReg then
+        return
+    end
+    self.execIsReg = true
     self.execution = function(self)
         if not (self.pauseRemaining or self.invalid) then
             execution(self)
@@ -169,15 +181,9 @@ function mt:Remove()
     self.isPeriod = nil
     self.execution = nil
     self.invalid = nil
+    self.execIsReg = nil
     self = nil
     collectgarbage("collect")
-end
-
-function mt:SetRemaining(timeout)
-    if not self.invalid then
-        self:Pause()
-    end
-    self = Timer(timeout, self.isPeriod, self.execution)
 end
 
 function mt:Pause()

@@ -23,7 +23,7 @@
 ### 新增/修改/移除物編數據
 - 打開table資料夾。
 - 根據類型開啟相應的ini檔。
-- 直接修改儲存。
+- 直接修改儲存。注意，可使用"[=["和"]=]"把內容包括在裏頭，它會將enter鍵視為換行，空格鍵就空幾格，顏色照樣可以染。
 - 最後用vscode執行obj一次即可。
 ### 導入檔案
 - 先把檔案放入resource裡面，根據檔案的類型放入不同資料夾。
@@ -44,7 +44,28 @@
 - [技能音效] Hero Of the Storm\mods\heros.stormmod\base.stormassets\assets\sounds\heros
 
 ## 更新日誌
-### Unreleased - 2018-11-20
+### 0.30.0 - 2018-11-21
+>#### Added:
+> - [base] 新增Map//quests路徑。
+> - [item] 添加週期刪除物品函數，對於書類及神符類都能正確刪除物品，不然這兩類只是模型縮小而已。
+>#### Fixed:
+> - [attribute] 修正物理攻擊力的公式，使其顯示正確。
+> - [combine] 修正"單位-發動技能效果"事件會導致getUnitTypeId崩潰的問題。
+> - [damage] 修正添加物理攻擊力後，最小/最大物理攻擊力不會改變的問題。
+> - [dectect_recipe] 修正"玩家-對話框被點擊"事件無法獲取self的問題。
+> - [enchanted] 修正秘物附魔在無空的秘環的裝備上，不會返還次數的問題。
+> - [hero] 修正"單位-使用物品"事件會獲取不到單位而導致getUnitName崩潰的問題。
+> - [hero] 修正_StackItem函數在使用cj.RemoveItem無法徹底刪除物品的問題。
+> - [hero] 修正"單位-準備施放技能"事件，獲取技能的索引太繁雜的問題。
+> - [item] 修正對使用後消失的物品設定數量從0到1，不會創建物品的問題。
+> - [jass_tool] 修正觸發"單位-發動技能效果"事件時，lua會告知U2Id內的GetUnitTypeId崩潰。
+> - [math_lib] 修正Random函數遇到參數非整數時會報錯的問題。
+> - [player] 修正由於沒有require game，導致EventDispatch函數無法獲取self的問題。
+> - [polygon] 修正In的if-else函數沒有寫上end(L45)的問題。
+> - [region] 修正沒有require game，使得Init函數無法獲得game的問題。
+> - [timer] 修正SetRemaining會使exection一直註冊條件，使得exection會出現冗餘的if-else的問題。
+
+### 0.29.0 - 2018-11-20
 >#### Added:
 > - 新增drop_list庫，儲存單位掉落的物品類型。
 > - [unit] 新增"單位-掉落物品"事件。
@@ -60,6 +81,7 @@
 >#### Fixed:
 > - [hero] 修正"單位-創建"，會註冊多個相同觸發，導致EventDispatch調用冗餘的問題。
 > - [hero] 修正'獲得物品'事件，string_sub有時會無法獲取itemName的問題。
+> - [quest] 修正檔名錯誤，導致無法讀取任務的問題。
 > - [quest] 修正還未達到要求數量，任務就會完成的問題。
 >#### Bug:
 > - [jass_tool] 施放技能時，lua會告知U2Id內的GetUnitTypeId崩潰。

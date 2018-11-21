@@ -3,6 +3,7 @@ local Polygon = require 'polygon'
 local Point = require 'point'
 local cj = require 'jass.common'
 local Unit = require 'unit'
+local Game = require 'game'
 require 'region_database'
 
 local Region, mt = {}, {}
@@ -21,6 +22,7 @@ function Region.Init()
             -- 偵測玩家位置
             Timer(_period, true, function(callback)
                 for name, region in pairs(Region) do 
+                    Unit(hero)["所在地"] = Unit(hero)["所在地"] or "訓練營"
                     if region:In(hero) and Unit(hero)["所在地"] ~= name do 
                         Unit(hero)["所在地"] = name
                     end

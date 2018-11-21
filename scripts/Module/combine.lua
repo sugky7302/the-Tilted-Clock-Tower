@@ -24,11 +24,11 @@ function Combine.Init()
 
     local Game = require 'game'
     local Hero = require 'hero'
-    Game:Event "單位-發動技能效果" (function(self, source, id)
-        if id == Base.String2Id('') then
-            Combine(Hero(source))
-        end
-    end)
+    -- Game:Event "單位-發動技能效果" (function(trigger, source, id)
+    --     if id == Base.String2Id('') then
+    --         Combine(Hero(source))
+    --     end
+    -- end)
 end
 
 -- TODO: 合成物品的生命值為材料等級

@@ -125,7 +125,7 @@ _GetEAtk = function(obj)
 end
 
 _GetAtk = function(source, target, eAtk)
-    local basic = MathLib.Random(source:get "最小物理攻擊力", source:get "最大物理攻擊力") + source:get "增強物理攻擊力"
+    local basic = MathLib.Random(source:get "最小物理攻擊力", source:get "最大物理攻擊力")
     local atk = (basic + source:get "固定傷害") * _BODY_TYPE[source:get "體型"][target:get "體型"] + source:get "額外物理傷害"
     return (atk + eAtk) * _GetTalentsBonusInAtk(source) * _GetBuffInAtk(source, target)
 end

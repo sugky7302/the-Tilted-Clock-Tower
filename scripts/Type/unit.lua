@@ -44,7 +44,10 @@ function Unit.Init()
         local p = Point:GetUnitLoc(unit.object)
         for _, data in ipairs(DROP_LIST[unit.id]) do 
             if MathLib.Random(100) < data[2] then
-                Item.Create(data[1], p)
+                local item = Item.Create(data[1], p)
+                if Item.IsEquipment(item) then
+                    unit:DropEquipment(item)
+                end
             end
         end
         p:Remove()

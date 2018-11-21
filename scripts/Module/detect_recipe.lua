@@ -14,20 +14,20 @@ local _PickProduct, _UnitAddItem, _GetDemands, _IsExist
 local _lastClickedProductIndex
 
 function DetectRecipe.Init()
-    local Game = require 'game'
+    local Player = require 'player'
 
-    Game:Event "玩家-對話框被點擊" (function(self, player, button)
-        -- 查詢最後點擊的產品
-        for index, b in pairs(player.dialog.buttons) do
-            if b == button then
-                _lastClickedProductIndex = index
-                break
-            end
-        end
-        -- 關閉對話框
-        player.dialog:Show(false)
-        player.dialog:Clear()
-    end)
+    -- Player:Event "玩家-對話框被點擊" (function(trigger, player, button)
+    --     -- 查詢最後點擊的產品
+    --     for index, b in pairs(player.dialog.buttons) do
+    --         if b == button then
+    --             _lastClickedProductIndex = index
+    --             break
+    --         end
+    --     end
+    --     -- 關閉對話框
+    --     player.dialog:Show(false)
+    --     player.dialog:Clear()
+    -- end)
 end
 
 function DetectRecipe:__call(unit)
@@ -96,7 +96,6 @@ _DecreaseItemChargesOrRemoveItem = function(unit, recipe, products)
             cj.SetItemChages(recipe[i], cj.GetItemCharges(recipe[i]) - demands[i])
         else
             recipe[i]:Remove()
-            cj.RemoveItem(unit, recipe[i])
         end
     end
 end

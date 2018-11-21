@@ -162,8 +162,8 @@ _CompareFn = function(a, b)
     return ATTRIBUTE_INDEX[a[1]] < ATTRIBUTE_INDEX[b[1]]
 end
 
-function Unit.__index:DropItem()
-    local item = Equipment()
+function Unit.__index:DropEquipment(equipment)
+    local item = Equipment(equipment)
     item:Rand(self.object:get "等級", self.object:get "階級")
 end
 

@@ -52,6 +52,7 @@ Base.AddPath 'Type'
 Base.AddPath 'War3'
 Base.AddPath 'Database'
 Base.AddPath 'Maps\\talents'
+Base.AddPath 'Maps\\quests'
 
 -- 初始化本地腳本
 require 'main'
