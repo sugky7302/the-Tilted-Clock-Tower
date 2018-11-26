@@ -1,0 +1,129 @@
+data
+- buffs
+    - x init
+    - x 冰凍
+    - x 定身
+    - x 暈眩
+    - x 束縛
+    - x 沉默
+    - x 減攻速
+    - x 減速
+    - x 繳械
+- heros
+    - 冰霜秘術師
+        - skills
+            - x init
+            - x 召喚水元素
+            - x 寒冰箭
+            - x 暴風雪
+            - x 霜之環
+            - x 霜寒刺骨
+        - talents
+            - x init
+            - x 冬之蕭瑟
+            - x 冰晶
+            - x 冰晶裂片
+            - x 冰雪襲境
+            - x 冰霜長矛
+            - x 嚴寒壓境
+            - x 霜雪暴
+    - x hero_list
+    - x init_talent
+    - x init
+- quests
+    - x init
+    - x 報到
+    - x 清掃
+    - x 領取物資-1
+    - x 領取物資-2
+    - x 領取物資-3
+- x attributes
+- x combinations
+- x drop_lib
+- x equipment_template
+- x intensify_attribute
+- x prefix_lib
+- x recipe_lib
+- x regions
+- x secrets_lib
+
+lib
+- bar
+    - x core
+    - x castbar
+- item
+    - x add_recipe
+    - x big_secret_order
+    - x combine
+    - x detect_recipe
+    - x enchanted
+    - x extend_hole
+    - x init
+    - x intensify
+    - x prefix
+    - x small_secret_order
+- missile
+    - x core
+    - x missile_tool
+    - x trace_lib
+- texttag
+    - x core
+    - x text_to_attach_unit
+- x attribute
+- x buff
+- x combat
+- x damage
+- x dialog
+- x equipment
+- x event
+- x game
+- x group
+- x heal
+- x hero
+- x init
+- x item
+- x map
+- x pet
+- x player
+- x point
+- x polygon
+- x quest
+- x region
+- x secrets
+- x shield
+- x skill
+- x talent
+- x timer
+- x trigger
+- x unit
+
+test
+- x test
+
+util
+- behavior_tree
+    - x behavior_tree
+- red_black_tree
+    - x core
+    - x RBTree_node
+- stl
+    - v array
+    - x list
+    - v node
+    - x queue
+    - x stack
+- x color
+- x custom_tool
+- x greatest_common_factor
+- x init
+- x jass_tool
+- x math_lib
+- x quick_sort
+- x random_number_generator
+
+war3
+- v api
+- v id 
+- v order_id
+
+v main

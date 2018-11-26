@@ -1,3 +1,5 @@
+-- 此module啟用lua訊息框，並加載路徑，使後續module在require時，能夠省去父路徑
+
 local Runtime = require 'jass.runtime'
 local Console = require 'jass.console'
 local Debug = require 'jass.debug'
@@ -5,7 +7,7 @@ local Debug = require 'jass.debug'
 Base = {}
 
 -- Debug模式
-Base.debugMode = true
+Base.debug_mode = true
 
 -- 打開控制台
 Console.enable = true
@@ -31,28 +33,22 @@ function Runtime.ErrorHandle(msg)
     Base.ErrorHandle(msg)
 end
 
+-- 一定要絕對路徑，不然lua會找不到
 package.path = package.path .. ';D:\\Tools\\YDWE1.25.10\\Creation\\Mod\\The_Tilted_Clock_Tower\\scripts\\?.lua'
 
 function Base.AddPath(dir)
     if dir ~= '' then
         dir = dir ..[[\]]
     end
-	local r = dir .. '?.lua'
-	package.path = package.path .. ';D:\\Tools\\YDWE1.25.10\\Creation\\Mod\\The_Tilted_Clock_Tower\\scripts\\' .. r
+	local path = dir .. '?.lua'
+	package.path = package.path .. ';D:\\Tools\\YDWE1.25.10\\Creation\\Mod\\The_Tilted_Clock_Tower\\scripts\\' .. path
 end
 
--- 添加路徑
-Base.AddPath 'Item'
-Base.AddPath 'Module'
-Base.AddPath 'STL'
-Base.AddPath 'Maps'
-Base.AddPath 'Test'
-Base.AddPath 'Tool'
-Base.AddPath 'Type'
-Base.AddPath 'War3'
-Base.AddPath 'Database'
-Base.AddPath 'Maps\\talents'
-Base.AddPath 'Maps\\quests'
+Base.AddPath 'data'
+Base.AddPath 'lib'
+Base.AddPath 'test'
+Base.AddPath 'war3'
+Base.AddPath 'util'
 
 -- 初始化本地腳本
 require 'main'
