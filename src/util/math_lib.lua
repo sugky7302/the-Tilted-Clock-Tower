@@ -1,33 +1,42 @@
+-- 補充lua沒有的數學庫
+
 local math = math
 
 local MathLib = {}
-math.randomseed(tonumber(tostring(os.time()):reverse():sub(1,6)))
 
 -- constants
 MathLib.e = math.exp(1)
 
-function MathLib.Round(num, numDecimalPlaces)
-    local mult = 10 ^ (numDecimalPlaces or 0)
-    return math.floor(num * mult + 0.5) / mult
+function MathLib.Round(num)
+    if num >= 0 then
+        local floor = math.floor
+        return floor(num + 0.5) 
+    else
+        local ceil = math.ceil
+        return ceil(num - 0.5)
+    end
 end
 
 -- 無參數 產生(0, 1)的隨機整數
 -- 只有參數n 產生[1, n]的隨機整數
 -- 兩個參數 產生[n, m]的隨機整數
+math.randomseed(tonumber(tostring(os.time()):reverse():sub(1,6)))
 function MathLib.Random(n, m)
+    local random = math.random
     if not n then
-        return math.random()
-    elseif not m  then
-        n = math.modf(n)
-        return math.random(n)
-    else
-        n = math.modf(n)
-        m = math.modf(m)
-        return math.random(n, m)
+        return random()
     end
+    
+    if not m  then
+        return random(n)
+    end
+
+    return random(n, m)
 end
 
-function MathLib.Error(value, compareValue)
-    return math.abs(value - compareValue)
+function MathLib.Difference(value, compareValue)
+    local abs = math.abs
+    return abs(value - compareValue)
 end
+
 return MathLib

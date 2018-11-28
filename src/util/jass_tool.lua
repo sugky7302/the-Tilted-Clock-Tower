@@ -1,3 +1,5 @@
+-- 自寫的jass工具
+
 local cj = require 'jass.common'
 return {
     H2I = function(h)
@@ -13,7 +15,7 @@ return {
         return cj.GetPlayerId(cj.GetOwningPlayer(u))
     end,
     Debug = function(s)
-        if Base.debugMode then
+        if Base.debug_mode then
             cj.DisplayTimedTextToPlayer(cj.Player(0), 0, 0, 5, s)
         end
     end,
@@ -42,6 +44,7 @@ return {
         local gg = require 'jass.globals'
         cj.StartSound(gg[handle])
     end,
+    -- TODO:之後要移到Effect結構
     TimeEffect = function(effect, timeout)
         local Timer = require 'timer'
         Timer(timeout, false, function()

@@ -33,20 +33,20 @@ function Runtime.ErrorHandle(msg)
     Base.ErrorHandle(msg)
 end
 
+local abs_path = ';D:\\Tools\\YDWE1.25.10\\Creation\\Mod\\The_Tilted_Clock_Tower\\src\\'
 -- 一定要絕對路徑，不然lua會找不到
-package.path = package.path .. ';D:\\Tools\\YDWE1.25.10\\Creation\\Mod\\The_Tilted_Clock_Tower\\scripts\\?.lua'
+package.path = package.path .. abs_path .. '?.lua'
 
 function Base.AddPath(dir)
     if dir ~= '' then
         dir = dir ..[[\]]
     end
 	local path = dir .. '?.lua'
-	package.path = package.path .. ';D:\\Tools\\YDWE1.25.10\\Creation\\Mod\\The_Tilted_Clock_Tower\\scripts\\' .. path
+	package.path = package.path .. abs_path .. path
 end
 
 Base.AddPath 'data'
 Base.AddPath 'lib'
-Base.AddPath 'test'
 Base.AddPath 'war3'
 Base.AddPath 'util'
 

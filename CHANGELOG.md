@@ -1,4 +1,11 @@
 # 更新日誌
+## 0.31.1 - 2018-11-28
+### Changed:
+- 重構list，分成core跟iterator。
+- custom_tool，更名成pairs_by_key，目的是解決pairs無序的問題。
+### Removed:
+- quick_sort沒有使用到，因此刪除。
+
 ## 0.31.0 - 2018-11-26
 ### Added:
 - 新增OUTLINE.md，記錄重構的文件有哪些。

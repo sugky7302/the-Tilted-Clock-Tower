@@ -1,55 +1,75 @@
-local setmetatable = setmetatable
-local Object = require 'object'
+-- 此module是在lua重構C++的泛型棧
 
-local Stack = {}
-local mt = {}
+local setmetatable = setmetatable
+
+local Stack, mt = {}, {}
 setmetatable(Stack, Stack)
 Stack.__index = mt
 
 function Stack:__call(type)
-    local obj = Object{
-        type = type,
-        top = nil,
-        size = 0, 
+    local instance = {
+        _top_ = nil,
+        _depth_ = 0, 
     }
-    setmetatable(obj, self)
-    obj.__index = obj
-    return obj
-end
+    setmetatable(instance, self)
 
-function mt:Push(data)
-    self.size = self.size + 1
-    self[self.size] = data
-    self.top = data
-end
-
-function mt:Pop()
-    self[self.size] = nil
-    self.size = self.size - 1
-    self.top = self[self.size] or nil
-end
-
-function mt:Top()
-    return self.top
-end
-
-function mt:IsEmpty()
-    return self.size < 1
-end
-
-function mt:GetSize()
-    return self.size
-end
-
-function mt:GetType()
-    return self.type
+    return instance
 end
 
 function mt:Remove()
-    while not self:IsEmpty() do
-        self:Pop()
+    self:Clear()
+
+    self._top_ = nil
+    self._depth_ = nil
+    self = nil
+end
+
+function mt:Clear()
+    for i = 1, self._depth_ do 
+        self[i] = nil
     end
-    collectgarbage("collect")
+
+    self._top_ = nil
+    self._depth_ = 0
+end
+
+function Stack:__tostring()
+    local print_str = "[bot-> "
+    for i = self._depth_, 1, -1 do 
+        print_str = print_str .. self[i] .. " "
+    end
+    print_str = print_str .. "<-top]"
+    return print_str
+end
+
+function mt:getTop()
+    return self._top_
+end
+
+function mt:getDepth()
+    return self._depth_
+end
+
+-- 索引從 1 開始，因此要先增加size
+function mt:PushTop(data)
+    self._depth_ = self._depth_ + 1
+
+    self[self._depth_] = data
+
+    self._top_ = data
+end
+
+-- 先減少size再清空會無法清除末端元素
+function mt:PopTop()
+    self[self._depth_] = nil
+
+    self._depth_ = self._depth_ - 1
+
+    self._top_ = self[self._depth_] or nil
+end
+
+function mt:IsEmpty()
+    return self._depth_ == 0
 end
 
 return Stack

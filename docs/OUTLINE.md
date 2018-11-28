@@ -98,7 +98,19 @@ lib
 - x unit
 
 test
-- x test
+- test
+    - v core
+    - v greatest_common_factor
+    - v hexadecimal
+    - v list
+    - v node
+    - v array
+    - v queue
+    - v stack
+    - v color
+    - v pairs_by_key
+    - v math_lib
+    - v random_number_generator
 
 util
 - behavior_tree
@@ -108,18 +120,20 @@ util
     - x RBTree_node
 - stl
     - v array
-    - x list
+    - list
+        - v core
+        - v iterator
     - v node
-    - x queue
-    - x stack
-- x color
-- x custom_tool
-- x greatest_common_factor
+    - v queue
+    - v stack
+- v color
+- v pairs_by_key
+- v greatest_common_factor
 - x init
-- x jass_tool
-- x math_lib
-- x quick_sort
-- x random_number_generator
+- v jass_tool
+- v math_lib
+- v random_number_generator
+- v hexadecimal
 
 war3
 - v api

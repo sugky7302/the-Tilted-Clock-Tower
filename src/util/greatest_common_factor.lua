@@ -1,19 +1,24 @@
-local setmetatable = setmetatable
-
-local GreatestCommonFactor = {}
-setmetatable(GreatestCommonFactor, GreatestCommonFactor)
-
--- 功能：獲得最大公因數
-function GreatestCommonFactor:__call(num1, num2)
+-- 此函數計算最大公因數
+-- 遞歸比起for會慢很多，這裡把較大的數當作迴圈次數，才不會出現迴圈結束卻還沒得到結果的問題
+function GreatestCommonFactor(num1, num2)
+    local big_num, small_num
     if num1 > num2 then
-        num1 = num1 % num2
-        return (num1 == 0) and num2 or self(num1, num2)
-    else 
-        num2 = num2 % num1 
-        return (num2 == 0) and num1 or self(num1, num2)
+        big_num = num1
+        small_num = num2
+    else
+        big_num = num2
+        small_num = num1
     end
-    
-    return 1
+
+    for i = 1, big_num do 
+        big_num = big_num % small_num
+        if big_num == 0 then
+            return small_num
+        end
+
+        -- 保證big_num > small_num
+        big_num, small_num = small_num, big_num
+    end
 end 
 
 return GreatestCommonFactor

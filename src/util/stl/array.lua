@@ -6,7 +6,7 @@ local Array, mt = {}, {}
 setmetatable(Array, Array)
 Array.__index = mt
 
--- constants
+-- assert
 mt.type = "Array"
 
 function Array:__call()
@@ -20,6 +20,9 @@ function Array:__call()
 end
 
 function mt:Remove()
+    self._begin_ = nil
+    self._end_ = nil
+    self._length_ = nil
     self = nil
 end
 
@@ -36,6 +39,7 @@ function mt:PushBack(data)
     self._length_ = self._length_ + 1
 end
 
+-- 刪除所有"資料 = data"的空間
 function mt:Delete(data)
     if not data then 
         return false
@@ -65,6 +69,8 @@ function mt:Clear()
     self._length_ = 0
 end
 
+-- 存在的話會回傳索引
+-- 只找第一筆資料
 function mt:Exist(data)
     if not data then 
         return false
@@ -72,7 +78,7 @@ function mt:Exist(data)
 
     for i = self._begin_, self._end_ - 1 do
         if self[i] == data then
-            return true 
+            return i
         end
     end
 
@@ -81,7 +87,7 @@ end
 
 -- 工具
 function mt:IsEmpty()
-    return self._length_ < 1
+    return self._length_ == 0
 end
 
 function mt:getLength()

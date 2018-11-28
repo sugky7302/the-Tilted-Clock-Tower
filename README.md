@@ -10,21 +10,39 @@
 - 根據玩家的回饋修正遊戲
 
 ## 目錄
-- data:儲存所有數據資料
-    - buffs:增益效果資料
-    - heros:英雄數據
-        - skills:英雄技能
-        - talents:英雄天賦
-    - quests:任務
-- lib:遊戲專用程式碼
-- test:測試碼
-- util:通用程式碼
-- war3:WE內部指令
+- docs:儲存相關文件或Markdown
+- map:儲存地圖內部數據
+- resource:儲存地圖美術資源
+- sound:儲存地圖音訊資源
+- src:程式碼目錄
+    - data:儲存所有數據資料
+        - buffs:增益效果資料
+        - heros:英雄數據
+            - skills:英雄技能
+            - talents:英雄天賦
+        - quests:任務
+    - lib:遊戲專用程式碼
+    - test:測試碼
+    - util:通用程式碼
+    - war3:WE內部指令
+- table:儲存地圖lni化後的物體數據
+- tools:lua-debug配置
+- w3x2lni:將地圖內部數據轉換成外部可讀寫的lni檔的程式
+- 傷害模擬器:計算英雄傷害
 
 ## 未來可能會加入的想法
 - [2018-10-25] 暫時無法使用出售物品和強制按鍵模擬出充能施法，之後學習圖層混合再來考慮。
 
 ## 注意事項
+### Lua撰寫細則
+- 給table添加元素時，tab[#tab + 1] = a比table.insert(tab, a)效率高，遠比table.insert(tab, 1, a)效率高。
+- 4種循環方式(正序數值for循環、反序數值for循環、ipairs泛型for循環、pairs泛型for循環)根據習慣選擇就好，效率差別不大。
+- 在循環內創建變數和循環外創建變數的效率取決於創建代價和跨域代價的對比，根據經驗選擇最合適的處理。
+- 以局部變數代替多次使用的外部變數（xx.xx之類）。
+- 減少函數調用可以很大提高效率，但會降低代碼的可讀性，按需選擇。
+- 提前聲明table大小可以很大提高效率，可以做到的情況盡量做到。
+- string.format比..效率低很多，但可讀性大大提高，按需選擇。
+- 判斷數組表是否為空時，一般情況用 #tab>0 即可，除非tab長度特別大，用next(tab)的效率才會更高。
 ### 修改地圖
 - 如果要修改地圖，請開啟TheTiltedClockTower.w3x，不要開啟.w3x。
 - 使用後，請先用vscode執行Lni一次。
@@ -52,3 +70,12 @@
 
 ## 資源
 - [技能音效] Hero Of the Storm\mods\heros.stormmod\base.stormassets\assets\sounds\heros
+
+## 感謝
+- [lua：部分常用操作的效率对比及代码优化建议（附测试代码）][ref_url1]
+- [Lua的CPU开销性能优化][ref_url2]
+- [Lua -- 重写pairs方法（让字典访问有序）][ref_url3]
+
+[ref_url1]:https://blog.csdn.net/u013119612/article/details/78758253
+[ref_url2]:https://blog.csdn.net/UWA4D/article/details/77988888
+[ref_url3]:https://blog.csdn.net/honey199396/article/details/78816793

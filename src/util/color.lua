@@ -1,47 +1,44 @@
 local setmetatable = setmetatable
-local math = math
+
+local Hex = require 'hexadecimal'
 
 local Color = {}
-setmetatable(Color,Color)
+setmetatable(Color, Color)
 
 -- constants
-local _HEXADECIMAL_SIGN = {'a', 'b', 'c', 'd', 'e', 'f'}
-local _D2H
+Color.red          = "|cffff0000"
+Color.green        = "|cff00ff00"
+Color.blue         = "|cff0000ff"
+Color.orange       = "|cffff8c00"
+Color.yellow       = "|cffffff00"
+Color.indigo       = "|cff333399"
+Color.purple       = "|cff8000ff"
+Color.black        = "|cff000000"
+Color.white        = "|cffffffff"
+Color.golden       = "|cffffcc00"
+Color.lightblue    = "|cff99ccff"
+Color.mediumblue   = "|cff3366ff"
+Color.mediumpurple = "|cff8080c0"
+Color.mediumorange = "|cffffcc99"
+Color.lightpurple  = "|cffcc99ff"
+Color.superpurple  = "|cff9393ff"
+Color.brown        = "|cff804000"
+Color.skin         = "|cffffd8ae"
 
-function Color:Init()
-    self["red"] = "|cffff0000"
-    self["green"] = "|cff00ff00"
-    self["blue"] = "|cff0000ff"
-    self["orange"] = "|cffff8c00"
-    self["yellow"] = "|cffffff00"
-    self["indigo"] = "|cff333399"
-    self["purple"] = "|cff8000ff"
-    self["black"] = "|cff000000"
-    self["white"] = "|cffffffff"
-    self["golden"] = "|cffffcc00"
-    self["lightblue"] = "|cff99ccff"
-    self["mediumblue"] = "|cff3366ff"
-    self["mediumpurple"] = "|cff8080c0"
-    self["mediumorange"] = "|cffffcc99"
-    self["lightpurple"] = "|cffcc99ff"
-    self["superpurple"] = "|cff9393ff"
-    self["brown"] = "|cff804000"
-    self["skin"] = "|cffffd8ae"
-end
-
-function Color:__call(...) -- 可能會給 顏色的英文名字 或 RGB數字
+-- 參數可能會給"顏色的英文名字"或"RGB數字"
+function Color:__call(...) 
     local r, g, b = ...
     if type(r) == 'string' then
         return Color[r]
-    else
-        return '|cff' .. _D2H(r) .. _D2H(g) .. _D2H(b)
     end
-end
 
-_D2H = function(num)
-    local firstSign = (math.modf(num/16) > 9) and _HEXADECIMAL_SIGN[math.modf(num/16)-9] or math.modf(num/16) .. ""
-    local secondSign = (num%16 > 9) and _HEXADECIMAL_SIGN[num%16-9] or num%16 .. ""
-    return firstSign .. secondSign
+    local string_format = string.format
+    local color_nums = string_format("%03d-%03d-%03d", r, g, b)
+    -- 儲存下來，下次調用就不用再計算
+    if not self[color_nums] then
+        self[color_nums] = '|cff' .. Hex.I2S(r) .. Hex.I2S(g) .. Hex.I2S(b)
+    end
+    return self[color_nums]
 end
 
 return Color

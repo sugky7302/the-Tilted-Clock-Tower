@@ -4,9 +4,12 @@ local Node, mt = {}, {}
 setmetatable(Node, Node)
 Node.__index = mt
 
+-- assert
+mt.type = "Node"
+
 function Node:__call(data)
     local instance = {
-        data_ = data,
+        _data_ = data,
         prev_ = nil,
         next_ = nil,
     }
@@ -17,10 +20,14 @@ function Node:__call(data)
 end
 
 function mt:Remove()
-    self.data_ = nil
+    self._data_ = nil
     self.prev_ = nil
     self.next_ = nil
     self = nil
+end
+
+function mt:getData()
+    return self._data_
 end
 
 return Node
