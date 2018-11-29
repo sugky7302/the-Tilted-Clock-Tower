@@ -235,16 +235,16 @@ end
 
 function Hero.Create(name)
     return function(obj)
-        Hero.heroDatas[name] = obj
+        Hero.hero_datas[name] = obj
         -- 註冊技能
-		obj.skillDatas = {}
-		if type(obj.skillNames) == 'string' then
-            for name in string.gmatch(obj.skillNames, '%S+') do
-				table.insert(obj.skillDatas, Skill[name])
+		obj.skill_datas = {}
+		if type(obj.skill_names) == 'string' then
+            for name in string.gmatch(obj.skill_names, '%S+') do
+				obj.skill_datas[#obj.skill_datas + 1] = Skill[name]
 			end
-		elseif type(obj.skillNames) == 'table' then
-			for _, name in ipairs(obj.skillNames) do
-				table.insert(obj.skillDatas, Skill[name])
+		elseif type(obj.skill_names) == 'table' then
+			for _, name in ipairs(obj.skill_names) do
+				obj.skill_datas[#obj.skill_datas + 1] = Skill[name]
 			end
         end
         return obj

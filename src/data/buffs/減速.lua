@@ -1,8 +1,8 @@
 local mt = require 'buff' "減速"
 
 -- constants
-mt.coverType = 1
-mt.coverMax = 1
+mt.cover_type = 1
+mt.cover_max = 1
 mt.model = [[Abilities\Spells\Human\slow\slowtarget.mdl]]
 
 function mt:on_add()

@@ -1,5 +1,5 @@
 -- 初始化計時器
-require 'timer'.Init()
+require 'timer.init'
 
 -- 初始化玩家
 require 'player'.Init()

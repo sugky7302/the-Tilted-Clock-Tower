@@ -1,14 +1,14 @@
 data
 - buffs
-    - x init
-    - x 冰凍
-    - x 定身
-    - x 暈眩
-    - x 束縛
-    - x 沉默
-    - x 減攻速
-    - x 減速
-    - x 繳械
+    - v init
+    - v 冰凍
+    - v 定身
+    - v 暈眩
+    - v 束縛
+    - v 沉默
+    - v 減攻速
+    - v 減速
+    - v 繳械
 - heros
     - 冰霜秘術師
         - skills
@@ -37,15 +37,15 @@ data
     - x 領取物資-1
     - x 領取物資-2
     - x 領取物資-3
-- x attributes
-- x combinations
-- x drop_lib
-- x equipment_template
-- x intensify_attribute
-- x prefix_lib
-- x recipe_lib
-- x regions
-- x secrets_lib
+- v attributes
+- v combinations
+- v drop_lib
+- v equipment_template
+- v intensify_attribute
+- v prefix_lib
+- v recipe_lib
+- v regions
+- v secrets_lib
 
 lib
 - bar
@@ -111,6 +111,7 @@ test
     - v pairs_by_key
     - v math_lib
     - v random_number_generator
+    - v build_table
 
 util
 - behavior_tree
@@ -129,7 +130,6 @@ util
 - v color
 - v pairs_by_key
 - v greatest_common_factor
-- x init
 - v jass_tool
 - v math_lib
 - v random_number_generator

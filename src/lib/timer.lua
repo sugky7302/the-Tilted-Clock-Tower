@@ -1,194 +1,97 @@
-local setmetatable = setmetatable
-local max = math.max
-local floor = math.floor
-local Queue = require 'queue'
-local cj = require 'jass.common'
-local Object = require 'object'
+-- 此module為註冊計時器動作
 
-local Timer = {}
-local mt = {}
+local setmetatable = setmetatable
+
+local Timer, mt = {}, require 'timer.init'
 setmetatable(Timer, Timer)
 Timer.__index = mt
 
--- constants
-local PERIOD = 0.001
+-- assert
+local _Loop, _Wait, _Count, _RegisterTimerAction
 
--- variables
-local _currentFrame, _maxFrame, _backFrame = 0, 0, 0
-local _recycleQueue = Queue("timer")
-local _Loop, _Wait, _Count, _AddCndToExecution, _OnTick, _Wakeup, _SetTimeout, _GetQueue
+function Timer:__call(timeout, is_period, execution)
+    local max, floor = math.max, math.floor
 
---[[ 建立0.01秒一幀的中心計時器
-執行每幀的佇列(最多10個動作)，若因為計時器誤差而導致丟幀，就於下次進行補幀。
-此計時器參考moe-master 2.1
-]] 
-function Timer.Init()
-    local centerTimer = cj.CreateTimer()
-    cj.TimerStart(centerTimer, PERIOD * 10, true, function()
-        local loopTimes = 10
-        if _backFrame > 0 then
-            _currentFrame = _currentFrame - 1
-        end
-        _maxFrame = _maxFrame + loopTimes
-        while _currentFrame < _maxFrame do 
-            _currentFrame = _currentFrame + 1
-            _OnTick()
-        end
-    end)
-end
-
--- 執行佇列內的每個動作，若此幀無動作則跳出。
-_OnTick = function()
-    local callbackQueue = Timer[_currentFrame]
-	if not callbackQueue then
-		_backFrame = 0
-		return
-    end
-    local callback
-	for i = _backFrame + 1, #callbackQueue do
-		callback = callbackQueue[i]
-		_backFrame = i
-		callbackQueue[i] = nil -- 移除回調
-		if callback then
-			_Wakeup(callback)
-		end
-	end
-	_backFrame = 0
-	Timer[_currentFrame] = nil -- 移除佇列
-	_recycleQueue:Push(callbackQueue)
-end
-
--- 判定回調是否失效，並處理執行函數有可能會暫停或停止回調
-_Wakeup = function(callback)
-    callback:execution() -- 執行函數
-    -- 處理上面的執行函數內有停用計時器的情況
-    if callback.pauseRemaining then
-        return
-    elseif callback.invalid then
-        callback.timeout = nil
-    end
-    -- 如果有儲存timeout，代表是週期觸發，因此要重複設定
-    if callback.timeout then
-        _SetTimeout(callback, callback.timeout)
-    else
-        callback:Remove()
-    end
-end
-
-function Timer:__call(timeout, isPeriod, execution)
-    local obj = Object{
-        timeout = max(floor(timeout / PERIOD) or 1, 1), -- 這裡要把時間(秒)改成時間(幀)
-        isPeriod = isPeriod,
+    local instance = {
+        timeout = max(floor(timeout / mt.PERIOD) or 1, 1), -- 這裡要把時間(秒)改成時間(幀)
+        is_period = is_period,
         execution = execution,
         invalid = false,
-        execIsReg = false
+        is_exec_registered = false
     }
-    setmetatable(obj, self)
-    obj.__index = obj
-    if not isPeriod then
-        _Wait(obj)
-    elseif (type(isPeriod) == "number") and (isPeriod > 0) then
-        _Count(obj)
-    else -- 如果週期設定成true或0，都視為循環觸發
-        _Loop(obj)
+
+    setmetatable(instance, self)
+
+    _RegisterTimerAction(instance)
+
+    return instance
+end
+
+_RegisterTimerAction = function(self)
+    if self.is_period == false then
+        _Wait(self)
+        return true
     end
-    return obj
+    
+    local type = type
+    if (type(self.is_period) == "number") and (self.is_period > 0) then
+        _Count(self)
+        return true
+    end
+    
+    -- 如果週期設定成true或0，都視為循環觸發
+    _Loop(self)
 end
 
 -- 單次計時器，因此不儲存timeout，讓_Wakeup能夠判斷是否循環
 _Wait = function(self)
     local timeout = self.timeout
     self.timeout = nil
-    _SetTimeout(self, timeout)
+    mt.SetTimeout(self, timeout)
 end
 
 _Count = function(self)
     local execution = self.execution
+
     self.execution = function(self)
-        self.isPeriod = self.isPeriod - 1
+        self.is_period = self.is_period - 1
+
         execution(self)
-        if self.isPeriod < 1 then
+
+        if self.is_period < 1 then
             self:Remove()
         end
     end
-    _SetTimeout(self, self.timeout)
+
+    mt.SetTimeout(self, self.timeout)
 end
 
 _Loop = function(self)
-    _SetTimeout(self, self.timeout)
-end
-
-
-function mt:Resume()
-    if self.pauseRemaining then
-        _SetTimeout(self, self.pauseRemaining)
-        self.pauseRemaining = false
-    end
-end
-
-function mt:SetRemaining(timeout)
-    if not self.invalid then
-        self:Pause()
-    end
-    _SetTimeout(self, timeout)
-end
-
--- 將循環動作插入新的幀的佇列中
-_SetTimeout = function(callback, timeout)
-    _AddCndToExecution(callback)
-    local newFrame = _currentFrame + timeout
-    local callbackQueue = Timer[newFrame]
-    -- 讀不到該幀的佇列，就新建一個
-    if not callbackQueue then
-        callbackQueue = _GetQueue()
-        Timer[newFrame] = callbackQueue
-    end
-    callback.timeoutFrame = newFrame -- 儲存新的時間戳記
-    callbackQueue:Insert(callback) -- 儲存回調
-end
-
-_AddCndToExecution = function(self)
-    local execution = self.execution
-    if self.execIsReg then
-        return
-    end
-    self.execIsReg = true
-    self.execution = function(self)
-        if not (self.pauseRemaining or self.invalid) then
-            execution(self)
-        end
-    end
-end
-
--- 獲得空白佇列
-_GetQueue = function()
-    if _recycleQueue:IsEmpty() then
-        return Object()
-    else
-        local queue = _recycleQueue:Front()
-        _recycleQueue:Pop()
-        return queue
-    end
-end
-
-function Timer:__tostring()
-    return self.EIN
+    mt.SetTimeout(self, self.timeout)
 end
 
 function mt:Remove()
     self:Pause()
     self.timeout = nil
-    self.isPeriod = nil
+    self.is_period = nil
     self.execution = nil
     self.invalid = nil
-    self.execIsReg = nil
+    self.is_exec_registered = nil
     self = nil
-    collectgarbage("collect")
+end
+
+function mt:SetRemaining(timeout)
+    if self.invalid == false then
+        self:Pause()
+    end
+
+    mt.SetTimeout(self, timeout)
 end
 
 function mt:Pause()
-    self.pauseRemaining = self:GetRemaining()
-    local queue = Timer[self.timeoutFrame]
+    self.pause_remaining = self:GetRemaining()
+
+    local queue = mt[self.end_frame]
     if queue then
         for i = #queue, 1, -1 do
             if queue[i] == self then -- 清除回調
@@ -200,23 +103,29 @@ function mt:Pause()
 end
 
 function mt:GetRemaining()
-    if self.pauseRemaining then
-        return self.pauseRemaining
-    elseif self.timeoutFrame == _currentFrame then
-        return self.timeout or 0
-    else
-        return self.timeoutFrame - _currentFrame
+    if self.invalid then
+        return 0
     end
+    
+    -- 在暫停的話，就回傳暫停秒數
+    if self.pause_remaining then
+        return self.pause_remaining
+    end
+    
+    -- 如果正在執行動作，考慮是不是循環，給出時間
+    if self.end_frame == mt.current_frame then
+        return self.timeout or 0
+    end
+    
+    return self.end_frame - mt.current_frame
 end
 
--- 提供計時器當前時間點(秒)
-function mt:Clock()
-    return _currentFrame * PERIOD
-end
-
--- 提供計時器當前時間點(幀)
-function mt:Frame()
-    return _currentFrame
+function mt:Resume()
+    if self.pause_remaining then
+        mt.SetTimeout(self, self.pause_remaining)
+        
+        self.pause_remaining = false
+    end
 end
 
 function mt:Break()

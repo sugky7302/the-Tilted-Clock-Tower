@@ -1,19 +1,28 @@
-local Map = require 'map'
+-- 此module用於加載英雄數據
 
-Map.heroList = {
-	{'冰霜秘術師','冰霜秘術師'}
+-- assert 
+local select, xpcall, ipairs = select, xpcall, ipairs
+local ErrorHandle = Base.ErrorHandle
+local format = string.format
+local _RegisterDatas
+
+local hero_list = {
+	"冰霜秘術師",
 }
 
---加載英雄數據
-function Map.LoadHeros()
-    for _, heroData in ipairs(Map.heroList) do
-		local name, file = heroData[1], heroData[2]
-		Map.heroList[name] = heroData
-		local heroData = select(2, xpcall(require, Base.ErrorHandle ,('Maps.heros.%s.init'):format(file)))
-		Map.heroList[name].data = heroData
+local function _LoadHeros()
+    for _, name in ipairs(hero_list) do
+        local hero_data = select(2, xpcall(require, ErrorHandle ,format('heros.%s.init', name)))
+        
+        _RegisterDatas(name, hero_data.skill_datas, "skills")
+        _RegisterDatas(name, hero_data.talent_datas, "talents")
 	end
-	--英雄總數
-	Map.heroCount = #Map.heroList
 end
 
-Map.LoadHeros()
+_RegisterDatas = function(name, datas, folder_name)
+    for i, #datas do
+        select(2, xpcall(require, ErrorHandle ,format('heros.%s.' .. folder_name .. '.%s', name, datas[i])))
+    end
+end
+
+_LoadHeros()

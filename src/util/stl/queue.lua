@@ -39,12 +39,8 @@ function mt:getLength()
     return self._length_
 end
 
-function mt:getBegin()
+function mt:front()
     return self[self._begin_]
-end
-
-function mt:getEnd()
-    return self[self._end_]
 end
 
 function mt:PushBack(data)
