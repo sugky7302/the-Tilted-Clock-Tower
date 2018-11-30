@@ -2,6 +2,10 @@ function TableTest()
     local format = string.format
     local times = 2000000
 
+    local tb = {}
+    tb.f = function() print "111" end
+    tb["f"]()
+    
     local start_time = os.clock()
     local tb1 = {}
     for i = 1, times do

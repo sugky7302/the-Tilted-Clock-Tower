@@ -73,11 +73,13 @@ lib
 - x buff
 - x combat
 - x damage
-- x dialog
+- v dialog
 - x equipment
 - x event
 - x game
-- x group
+- group
+    - v core
+    - v condition
 - x heal
 - x hero
 - x init
@@ -93,8 +95,10 @@ lib
 - x shield
 - x skill
 - x talent
-- x timer
-- x trigger
+- timer
+    - v core
+    - v init
+- v trigger
 - x unit
 
 test
@@ -112,6 +116,10 @@ test
     - v math_lib
     - v random_number_generator
     - v build_table
+    - v timer
+    - v trigger
+    - v group
+    - v dialog
 
 util
 - behavior_tree

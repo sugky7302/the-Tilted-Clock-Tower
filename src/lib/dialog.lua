@@ -1,4 +1,7 @@
+-- 此module是擴展並簡易化we的dialog功能
+
 local setmetatable = setmetatable
+
 local cj = require 'jass.common'
 
 local Dialog, mt = {}, {}
@@ -6,43 +9,49 @@ setmetatable(Dialog, Dialog)
 Dialog.__index = mt
 
 function Dialog:__call(player)
-    local obj = {
-        object = cj.DialogCreate(),
-        owner = player,
-        buttons = {},
+    local instance = {
+        object_ = cj.DialogCreate(),
+        owner_ = player,
+        buttons_ = {},
     }
-    setmetatable(obj, self)
-    return obj
-end
 
-function mt:Insert(text, label, hotkey)
-    self.buttons[label or text] = cj.DialogAddButton(self.object, text, hotkey or 0)
-end
+    setmetatable(instance, self)
 
-function mt:Erase(text)
-    self.buttons[text] = nil
-end
-
-function mt:Find(text)
-    return self.buttons[text]
-end
-
-function mt:Clear()
-    cj.DialogClear(self.object)
-    self.buttons = {}
+    return instance
 end
 
 function mt:Remove()
-    cj.DialogDestroy(self.object)
+    self:Clear()
+    
+    cj.DialogDestroy(self.object_)
+
+    self.object_ = nil
+    self.owner_ = nil
+    self.buttons = nil
     self = nil 
 end
 
-function mt:Show(isShow)
-    cj.DialogDisplay(self.owner.object, self.object, isShow)
+function mt:Clear()
+    cj.DialogClear(self.object_)
+    self.buttons_ = {}
 end
 
-function mt:SetTitle(str)
-    cj.DialogSetMessage(self.object, str)
+-- label是索引，不填會預設為按鈕文字
+function mt:AddButton(text, label, hotkey)
+    local key = label or text
+    self.buttons_[key] = cj.DialogAddButton(self.object_, text, hotkey or 0)
+end
+
+function mt:FindButton(key)
+    return self.buttons_[key]
+end
+
+function mt:Show(is_show)
+    cj.DialogDisplay(self.owner_.object, self.object_, is_show)
+end
+
+function mt:SetTitle(title)
+    cj.DialogSetMessage(self.object_, title)
 end
 
 return Dialog
