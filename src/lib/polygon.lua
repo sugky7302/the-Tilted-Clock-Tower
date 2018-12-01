@@ -1,6 +1,6 @@
+-- 此module創建多邊形區域，並可偵測有沒有點在多邊形內
+
 local setmetatable = setmetatable
-local math = math
-local Point = require 'point'
 
 local Polygon, mt = {}, {}
 setmetatable(Polygon, Polygon)
@@ -9,42 +9,81 @@ Polygon.__index = mt
 -- constants
 mt.type = 'Polygon'
 
--- variables
+-- assert
 local _GeneratePoints
 
+-- points.shape = (2n, 1)
 function Polygon:__call(points)
-    local obj = {
-        points = _GeneratePoints(points),
-        pointNum = #points,
+    local instance = {
+        point_num_ = #points / 2,
+        points_ = _GeneratePoints(points),
     }
-    setmetatable(obj, self)
-    return obj
+
+    setmetatable(instance, self)
+
+    return instance
 end
 
 _GeneratePoints = function(points)
-    local table_insert = table.insert
-    
-    local pts = {}
-    for i = 1, #points do 
-        local p = Point(points[i][1], points[i][2])
-        table_insert(pts, p)
+    local Point = require 'point'
+
+    -- 奇數索引是X座標，偶數索引是Y座標
+    local pts, x_tmp = {}
+    for i = 1, #points do
+        if i % 2 == 1 then
+            x_tmp = points[i]
+        else
+            pts[#pts + 1] = Point(x_tmp, points[i])
+        end
     end
+
     return pts
 end
 
+function Polygon:__tostring()
+    local print_str_tb = {}
+
+    for i = 1, self.point_num_ do
+        print_str_tb[#print_str_tb + 1] = "("
+        print_str_tb[#print_str_tb + 1] = self.points_[i].x_
+        print_str_tb[#print_str_tb + 1] = ", "
+        print_str_tb[#print_str_tb + 1] = self.points_[i].y_
+        print_str_tb[#print_str_tb + 1] = ", "
+        print_str_tb[#print_str_tb + 1] = self.points_[i].z_
+        print_str_tb[#print_str_tb + 1] = ") "
+    end
+
+    local table_concat = table.concat
+    return table_concat(print_str_tb)
+end
+
+-- 以p為起點，向右作一條射線，看射線跟邊相交的點的數量是奇還偶
 function mt:In(p)
-    local crossNum = 0
-    for i = 1, self.pointNum do 
-        local p1 = self.points[i]
-        local p2 = self.points[(i + 1) % self.pointNum] -- 最後一個點與第一個點的連接
-        if (p1.y != p2.y) and (p.y >= math.min(p1.y, p2.y)) and (p.y < math.max(p1.y, p2.y)) then
-            local x = (p.y - p1.y) * (p2.x - p1.x) / (p2.y - p1.y) + p1.x
-            if x > p.x then
-                crossNum = crossNum + 1
+    local max, min, floor = math.max, math.min, math.floor
+    local cross_num = 0
+
+    for i = 1, self.point_num_ do 
+        local p1 = self.points_[i]
+
+        local next_index = (i + 1) - floor(i / self.point_num_) * self.point_num_ -- 最後一個點與第一個點的連接
+        local p2 = self.points_[next_index]
+
+        -- 點經過水平的邊不算
+        -- 點的y座標比兩端點都低或都高，都代表碰不到邊
+        if (p1.y_ ~= p2.y_) and
+           (p.y_  >= min(p1.y_, p2.y_)) and
+           (p.y_  <  max(p1.y_, p2.y_)) then
+            -- 計算斜率，再用比例求x
+            local x = (p.y_ - p1.y_) * (p2.x_ - p1.x_) / (p2.y_ - p1.y_) + p1.x_
+
+            if x > p.x_ then
+                cross_num = cross_num + 1
             end
         end
     end
-    return crossNum % 2 == 1
+
+    -- 奇數表示在裡面，偶數表示在外面
+    return cross_num % 2 == 1
 end
 
 return Polygon

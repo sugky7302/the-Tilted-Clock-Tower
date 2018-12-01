@@ -1,57 +1,67 @@
+-- 此module會創建一個事件列表，使事件觸發時，會調用同一事件名的所有觸發器
+
 local setmetatable = setmetatable
-local Trigger = require 'trigger'
-local Array = require 'array'
+
+local Array = require 'stl.array'
 
 local Event = {}
 setmetatable(Event, Event)
 
--- variables
-local _RegisterEvent, _GetEvents, _GetEvent
+-- assert
+local _GetEvents, _GetEvent
 
-function Event:__call(obj, eventName) -- 使用 .__call 會無法讀取eventName
-    return _RegisterEvent(obj, eventName)
-end
-
-_RegisterEvent = function(obj, eventName)
-    local events = _GetEvents(obj)
-    local event = _GetEvent(events, eventName)
+-- 使用 .__call 會無法讀取eventName
+-- callback第一個參數是trigger的實例，後面的參數才是自己加的
+function Event:__call(class, event_name) 
+    local Trigger = require 'trigger'
+    
+    local events = _GetEvents(class)
+    local event = _GetEvent(events, event_name)
     return function(callback)
         return Trigger(event, callback)
     end
 end
 
-_GetEvents = function(obj)
-    local events = obj.events
+_GetEvents = function(class)
+    local events = class.events
     if not events then
-        events = Array("event")
-        obj.events = events
+        events = Array()
+        class.events = events
     end
+
     return events
 end
 
-_GetEvent = function(events, eventName)
-    local event = events[eventName]
+_GetEvent = function(events, event_name)
+    local event = events[event_name]
     if not event then
-        event = Array("callback")
-        events[eventName] = event
+        event = Array()
+        events[event_name] = event
+
         function event:Remove()
-            events:Erase(event)
+            events:Delete(event)
         end
     end
+
     return event
 end
 
-function Event.Dispatch(self, eventName, ...)
-    local events = self.events
+-- 有回傳值
+function Event.Dispatch(class, event_name, ...)
+    local events = class.events
     if not events then
         return false
     end
-    local event = events[eventName]
+
+    local event = events[event_name]
     if not event then
         return false
     end
+
     for i = #event, 1, -1 do
         local callback = event[i]:Run(...)
+
+        -- 如果寫"if callback then"的話會沒辦法回傳"false"
         if callback ~= nil then
             return callback
         end
@@ -59,15 +69,18 @@ function Event.Dispatch(self, eventName, ...)
 end
 
 -- TODO: 預留不用
-function Event.Notify(self, eventName, ...)
-    local events = self.events
+-- 沒有回傳值
+function Event.Notify(class, event_name, ...)
+    local events = class.events
     if not events then
         return
     end
-    local event = events[eventName]
+
+    local event = events[event_name]
     if not event then
         return
     end
+
     for i = #event, 1, -1 do
         event[i]:Run(...)
     end

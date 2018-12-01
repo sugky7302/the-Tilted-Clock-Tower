@@ -1,56 +1,73 @@
+-- 此module為地圖創建多邊形區域，取代we編輯器的region功能
+
 local setmetatble = setmetatble
-local Polygon = require 'polygon'
-local Point = require 'point'
-local cj = require 'jass.common'
-local Unit = require 'unit'
-local Game = require 'game'
-require 'region_database'
 
 local Region, mt = {}, {}
-setmetatble(Region, Region)
+setmetatable(Region, Region)
 Region.__index = mt
 
 -- constants
 mt.type = "Region"
 
--- variables
-local _period = 1
-
 function Region.Init()
-    Game:Event "單位-創建" (function(trigger, hero)
-        if cj.IsUnitType(hero, cj.UNIT_TYPE_HERO) then
-            -- 偵測玩家位置
-            Timer(_period, true, function(callback)
-                for name, region in pairs(Region) do 
-                    Unit(hero)["所在地"] = Unit(hero)["所在地"] or "訓練營"
-                    if region:In(hero) and Unit(hero)["所在地"] ~= name do 
-                        Unit(hero)["所在地"] = name
-                    end
-                end
-            )
-        end
-    end)
+    local pairs = pairs
+    local regions = require 'regions'
+
     -- 初始化區域
-    for name, points in pairs(Regions) do
+    for name, points in pairs(regions) do
         Region(name, points)
     end
+
+    local Game = require 'game'
+    local cj = require 'jass.common'
+    local Timer = require 'timer.core'
+    local Unit = require 'unit'
+
+    local _period = 1
+
+    Game:Event "單位-創建" (function(_, hero)
+        if cj.IsUnitType(hero, cj.UNIT_TYPE_HERO) then
+            -- 偵測玩家位置
+            Timer(_period, true, function(_)
+                for name, region in pairs(regions) do 
+                    if region:In(hero) then
+                        Unit(hero)["所在區域"] = name
+                    end
+                end
+            end)
+        end
+    end)
 end
 
 function Region:__call(name, points)
-    local obj = {
-        name = name,
-        object = Polygon(points),
+    local Polygon = require 'polygon'
+
+    local instance = {
+        name_ = name,
+        object_ = Polygon(points),
     }
-    self[name] = obj
-    setmetatble(obj, self)
-    return obj
+
+    self[name] = instance
+
+    setmetatable(instance, self)
+
+    return instance
 end
 
-function mt:In(unit)
-    local p = Point:GetUnitLoc(unit)
-    local inRegion = self.object:In(p)
-    p:Remove()
-    return inRegion
+function mt:HasUnit(unit)
+    local Point = require 'point'
+
+    local p_unit = Point:GetUnitLoc(unit)
+    local in_region = self.object_:In(p_unit)
+
+    p_unit:Remove()
+
+    return in_region
+end
+
+function mt:In(p)
+    local in_region = self.object_:In(p)
+    return in_region
 end
 
 return Region

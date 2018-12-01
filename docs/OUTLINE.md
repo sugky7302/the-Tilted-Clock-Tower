@@ -75,8 +75,8 @@ lib
 - x damage
 - v dialog
 - x equipment
-- x event
-- x game
+- v event
+- v game
 - group
     - v core
     - v condition
@@ -87,10 +87,10 @@ lib
 - x map
 - x pet
 - x player
-- x point
-- x polygon
+- v point
+- v polygon
 - x quest
-- x region
+- v region
 - x secrets
 - x shield
 - x skill
@@ -120,6 +120,11 @@ test
     - v trigger
     - v group
     - v dialog
+    - v point
+    - v event
+    - v game
+    - v polygon
+    - v region
 
 util
 - behavior_tree

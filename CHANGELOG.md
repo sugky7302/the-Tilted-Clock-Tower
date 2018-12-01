@@ -1,23 +1,32 @@
 # 更新日誌
-## 0.31.3 - 2018-11-30
+## 0.31.4 - 2018-12-01
+### Changed:
+- 替每個版本號添加git版本連結。
+- 重構point。
+- 重構event。
+- 重構game。
+- 重構polygon。
+- 重構region。
+
+## [0.31.3] - 2018-11-30
 ### Changed:
 - 測試完timer。
 - 重構並分離group。
 - 重構dialog。
 - 重構trigger。
 
-## 0.31.2 - 2018-11-29
+## [0.31.2] - 2018-11-29
 ### Changed:
 - 重構timer，並分離成兩個模組。
 
-## 0.31.1 - 2018-11-28
+## [0.31.1] - 2018-11-28
 ### Changed:
 - 重構list，分成core跟iterator。
 - custom_tool，更名成pairs_by_key，目的是解決pairs無序的問題。
 ### Removed:
 - quick_sort沒有使用到，因此刪除。
 
-## 0.31.0 - 2018-11-26
+## [0.31.0] - 2018-11-26
 ### Added:
 - 新增OUTLINE.md，記錄重構的文件有哪些。
 ### Changed:
@@ -29,7 +38,7 @@
 - 刪除object。
 - 刪除new.j。
 
-## 0.30.0 - 2018-11-21
+## [0.30.0] - 2018-11-21
 ### Added:
 - [base] 新增Map//quests路徑。
 - [item] 添加週期刪除物品函數，對於書類及神符類都能正確刪除物品，不然這兩類只是模型縮小而已。
@@ -50,7 +59,7 @@
 - [region] 修正沒有require game，使得Init函數無法獲得game的問題。
 - [timer] 修正SetRemaining會使exection一直註冊條件，使得exection會出現冗餘的if-else的問題。
 
-## 0.29.0 - 2018-11-20
+## [0.29.0] - 2018-11-20
 ### Added:
 - 新增drop_list庫，儲存單位掉落的物品類型。
 - [unit] 新增"單位-掉落物品"事件。
@@ -58,7 +67,7 @@
 - [damage] 修正MathLib.Random()只產生{0, 1}，導致命中判定不正確的問題。
 - [hero] 修正拾取裝備卻無法獲得屬性的問題。
 
-## 0.28.0 - 2018-11-19
+## [0.28.0] - 2018-11-19
 ### Added:
 - 新增polygon庫，用於處理多邊形，例如區域。
 - [unit] 添加Event、EventDispatch函數。注意，Event的第一個參數self指的是"trigger"，不是EventDispatch呼叫的那個東西。
@@ -72,17 +81,17 @@
 - [jass_tool] 施放技能時，lua會告知U2Id內的GetUnitTypeId崩潰。
 - [missile] 某些地形投射物的軌跡會變形。
 
-## 0.27.0 - 2018-11-12
+## [0.27.0] - 2018-11-12
 ### Added:
 - 完成**領取物資**3環任務。
 ### Changed:
 - [equipment] 修改裝備顯示樣式。
 
-## 0.26.0 - 2018-11-11
+## [0.26.0] - 2018-11-11
 ### Added:
 - 新增**領取物資**任務。
 
-## 0.25.0 - 2018-11-10
+## [0.25.0] - 2018-11-10
 ### Added:
 - 完成訓練營地形。
 - 新增equipment_database，用於儲存商店的裝備的數據。
@@ -97,7 +106,7 @@
 ### Fixed:
 - [prefix] 修正沒有屬性時，也會設定前綴的問題。
 
-## 0.24.0 - 2018-11-03
+## [0.24.0] - 2018-11-03
 ### Added:
 - [buff] 新增冰凍效果。
 - [item] 添加"單位-物品掉落'事件。
@@ -106,14 +115,14 @@
 ### Fixed:
 - [buff] 修改暈眩效果。
 
-## 0.23.0 - 2018-11-02
+## [0.23.0] - 2018-11-02
 ### Fixed:
 - [quest] 完善庫。
 - [quest] 修正無法正確完成任務的問題。
 - [quest] 修正非任務單位死亡觸發"任務-更新"事件，會產生Nil的問題。
 - [quest] 修正任務可能無法完成的問題。
 
-## 0.22.0 - 2018-11-01
+## [0.22.0] - 2018-11-01
 ### Added:
 - 新增quest庫，用於任務系統。
 - [pet] 新增remove函數，用於刪除死亡的寵物。
@@ -126,7 +135,7 @@
 - [冰霜秘術師] 修正冰霜長矛天賦無法觸發的問題。
 - [冰霜秘術師] 修正寒冰箭施放時，冰晶不會消失的問題。
 
-## 0.21.0 - 2018-10-31
+## [0.21.0] - 2018-10-31
 ### Added:
 - [buff] 新增多層buff的說明。
 - [unit] 新增event、eventdispatch、talentdispatch函數。
@@ -146,7 +155,7 @@
 - [missile] 修正remove函數會導致計時器無法執行的問題。
 - [skill] 修正updatetip函數只能更新有傷害值的技能數據的問題。
 
-## 0.20.0 - 2018-10-30
+## [0.20.0] - 2018-10-30
 ### Added:
 - 新增talent資料夾，儲存各個天賦。
 - 新增talent庫，讓玩家能夠像heros of the storm一樣選擇自己想要的天賦。
@@ -161,7 +170,7 @@
 - [damage] 修正霜寒刺骨會加成普通攻擊的問題。
 - [missile] 修正單位組不清空舊有單位，導致擊中判斷不正確的問題。
 
-## 0.19.0 - 2018-10-29
+## [0.19.0] - 2018-10-29
 ### Added:
 - 新增attribute，將unit內設定屬性的函數全部獨立成一個檔案管理，有效減少unit的結構大小。
 - [buff資料夾] 新增init函數，用於初始化效果。
@@ -181,13 +190,13 @@
 - [unit] 根據上條，為防止空單位也會註冊，修正註冊函數，判定空單位直接跳出。
 - [霜之環] 修正沒有定身效果的問題。
 
-## 0.18.0 - 2018-10-28
+## [0.18.0] - 2018-10-28
 ### Added:
 - 新增buff庫，可以設定/調用所有buff、debuff效果。
 ### Changed:
 - [Effect資料夾] 更名為Buff資料夾，儲存遊戲內所有buff/debuff效果。
 
-## 0.17.0 - 2018-10-26
+## [0.17.0] - 2018-10-26
 ### Added:
 - 新增shield庫。
 - 新增pet庫，專門對召喚物作處理。
@@ -201,7 +210,7 @@
 ### Fixed:
 - [skill] 修正連續施放技能，前一個技能不會被打斷的問題。
 
-## 0.16.0 - 2018-10-25
+## [0.16.0] - 2018-10-25
 ### Added:
 - [group] 新增ignoreUnits變量，儲存已經被傷害過的單位。
 - [group] 根據上條更新，loop現在會忽略ignoreUnits裡的單位。
@@ -216,7 +225,7 @@
 - [point] 修正rotate函數換算錯誤的問題。
 - [冰霜秘術師] 修正由於寒冰箭的**施法持續時間**及**動作持續時間**沒有超過施法動作播一次的時間，而導致動畫播放不出來的問題。
 
-## 0.15.0 - 2018-10-24
+## [0.15.0] - 2018-10-24
 ### Added:
 - 新增bar庫，將castbar的核心功能摘出來，為之後的狀態條作準備。
 - [skill] 完善施法階段。
@@ -230,7 +239,7 @@
 - [skill] 修正多重施法提示文字無法顯示的問題，但目前仍未解決文字會莫名跳動的問題。
 - [timer] 修正計時器在失效後，依舊會調用動作的問題。
 
-## 0.14.0 - 2018-10-23
+## [0.14.0] - 2018-10-23
 ### Added:
 - 新增castbar庫，生成施法條。
 - [damage] 考慮到某些技能需要必中，因此新增"mustHit"參數。
@@ -245,7 +254,7 @@
 - [damage] 修正獲取元素傷害錯誤的問題。
 - [暴風雪] 修正暴風雪獲取單位組內單位錯誤的問題。
 
-## 0.13.0 - 2018-10-22
+## [0.13.0] - 2018-10-22
 ### Added:
 - 新增smallSecretOrder、bigSecretOrder庫，但秘物序列還沒進行測試。
 - 新增combine庫，用於低級材料轉換成高級材料。
@@ -257,7 +266,7 @@
 ### Fixed:
 - [enchanted] 修正相同屬性的秘物可以用在同一件裝備的問題。
 
-## 0.12.0 - 2018-10-21
+## [0.12.0] - 2018-10-21
 ### Added:
 - 新增attribute資料庫，儲存屬性、描述文字、裝備評分。
 - 新增combine資料庫，儲存材料合成公式。
@@ -281,7 +290,7 @@
 - [player] 修正add函數算符錯誤，導致exten_hole扣除金額時變成增加的問題。
 - [secrets] 修正_GenerateAttributes函數無法給secrets對象數據，導致附魔錯誤的問題。
 
-## 0.11.0 - 2018-10-20
+## [0.11.0] - 2018-10-20
 ### Added:
 - 新增database資料夾，儲存各類型需要的模板。
 - 新增secrets_database、attribute_database庫，提供物品需要的數據。
@@ -310,7 +319,7 @@
 ### Removed:
 - [equipment] 由於物品數據是類型一起更改，無法達到單件物品專門修改的效果，因此刪除此功能。
 
-## 0.10.0 - 2018-10-19
+## [0.10.0] - 2018-10-19
 ### Added:
 - 新增damage庫。
 - 新增unit庫，為單位註冊結構。
@@ -326,7 +335,7 @@
 ### Removed:
 - 移除general_bonus_system庫，改用japi。
 
-## 0.9.1 - 2018-10-18
+## [0.9.1] - 2018-10-18
 ### Added:
 - 新增buff庫，執行所有增益/減益/持續傷害等效果。
 - 新增skill庫，設計技能工具。
@@ -338,7 +347,7 @@
 - [game] 移動到map庫統一執行。
 - [recipe] 修改product，能儲存多種產品。運用隨機數讀取隨機一種產品，用於材料賭博相關方面，由《超神機械師》參考而來。
 
-## 0.9.0 - 2018-10-10
+## [0.9.0] - 2018-10-10
 ### Added:
 - 新增trigger庫。參照moe-master 2.1和javascript的自定義事件，理解原理再根據需求修改。
 - 新增event庫，同上理由。
@@ -352,7 +361,7 @@
 - [event] 修正.__call無法讀取eventName的問題。
 - [trigger] 修正沒有將回調函數添加進事件佇列的問題。
 
-## 0.8.0 - 2018-10-09 - 重新更名回README
+## [0.8.0] - 2018-10-09 - 重新更名回README
 ### Added:
 - 新增queue。
 - [base] 新增Debug模式。
@@ -366,7 +375,7 @@
 - 原README改成lua使用說明。
 - [api] timer重寫後，trigger能夠正確觸發。
 
-## 0.7.0 - 2018-10-08
+## [0.7.0] - 2018-10-08
 ### Added:
 - 新增missile_tool庫，將missile的工具獨立出來。
 - 新增trace_lib庫，將missile的彈道庫獨立出來。
@@ -383,11 +392,11 @@
 - [missile_tool] 根據下條錯誤，修正SetHeight獲取錯誤高度，導致條件判斷會使得missile還沒設定timer時就刪除timer的問題。
 - [point] 修正+-*/會覆蓋舊point，使得Distance函數計算=0，進而導致missile_tool的_GetSlope函數會出現nan(ind)的問題。
 
-## 0.6.1 - 2018-10-07
+## [0.6.1] - 2018-10-07
 ### Fixed:
 - [timer] 修正Remove函數不會暫停計時器，可能會一直執行的問題。
 
-## 0.6.0 - 2018-10-06
+## [0.6.0] - 2018-10-06
 ### Added:
 - 新增add_recipe、detect_recipe(未測試)庫。
 - [object] 新增Insert、Sort函數。
@@ -395,11 +404,11 @@
 ### Changed:
 - 根據**程式碼撰寫規則**重審所有程式碼，並測試部分程式碼。
 
-## 0.5.0 - 2018-10-05 - 更名為CHANGELOG
+## [0.5.0] - 2018-10-05 - 更名為CHANGELOG
 ### Added:
 - 新增紅黑樹，但「刪除」動作尚未完成。
 
-## 0.4.0 - 2018-10-04 - 純vscode作圖
+## [0.4.0] - 2018-10-04 - 純vscode作圖
 ### Added:
 - 新增test，用於測試程式碼。
 - [texttag] 將原先texttag的戰鬥漂浮文字獨立成text_to_attch_unit模塊。
@@ -409,7 +418,7 @@
 ### Fixed:
 - [texttag] 修正由於字體過大導致遊戲內看不見漂浮文字的問題。
 
-## 0.3.0 - 2018-10-01
+## [0.3.0] - 2018-10-01
 ### Added:
 - 新增combat，處理戰鬥相關的事件。
 ### Changed:
@@ -421,7 +430,7 @@
 - [texttag] 修正RunTimer內由於list:Iterator()而產生的問題。
 - [texttag] 修正由於SetTexttag設定錯誤導致漂浮文字無法顯示的問題。
 
-## 0.2.0 - 2018-09-29
+## [0.2.0] - 2018-09-29
 ### Added:
 - 新增node，用於list。
 - 新增list，用於texttag。
@@ -435,11 +444,11 @@
 - [point] 修正建構函數，使point作運算時，不會再出現遊戲當機的問題。
 - [timer] 修正對象無法呼叫Pause的問題。
 
-## 0.1.1 - 2018-09-27 - 開發
+## [0.1.1] - 2018-09-27 - 開發
 ### Changed:
 - 將外部腳本寫進地圖內，防止YDWE讀不到。
 
-## 0.1.0 - 2018-07-06 - 啟動ChangeLog
+## [0.1.0] - 2018-07-06 - 啟動ChangeLog
 ### Goal:
 - 將所有腳本的更新都集中撰寫，方便日後檢查、維護。
 - 按日期降序排列，方便檢視最新的更新。
@@ -449,3 +458,41 @@
 
 [actboy168-lua-debug]:https://tieba.baidu.com/p/5902146836
 [coordinate_error]:https://tieba.baidu.com/p/5773334779?pid=120570865697&cid=0&red_tag=1133617129#120570865697
+
+[0.31.3]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/8d705f75fa4bc0bba582ced04a63d009283706bf
+[0.31.2]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/f7d7a595081d9f13b7d6630f727015d2325f8cd7
+[0.31.1]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/0de580579a487d0cca89dbc3225c77c9f1d4edb5
+[0.31.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/6ed8a7066393bf1b291d1901332ce6d669544f74
+[0.30.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/547fdeb4d0184c8b433b19ab54a1e6cfe86adad8
+[0.29.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/f67d293fc513ba9417d8d666e69861de0a4a8472
+[0.28.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/c4b6584a08e6a096f29a8c4acefa98e395dc1f65
+[0.27.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/6c0d41df8ea0e04f84384ef0a9e490653d78b536
+[0.26.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/6c0d41df8ea0e04f84384ef0a9e490653d78b536
+[0.25.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/6c0d41df8ea0e04f84384ef0a9e490653d78b536
+[0.24.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/3bf9a3684adca59c50f93ecc6470c464a0b329fc
+[0.23.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/4e1befe74a6436e71944b7ec175e345023cbc3de
+[0.22.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/acb3702ba188aeeba4f561f0e0e9ecca212e61e8
+[0.21.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/ec64bf30b9c8003b762142960fc0ec934cd88f41
+[0.20.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/b7e0bbbe90aadf5033ef5946bc02a7ec56b03864
+[0.19.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/b01a20b8cd1e173445e14542ecb83bbc5635e8e4
+[0.18.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/e27001f178c3a32ea7cd6ac70b771da500e3f86c
+[0.17.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/bd3c38a0e36d4902fcd55515dbfdd347b752eef1
+[0.16.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/f296637a13ae98c3c261ea861eddbe4adf59dc28
+[0.15.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/8200cdf854b6c157d54210413d565bbab91daee0
+[0.14.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/24f37725119df7a75c1c70b7a4ff2506b1cbba1c
+[0.13.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/5182e0747ee51b0d677acff1df2465f204bc6e13
+[0.12.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/abadd348e45f3b5e962031a81c87524f6445171f
+[0.11.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/a11b6d9647e589f7abe8974d15d2475377f8ff2a
+[0.10.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/418eb1acb3add779ecb1d1d0a336a5087323ddac
+[0.9.1] :https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/e9f9329e3de4de4c181048e1ac5eaf205d3e8bdb
+[0.9.0] :https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/8802052739c32a80c48c5aa114ca29e7dc4f70b9
+[0.8.0] :https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/f20b9948fc90b4514128a9154970869953adc34a
+[0.7.0] :https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/59f0cd6dc685cd8419bd68c647d6d7ef21dbb2d8
+[0.6.1] :https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/6f2da005e378697a095f33346ec7ba2af74cdd08
+[0.6.0] :https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/6f2da005e378697a095f33346ec7ba2af74cdd08
+[0.5.0] :https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/ec3e5a98dc8a5d6176fe39eeca3eb8a7985a9291
+[0.4.0] :https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/af30d9215a7e0265cbb6562f0cff86c66868778a
+[0.3.0] :https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/434371820ce88be522cd0b2f41a5a2cb97f887d8
+[0.2.0] :https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/63c6f063208896d6ca19fccbefbc9b9d05aec106
+[0.1.1] :https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/4ec8da80ac520ebd9d8a99a2ad768fdccc01c608
+[0.1.0] :https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/3171a30af526c25bd858956c8fbaa9c669115964

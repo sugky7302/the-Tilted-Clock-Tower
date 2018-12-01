@@ -1,6 +1,6 @@
-local setmetatable = setmetatable
+-- 此module提供we的字串顏色符
 
-local Hex = require 'hexadecimal'
+local setmetatable = setmetatable
 
 local Color = {}
 setmetatable(Color, Color)
@@ -34,8 +34,10 @@ function Color:__call(...)
 
     local string_format = string.format
     local color_nums = string_format("%03d-%03d-%03d", r, g, b)
+
     -- 儲存下來，下次調用就不用再計算
     if not self[color_nums] then
+        local Hex = require 'hexadecimal'
         self[color_nums] = '|cff' .. Hex.I2S(r) .. Hex.I2S(g) .. Hex.I2S(b)
     end
     return self[color_nums]

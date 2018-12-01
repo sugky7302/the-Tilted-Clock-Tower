@@ -20,17 +20,21 @@ end
 -- 無參數 產生(0, 1)的隨機整數
 -- 只有參數n 產生[1, n]的隨機整數
 -- 兩個參數 產生[n, m]的隨機整數
+-- n, m 非整數會報錯
 math.randomseed(tonumber(tostring(os.time()):reverse():sub(1,6)))
 function MathLib.Random(n, m)
-    local random = math.random
+    local random, modf = math.random, modf
     if not n then
         return random()
     end
     
-    if not m  then
+    if not m then
+        n = modf(n)
         return random(n)
     end
 
+    n = modf(n)
+    m = modf(m)
     return random(n, m)
 end
 

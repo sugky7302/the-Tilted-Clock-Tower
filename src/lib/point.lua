@@ -1,86 +1,101 @@
-local sin, cos, deg, rad, sqrt, atan = math.sin, math.cos, math.deg, math.rad, math.sqrt, math.atan
-local setmetatable = setmetatable
-local cj = require 'jass.common'
-local Object = require 'object'
+-- 此module取代we的point，減少ram的開銷
 
-local Point = {}
-local mt = {}
+local setmetatable = setmetatable
+
+local cj = require 'jass.common'
+
+local Point, mt = {}, {}
 setmetatable(Point, Point)
 Point.__index = mt
 
+-- constants
+mt.type = "Point"
+
 function Point:__call(x, y, z)
-    local obj = Object{
-        x = x or 0,
-        y = y or 0,
-        z = z or 0
+    local instance = {
+        x_ = x or 0,
+        y_ = y or 0,
+        z_ = z or 0
     }
-    setmetatable(obj, self)
-    obj.__index = obj
-    return obj 
-end
 
-function mt:GetZ()
-    local loc = cj.Location(self.x, self.y)
-    self.z = cj.GetLocationZ(loc)
-    cj.RemoveLocation(loc)
-end
+    setmetatable(instance, self)
 
-function Point:GetUnitLoc(unit)
-    return self(cj.GetUnitX(unit), cj.GetUnitY(unit))
-end
-
-function Point:GetLoc(p)
-    return self(cj.GetLocationX(p), cj.GetLocationY(p))
+    return instance 
 end
 
 function mt:Remove()
+    self.x_ = nil
+    self.y_ = nil
+    self.z_ = nil
     self = nil
 end
 
-function Point.Distance(p1, p2)
-    return sqrt((p1.x - p2.x)^2 + (p1.y - p2.y)^2)
+function Point:__tostring()
+    return '(' .. self.x_ .. ', ' .. self.y_ .. ', ' .. self.z_ .. ')'
 end
 
-function Point.DistanceInSpace(p1, p2)
-    return sqrt((p1.x - p2.x)^2 + (p1.y - p2.y)^2 + (p1.z - p2.z)^2)
+function Point:__add(p)
+    local new_point = Point(self.x_ + p.x_, self.y_ + p.y_, self.z_ + p.z_)
+    return new_point
 end
 
-function Point.Angle(p1, p2)
+function Point:__sub(p)
+    local new_point = Point(self.x_ - p.x_, self.y_ - p.y_, self.z_ - p.z_)
+    return new_point
+end
+
+function Point:__mul(scale)
+    local new_point = Point(self.x_ * scale, self.y_ * scale, self.z_ * scale)
+    return new_point
+end
+
+function Point:__div(scale)
+    local new_point = Point(self.x_ / scale, self.y_ / scale, self.z_ / scale)
+    return new_point
+end
+
+function mt.GetUnitLoc(unit)
+    return Point(cj.GetUnitX(unit), cj.GetUnitY(unit))
+end
+
+function mt.GetLoc(p)
+    return Point(cj.GetLocationX(p), cj.GetLocationY(p))
+end
+
+function mt:UpdateZ()
+    local loc = cj.Location(self.x_, self.y_)
+    self.z_ = cj.GetLocationZ(loc)
+
+    cj.RemoveLocation(loc)
+end
+
+-- 假定極點為(0, 0)
+function mt:Rotate(deg)
+    local rad, sin, cos, sqrt = math.rad, math.sin, math.cos, math.sqrt
+
+    local angle, length = rad(deg), sqrt(self.x_ ^ 2 + self.y_ ^ 2)
+    self.x_, self.y_ = length * cos(angle), length * sin(angle)
+end
+
+-- 相關功能
+function Point.Deg(p1, p2)
+    local deg = math.deg
     return deg(Point.Rad(p1, p2))
 end
 
 function Point.Rad(p1, p2)
-    return atan(p2.y - p1.y, p2.x - p1.x)
+    local atan = math.atan
+    return atan(p2.y_ - p1.y_, p2.x_ - p1.x_)
 end
 
--- 假定極點為(0, 0)
-function mt:Rotate(val)
-    local theta, r = rad(val), sqrt(self.x^2 + self.y^2)
-    self.x, self.y = r * cos(rad(val)), r * sin(rad(val))
+function Point.Distance(p1, p2)
+    local sqrt = math.sqrt
+    return sqrt((p1.x_ - p2.x_) ^ 2 + (p1.y_ - p2.y_) ^ 2)
 end
 
-function Point:__tostring()
-    return '(' .. self.x .. ', ' .. self.y .. ', ' .. self.z .. ')'
-end
-
-function Point:__add(p)
-    local newPoint = Point(self.x + p.x, self.y + p.y, self.z + p.z)
-    return newPoint
-end
-
-function Point:__sub(p)
-    local newPoint = Point(self.x - p.x, self.y - p.y, self.z - p.z)
-    return newPoint
-end
-
-function Point:__mul(val)
-    local newPoint = Point(self.x * val, self.y  * val, self.z  * val)
-    return newPoint
-end
-
-function Point:__div(val)
-    local newPoint = Point(self.x / val, self.y  / val, self.z  / val)
-    return newPoint
+function Point.DistanceInSpace(p1, p2)
+    local sqrt = math.sqrt
+    return sqrt((p1.x_ - p2.x_) ^ 2 + (p1.y_ - p2.y_) ^ 2 + (p1.z_ - p2.z_) ^ 2)
 end
 
 return Point

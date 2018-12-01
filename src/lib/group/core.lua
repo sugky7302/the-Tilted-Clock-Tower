@@ -111,6 +111,7 @@ function mt:Ignore(unit)
     self._ignore_label_[H2I(unit) .. ""] = true
 end 
 
+-- cnd_name 有 IsEnemy、IsAlly、IsHero、IsNonHero、Nil
 function mt:EnumUnitsInRange(x, y, r, cnd_name)
     local enum_range_units = cj.CreateGroup()
 
