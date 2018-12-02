@@ -1,70 +1,78 @@
-local setmetatable = setmetatable
-local string_rep = string.rep
-local math_modf = math.modf
-local cj = require 'jass.common'
-local Texttag = require 'texttag'
+-- 此module會在英雄身上創建狀態條
+
 local Point = require 'point'
-local Color = require 'color'
 
-local Bar, mt = {}, {}
-setmetatable(Bar, Bar)
-Bar.__index = mt
+-- assert
+local motivation = Point(-40, 0)
 
--- constants
-mt.SIZE = 0.015
-mt.Z_OFFSET = 150
-mt.motivation = Point(-40, 0)
-mt.BarSize = 25
-mt.BarModel = "l"
+local GetBarModel
+local Initialize, Update
 
--- variables
-local _Initialize, _Update, _Remove, _GetBarModel
+function Bar(unit, timeout, color, is_reverse)
+    local SIZE = 0.015
 
-function Bar:__call(unit, timeout, color, isReverse)
-    local obj = {
-        msg = _GetBarModel(0, timeout, color, isReverse),
-        loc = Point:GetUnitLoc(unit) + self.motivation,
-        timeout = timeout,
-        lifeTime = timeout,
-        size = self.SIZE,
-        Initialize = _Initialize,
-        Update = _Update,
-        Remove = _Remove,
-        isReverse = isReverse,
-        color = color,
-        owner = unit,
-        invalid = false,
+    local unit_loc = Point.GetUnitLoc(unit)
+    local instance = {
+        _msg_ = GetBarModel(0, timeout, color, is_reverse),
+        _loc_ = unit_loc + motivation,
+        _timeout_ = timeout,
+        _life_time_ = timeout, -- 記錄總時間，要計算條的變色比例
+        _size_ = SIZE,
+        _is_reverse_ = is_reverse,
+        _color_ = color,
+        _owner_ = unit,
+
+        Initialize = Initialize,
+        Update = Update,
     }
-    setmetatable(obj, obj)
-    obj.__index = self
-    return Texttag(obj)
+
+    unit_loc:Remove()
+
+    local Texttag = require 'texttag.core'
+    return Texttag(instance)
 end
 
-_Initialize = function(obj)
-    cj.SetTextTagPermanent(obj.texttag, false)
-    cj.SetTextTagLifespan(obj.texttag, obj.timeout)
-    cj.SetTextTagText(obj.texttag, obj.msg, obj.size)
-    cj.SetTextTagPos(obj.texttag, obj.loc.x, obj.loc.y, obj.Z_OFFSET)
+-- assert
+local cj = require 'jass.common'
+local Z_OFFSET = 150
+
+Initialize = function(self)
+    cj.SetTextTagPermanent(self._texttag_, false)
+    cj.SetTextTagLifespan(self._texttag_, self._timeout_)
+
+    cj.SetTextTagText(self._texttag_, self._msg_, self._size_)
+    cj.SetTextTagPos(self._texttag_, self._loc_.x_, self._loc_.y_, Z_OFFSET)
 end
 
-_Update = function(data)
-    data.loc = Point:GetUnitLoc(data.owner) + data.motivation
-    cj.SetTextTagPos(data.texttag, data.loc.x, data.loc.y, data.Z_OFFSET)
-    cj.SetTextTagText(data.texttag, _GetBarModel(data.lifeTime - data.timeout, data.lifeTime, data.color, data.isReverse), data.size)
+Update = function(self)
+    -- bar要跟隨單位
+    local unit_loc = Point.GetUnitLoc(self._owner_)
+    self._loc_:Remove()
+    self._loc_ = unit_loc + motivation
+    unit_loc:Remove()
+
+    cj.SetTextTagPos(self._texttag_, self._loc_.x_, self._loc_.y_, Z_OFFSET)
+
+    local bar_model = GetBarModel(self._life_time_ - self._timeout_, self._life_time_, self._color_, self._is_reverse_)
+    cj.SetTextTagText(self._texttag_, bar_model, self._size_)
 end
 
-_GetBarModel = function(current, timeout, color, isReverse)
-    current = isReverse and (timeout - current) or current
-    local dur = math_modf(Bar.BarSize * current / timeout)
-    return Color(color) .. string_rep(Bar.BarModel, dur) .. "|r|cffc0c0c0" .. string_rep(Bar.BarModel, Bar.BarSize - dur)
-end
+GetBarModel = function(current, total, color, isReverse)
+    -- 設定條是向右充能，或是向左
+    current = is_reverse and (total - current) or current
+    
+    -- 計算染色比例
+    local modf = math.modf
+    local BAR_SIZE = 25
+    local coloring_rate = modf(BAR_SIZE * current / total)
 
-_Remove = function(data)
-    Texttag.Remove(data)
-end
-
-function mt:Break()
-    self.invalid = true 
+    -- 以漂浮文字輸出條的視覺效果
+    local Color = require 'color'
+    local string_rep, table_concat = string.rep, table.concat
+    local BAR_MODEL = "l"
+    local string_concat = {Color(color), string_rep(BAR_MODEL, coloring_rate),
+                           "|r|cffc0c0c0", string_rep(BAR_MODEL, BAR_SIZE - coloring_rate)}
+    return table_concat(string_concat)
 end
 
 return Bar

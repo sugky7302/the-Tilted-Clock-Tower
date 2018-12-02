@@ -1,99 +1,146 @@
-local math = math
-local setmetatable = setmetatable
-local cj = require 'jass.common'
-local Timer = require 'timer'
-local List = require 'list'
-local Object = require 'object'
+-- 此module擴展we的texttag的功能，提供最基本的漂浮文字功能，並建立回收機制
+-- texttag最大只能到100個
 
-local Texttag = {}
-local mt = {}
+local setmetatable = setmetatable
+
+local cj = require 'jass.common'
+local Array = require 'stl.array'
+local Queue = require 'stl.queue'
+
+local Texttag, mt = {}, {}
 setmetatable(Texttag, Texttag)
 Texttag.__index = mt
 
--- constants
-Texttag.PERIOD = 0.03
-Texttag.TIME_FADE = 0.3
-Texttag.SIZE = 0.05
-Texttag.Z_OFFSET = 20
+-- assert
+local executing_order, recycle_texttags = Array(), Queue()
+local New, Initialize
+local RunTimer, PauseTimer, Expire
+local GetEmptyTexttag, RecycleTexttag
 
--- variables
-Texttag.executingOrder = List()
-local _IsPauseTimer, _IsExpired, Initialize, Update
+-- 創建固定的漂浮文字
+function Texttag:__call(str, loc, dur, is_permanant)
+    str = (type(str) == 'table') and str or New(self, str, loc, dur, is_permanant)
+    str._invalid_ = false
+    str._texttag_ = GetEmptyTexttag()
 
--- TODO:核心提供最基本的漂浮文字功能，在固定點創建有時間性的固定漂浮文字
-function Texttag:__call(str, loc, dur, isPermanant)
-    str = (type(str) == 'table') and str or self:New(str, loc, dur, isPermanant)
-    str.invalid = false
-    str.texttag = cj.CreateTextTag() 
+    setmetatable(str, self)
+    str.__index = str
+
     str:Initialize()
-    self.executingOrder:PushBack(str)
-    self:RunTimer()
+    
+    executing_order:PushBack(str)
+
+    RunTimer(self)
     return str
 end
 
-function mt:New(str, loc, dur, isPermanant)
-    local obj = Object{
-        msg = str,
-        loc = loc,
-        timeout = dur,
-        isPermanant = isPermanant and true or false,
-        Initialize = _Initialize,
-        Update = _Update
+GetEmptyTexttag = function()
+    if recycle_texttags:IsEmpty() then
+        return cj.CreateTextTag()
+    end
+
+    local texttag = recycle_texttags:front()
+    recycle_texttags:PopFront()
+    return texttag
+end
+
+New = function(self, str, loc, dur, is_permanant)
+    local instance = {
+        _msg_ = str,
+        _loc_ = loc,
+        _timeout_ = dur,
+        _is_permanant_ = is_permanant and true or false,
+        
+        Initialize = Initialize,
+        Update = nil
     }
-    setmetatable(obj, obj)
-    obj.__index = self
-    return obj
+
+    return instance
 end
 
-_Initialize = function(obj) 
-    cj.SetTextTagText(obj.texttag, obj.msg, obj.SIZE)
-    cj.SetTextTagPos(obj.texttag, obj.loc.x, obj.loc.y, obj.SIZE * obj.Z_OFFSET)
-    cj.SetTextTagPermanent(obj.texttag, obj.isPermanant)
-    cj.SetTextTagLifespan(obj.texttag, obj.timeout)
-    cj.SetTextTagFadepoint(obj.texttag, obj.TIME_FADE)
+Initialize = function(self)
+    local SIZE, Z_OFFSET = 0.05, 20
+    local TIME_FADE = 0.3
+
+    cj.SetTextTagText(self._texttag_, self._msg_, SIZE)
+    cj.SetTextTagPos(self._texttag_, self._loc_.x_, self._loc_.y_, SIZE * Z_OFFSET)
+
+    -- 設置結束點、淡出動畫時間
+    cj.SetTextTagPermanent(self._texttag_, self._is_permanant_)
+    cj.SetTextTagLifespan(self._texttag_, self._timeout_)
+    cj.SetTextTagFadepoint(self._texttag_, TIME_FADE)
 end
 
-_Update = function(data)
-end
+RunTimer = function(self)
+    local PERIOD = 0.03
 
-function Texttag:RunTimer()
-    if self.executingOrder:GetSize() < 2 then --啟動計時器
-        self.timer = Timer(self.PERIOD, true, function()
-            for node in self.executingOrder:Iterator() do
-                if not node.data.isPermanent then
-                    node.data.timeout = node.data.timeout - self.PERIOD
+    -- 只有1個元素表示先前array是空的
+    if executing_order:getLength() == 1 then
+        local Timer = require 'timer.core'
+
+        self._timer_ = Timer(PERIOD, true, function()
+            local texttag
+            for i = executing_order:getLength(), 1, -1 do
+                texttag = executing_order[i]
+
+                -- 永久性的漂浮文字不扣時間
+                -- 有些會沒有is_permanent_參數，因此要用not，不能直接==false
+                if not texttag._is_permanent_ then
+                    texttag._timeout_ = texttag._timeout_ - PERIOD
                 end
-                node.data.Update(node.data) -- TODO: 要根據所有的texttag plugin及外部調用此函數的結構來定下Update的參數。
-                _IsExpired(self, node)
+
+                -- 要根據所有的texttag plugin及外部調用此函數的結構來定下update_的參數
+                if texttag.Update then
+                    texttag:Update() 
+                end
+
+                Expire(self, texttag)
             end
-            _IsPauseTimer(self)
+
+            PauseTimer(self)
         end)
     end
 end
 
-_IsExpired = function(self, node)
-    if node.data.timeout <= 0 or node.data.invalid then
-        node.data:Remove()
-        self.executingOrder:Erase(node)
+Expire = function(self, texttag)
+    if texttag._timeout_ <= 0 or texttag._invalid_ then
+        texttag:Remove()
+        executing_order:Delete(texttag)
     end
 end
 
-_IsPauseTimer = function(self)
-    if self.executingOrder:IsEmpty() then -- 如果沒有漂浮文字運作，就關閉計時器
-        self.timer:Remove()
+PauseTimer = function(self)
+    -- 如果沒有漂浮文字運作，就關閉計時器
+    if executing_order:IsEmpty() then
+        self._timer_:Break()
     end 
 end
 
 function mt:Remove()
-    cj.DestroyTextTag(self.texttag)
-    self.invalid = true
-    self.texttag = nil
+    RecycleTexttag(self._texttag_)
+    self._loc_:Remove()
+
+    local pairs = pairs
+    for _, var in pairs(self) do
+        var = nil
+    end
+
     self = nil
-    collectgarbage("collect")
 end
 
-function mt:Break()
-    self.invalid = true
+RecycleTexttag = function(texttag)
+    local MAX_COUNT = 100
+
+    if recycle_texttags:getLength() >= MAX_COUNT then
+        cj.DestroyTextTag(texttag)
+    else
+        -- 回收漂浮文字，減少ram開銷
+        recycle_texttags:PushBack(texttag)
+    end
+end
+
+function mt:Invalid()
+    self._invalid_ = true
 end
 
 return Texttag

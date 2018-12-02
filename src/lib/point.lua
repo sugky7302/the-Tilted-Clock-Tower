@@ -54,14 +54,6 @@ function Point:__div(scale)
     return new_point
 end
 
-function mt.GetUnitLoc(unit)
-    return Point(cj.GetUnitX(unit), cj.GetUnitY(unit))
-end
-
-function mt.GetLoc(p)
-    return Point(cj.GetLocationX(p), cj.GetLocationY(p))
-end
-
 function mt:UpdateZ()
     local loc = cj.Location(self.x_, self.y_)
     self.z_ = cj.GetLocationZ(loc)
@@ -96,6 +88,14 @@ end
 function Point.DistanceInSpace(p1, p2)
     local sqrt = math.sqrt
     return sqrt((p1.x_ - p2.x_) ^ 2 + (p1.y_ - p2.y_) ^ 2 + (p1.z_ - p2.z_) ^ 2)
+end
+
+function Point.GetUnitLoc(unit)
+    return Point(cj.GetUnitX(unit), cj.GetUnitY(unit))
+end
+
+function Point.GetLoc(p)
+    return Point(cj.GetLocationX(p), cj.GetLocationY(p))
 end
 
 return Point

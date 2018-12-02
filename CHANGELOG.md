@@ -1,5 +1,12 @@
 # 更新日誌
-## 0.31.4 - 2018-12-01
+## 0.31.5 - 2018-12-02
+### Changed:
+- 重構texttag。
+- 重構bar。
+### Fixed:
+- [point] 修正GetUnitLoc、GetLoc使用 ":" 語法糖，導致無法獲取單位的問題。
+
+## [0.31.4] - 2018-12-01
 ### Changed:
 - 替每個版本號添加git版本連結。
 - 重構point。
@@ -459,6 +466,7 @@
 [actboy168-lua-debug]:https://tieba.baidu.com/p/5902146836
 [coordinate_error]:https://tieba.baidu.com/p/5773334779?pid=120570865697&cid=0&red_tag=1133617129#120570865697
 
+[0.31.4]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/83dbeeb735c81e9e80395a7e7fa8342b1f34a9a1
 [0.31.3]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/8d705f75fa4bc0bba582ced04a63d009283706bf
 [0.31.2]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/f7d7a595081d9f13b7d6630f727015d2325f8cd7
 [0.31.1]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/0de580579a487d0cca89dbc3225c77c9f1d4edb5

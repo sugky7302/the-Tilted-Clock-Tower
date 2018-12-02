@@ -67,8 +67,8 @@ lib
     - x missile_tool
     - x trace_lib
 - texttag
-    - x core
-    - x text_to_attach_unit
+    - v core
+    - v arc
 - x attribute
 - x buff
 - x combat
@@ -125,6 +125,8 @@ test
     - v game
     - v polygon
     - v region
+    - v texttag
+    - v arc_texttag
 
 util
 - behavior_tree
