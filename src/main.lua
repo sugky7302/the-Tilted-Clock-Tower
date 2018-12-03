@@ -13,7 +13,7 @@ local function _Main()
     -- require 'Type.init'
     -- require 'Tool.init'
     -- require 'Item.init'
-    require 'test.core'("castbar")
+    require 'test.core'("secrets")
     
     -- -- 替所有單位註冊事件，因此一定要放在最後
     -- Map.Init() 

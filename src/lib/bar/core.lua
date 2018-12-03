@@ -1,29 +1,35 @@
 -- 此module會在英雄身上創建狀態條
 
+local setmetatable = setmetatable
 local Point = require 'point'
+
+local Bar, mt = {}, {}
+setmetatable(Bar, Bar)
+Bar.__index = mt 
 
 -- assert
 local motivation = Point(-40, 0)
 
-local GetBarModel
 local Initialize, Update
 
-function Bar(unit, timeout, color, is_reverse)
+-- unit是Unit實例，不是單位
+function Bar:__call(unit, value, timeout, color, is_reverse, initialize, update)
     local SIZE = 0.015
 
-    local unit_loc = Point.GetUnitLoc(unit)
+    local unit_loc = Point.GetUnitLoc(unit.object_)
     local instance = {
-        _msg_ = GetBarModel(0, timeout, color, is_reverse),
+        _msg_ = mt.GetBarModel(0, value or timeout, color, is_reverse),
         _loc_ = unit_loc + motivation,
         _timeout_ = timeout,
-        _life_time_ = timeout, -- 記錄總時間，要計算條的變色比例
+        _value_ = 0, -- 記錄當前值，計算條的變色比例
+        _max_value_ = value or timeout, -- 記錄最大值，計算條的變色比例
         _size_ = SIZE,
         _is_reverse_ = is_reverse,
         _color_ = color,
         _owner_ = unit,
 
-        Initialize = Initialize,
-        Update = Update,
+        Initialize = initialize or Initialize,
+        Update = update or Update,
     }
 
     unit_loc:Remove()
@@ -46,18 +52,19 @@ end
 
 Update = function(self)
     -- bar要跟隨單位
-    local unit_loc = Point.GetUnitLoc(self._owner_)
+    local unit_loc = Point.GetUnitLoc(self._owner_.object_)
     self._loc_:Remove()
     self._loc_ = unit_loc + motivation
     unit_loc:Remove()
 
     cj.SetTextTagPos(self._texttag_, self._loc_.x_, self._loc_.y_, Z_OFFSET)
 
-    local bar_model = GetBarModel(self._life_time_ - self._timeout_, self._life_time_, self._color_, self._is_reverse_)
+    self._value_ = self._timeout_
+    local bar_model = mt.GetBarModel(self._max_value_ - self._value_, self._max_value_, self._color_, self._is_reverse_)
     cj.SetTextTagText(self._texttag_, bar_model, self._size_)
 end
 
-GetBarModel = function(current, total, color, isReverse)
+function mt.GetBarModel(current, total, color, is_reverse)
     -- 設定條是向右充能，或是向左
     current = is_reverse and (total - current) or current
     

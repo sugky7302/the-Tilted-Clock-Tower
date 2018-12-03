@@ -1,6 +1,6 @@
 -- 儲存所有屬性數據
 
-ATTRIBUTE = {
+local ATTRIBUTE = {
     '物理攻擊力', '法術攻擊力', '物理護甲', '法術護甲',
     '無元素傷害', '地元素傷害', '水元素傷害', '火元素傷害', '風元素傷害',
     '無元素抗性', '地元素抗性', '水元素抗性', '火元素抗性', '風元素抗性',
@@ -21,12 +21,12 @@ ATTRIBUTE = {
     '生命恢復', '魔力恢復', '移動速度',
 }
 
-ATTRIBUTE_INDEX = {}
+local ATTRIBUTE_INDEX = {}
 for i, v in ipairs(ATTRIBUTE) do 
     ATTRIBUTE_INDEX[v] = i
 end
 
-ATTRIBUTE_STATE = {
+local ATTRIBUTE_STATE = {
     "+N 物理攻擊力", "+N 法術攻擊力", "+N 物理護甲", "+N 法術護甲",
     "+N 無元素傷害", "+N 地元素傷害", "+N 水元素傷害", "+N 火元素傷害", "+N 風元素傷害",
     "+N 無元素抗性", "+N 地元素抗性", "+N 水元素抗性", "+N 火元素抗性", "+N 風元素抗性",
@@ -53,7 +53,7 @@ ATTRIBUTE_STATE = {
     "恢復的生命值提高 N 點", "恢復的魔力值提高 N 點", "移動速度提高 N%",
 }
 
-ATTRIBUTE_WEIGHT = {
+local ATTRIBUTE_WEIGHT = {
     0.5, 0.75, 0.5, 0.75,
     1, 1, 1, 1, 1,
     1, 1, 1, 1, 1,

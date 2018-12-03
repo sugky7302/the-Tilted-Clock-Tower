@@ -49,9 +49,11 @@ data
 
 lib
 - bar
-    - x core
-    - x castbar
+    - v core
+    - v castbar
+    - v shield
 - item
+    - v core
     - x add_recipe
     - x big_secret_order
     - x combine
@@ -62,10 +64,12 @@ lib
     - x intensify
     - x prefix
     - x small_secret_order
+    - v secrets
+    - x equipment
 - missile
     - x core
-    - x missile_tool
-    - x trace_lib
+    - x tool
+    - x trace
 - texttag
     - v core
     - v arc
@@ -74,7 +78,6 @@ lib
 - x combat
 - x damage
 - v dialog
-- x equipment
 - v event
 - v game
 - group
@@ -83,16 +86,13 @@ lib
 - x heal
 - x hero
 - x init
-- x item
 - x map
 - x pet
-- x player
+- v player
 - v point
 - v polygon
 - x quest
 - v region
-- x secrets
-- x shield
 - x skill
 - x talent
 - timer
@@ -127,6 +127,12 @@ test
     - v region
     - v texttag
     - v arc_texttag
+    - v bar
+    - v castbar
+    - v shield
+    - v player
+    - v item
+    - v secrets
 
 util
 - behavior_tree

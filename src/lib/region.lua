@@ -11,10 +11,10 @@ mt.type = "Region"
 
 function Region.Init()
     local pairs = pairs
-    local regions = require 'regions'
+    local REGIONS = require 'regions'
 
     -- 初始化區域
-    for name, points in pairs(regions) do
+    for name, points in pairs(REGIONS) do
         Region(name, points)
     end
 
@@ -29,7 +29,7 @@ function Region.Init()
         if cj.IsUnitType(hero, cj.UNIT_TYPE_HERO) then
             -- 偵測玩家位置
             Timer(_period, true, function(_)
-                for name, region in pairs(regions) do 
+                for name, region in pairs(REGIONS) do 
                     if region:In(hero) then
                         Unit(hero)["所在區域"] = name
                     end
