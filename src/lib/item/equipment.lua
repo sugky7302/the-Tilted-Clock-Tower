@@ -1,27 +1,27 @@
 -- 此module獨立裝備功能
 
 local setmetatable = setmetatable
+
+-- local Unit = require 'unit'
 local Player = require 'player'
 
 local Equipment, Item = {}, require 'item.core'
 Equipment.__index = Item
 setmetatable(Equipment, Equipment)
 
--- constants
-local _DROP_CHANCE = {{55, 40, 4, 1}, {35, 50, 12, 3}, {12, 35, 41, 12}, {0, 20, 55, 25}}
-
--- varaibles
-local _CompareFn, _RandRingCount, _SetAttributeState, _GetDisplayedInfo, _DialogDisplay, _GetAttribute, _GetLevel
+-- assert
+local GetAttribute, GetLevel
+local CompareFn, RandRingCount
+local SetAttributeState
+local DialogDisplay, GetDisplayedInfo
 
 function Equipment.Init()
-    local Unit = require 'unit'
-
-    Unit:Event "單位-使用物品" (function(_, unit, equipment)
-        if equipment:IsEquipment() then
-            equipment:Update()
-            equipment:Display()
-        end
-    end)
+    -- Unit:Event "單位-使用物品" (function(_, unit, equipment)
+    --     if equipment:IsEquipment() then
+    --         equipment:Update()
+    --         equipment:Display()
+    --     end
+    -- end)
 
     -- 裝備顯示框被點擊事件
     Player:Event "玩家-對話框被點擊" (function(_, player, button)
@@ -127,12 +127,12 @@ GetDisplayedInfo = function(self)
 end
 
 -- assert
-local _, _, _, ATTRIBUTE_WEIGHT = require 'attributes'
+local _, ATTRIBUTE_INDEX, ATTRIBUTE_STATE, ATTRIBUTE_WEIGHT = require 'attributes'() -- 這樣才能多個返回值
 
 function Equipment:GetGearScore()
     local sum = 0
     for i = 1, self.attribute_count_ do
-        sum = sum + self.attribute_[i][2] * ATTRIBUTE_WEIGHT[self.attribute_[i][1]]
+        sum = sum + self.attribute_[i][2] * ATTRIBUTE_WEIGHT[ATTRIBUTE_INDEX[self.attribute_[i][1]]]
     end
 
     return sum
@@ -145,107 +145,151 @@ DialogDisplay = function(player, displayed_info)
     dialog:Show(true)
 end
 
+-- assert
+local EQUIPMENT_TEMPLATE = require 'equipment_template'
+
 -- 建構函式
 function Equipment:__call(item)
-    local obj = self[js.H2I(item) .. ""]
-    if not obj then
-        obj = Item(item)
-        obj.prefix = nil 
-        obj.bigSecretOrder= {}
-        obj.smallSecretOrder = {}
-        obj.attribute = _GetAttribute(obj.id) -- 每個元素包含index, value, states, fixed
-        obj.level = _GetLevel(obj.id)
-        obj.additionalEffect = {} -- 額外效果
-        obj.inscriptions = {} -- 銘文
-        obj.color = "|cffffffff"
-        obj.attributeCount = #obj.attribute
-        obj.attributeCountLimit = #obj.attribute + (EQUIPMENT_TEMPLATE[obj.id].ringCount or 0)
-        obj.intensifyLevel = 0
-        obj.intensifyFailTimes = 0
-        obj.stability = 0
-        obj.intensify = 0
-        obj.fusion = 0
-        obj.uniqueness = 0
-        cj.SetItemInvulnerable(item, true)
-        self[js.H2I(item) .. ""] = obj
-        setmetatable(obj, obj)
-        obj.__index = self
+    local H2I = require 'jass_tool'.H2I
+
+    local instance = Item[H2I(item) .. ""]
+    if not instance then
+        instance = Item(item)
+    
+        -- 前綴
+        instance.prefix_             = nil 
+        instance.big_secret_order_   = {}
+        instance.small_secret_order_ = {}
+
+        -- 每個元素包含index, value, states, fixed
+        instance.attribute_             = GetAttribute(instance.id_)
+
+        local attribute_size = #instance.attribute_
+        instance.attribute_count_       = attribute_size
+        instance.attribute_count_limit_ = attribute_size + (EQUIPMENT_TEMPLATE[instance.id_].ring_count or 0)
+
+        instance.level_ = GetLevel(instance.id_)
+
+        -- 額外效果
+        instance.additional_effect_ = {} 
+
+        -- 銘文
+        instance.inscriptions_ = {} 
+
+        instance.color_ = "|cffffffff"
+        
+        -- 精鍊
+        instance.intensify_level_      = 0
+        instance.intensify_fail_times_ = 0
+
+        -- 鍊金術四項指標
+        instance.stability_  = 0 -- 決定物品等級
+        instance.intensify_  = 0 -- 決定精鍊上限與安定值
+        instance.fusion_     = 0 -- 決定秘物屬性的增幅比例
+        instance.uniqueness_ = 0 -- 決定附加效果的數量
+        
+        -- 讓物品不可破壞
+        local cj_SetItemInvulnerable = require 'jass.common'.SetItemInvulnerable
+        cj_SetItemInvulnerable(item, true)
+
+        setmetatable(instance, instance)
+        instance.__index = self
     end
-    return obj
+
+    return instance
 end
 
-_GetAttribute = function(id)
-    local obj = {}
+GetAttribute = function(id)
+    local attribute = {}
+
+    -- 根據短路的效果做二次存在判斷
+    local pairs = pairs
     if EQUIPMENT_TEMPLATE[id] and EQUIPMENT_TEMPLATE[id].attribute then
         for i, v in pairs(EQUIPMENT_TEMPLATE[id].attribute) do
-            table.insert(obj, {i, v, "", true})
+            attribute[#attribute + 1] = {i, v, "", true}
         end
     end
-    return obj
+
+    return attribute
 end
 
-_GetLevel = function(id)
+GetLevel = function(id)
+    -- 設定好的是商店物品
     if EQUIPMENT_TEMPLATE[id] then
         return EQUIPMENT_TEMPLATE[id].level
     end 
+
     return 1
 end
 
 function Equipment:Update()
     self:Sort()
-    _SetAttributeState(self)
-    Prefix(self)
-end
-
-_SetAttributeState = function(self)
-    local string_gsub = string.gsub
-    for i, tb in pairs(self.attribute) do
-        local str = ATTRIBUTE_STATE[tb[1]]
-        self.attribute[i][3] = string_gsub(str, "N", tb[2] .. "")
-    end
-end
-
--- 移除函式
-function Equipment:Remove()
-    self = nil
+    SetAttributeState(self)
+    -- TODO: Prefix(self)
 end
 
 function Equipment:Sort()
-    table_sort(self.attribute, _CompareFn)
+    local table_sort = table.sort
+    table_sort(self.attribute_, CompareFn)
 end
 
-_CompareFn = function(a, b)
+CompareFn = function(a, b)
     return ATTRIBUTE_INDEX[a[1]] < ATTRIBUTE_INDEX[b[1]]
 end
 
-function Unit.__index:DropEquipment(equipment)
-    local item = Equipment(equipment)
-    item:Rand(self.object:get "等級", self.object:get "階級")
+SetAttributeState = function(self)
+    local string_gsub, pairs = string.gsub, pairs
+
+    -- 把屬性敘述的參數 N 替換成實際數字
+    for i, tb in pairs(self.attribute_) do
+        local str = ATTRIBUTE_STATE[ATTRIBUTE_INDEX[tb[1]]]
+        self.attribute_[i][3] = string_gsub(str, "N", tb[2] .. "")
+    end
 end
+
+-- function Unit.__index:DropEquipment(item)
+--     local equipment = Equipment(item)
+--     equipment:Rand(self.object_:get "等級", self.object_:get "階級")
+-- end
+
+local MathLib = require 'math_lib'
 
 function Equipment:Rand(lv, layer)
-    self.level = MathLib.Random(math.modf(lv + layer / 2), lv + layer)
-    self.layer = layer -- 掉落的強度
-    _RandRingCount(self)
+    local modf = math.modf
+    self.level_ = MathLib.Random(modf(lv + layer / 2), lv + layer)
+
+    self.layer_ = layer -- 掉落的強度[1, 4]
+    
+    RandRingCount(self)
 end
 
-_RandRingCount = function(self)
+RandRingCount = function(self)
     local rand, r = MathLib.Random(100), 0
-    for c, p in ipairs(_DROP_CHANCE[self.layer]) do
-        r = r + p
-        if rand <= r then
-            self.attributeCountLimit = c + 1
-            break
+    local DROP_CHANCE = {55, 40,  4,  1, -- 普通怪物掉落2~5環物品的機率
+                         35, 50, 12,  3, -- 菁英怪物掉落2~5環物品的機率
+                         12, 35, 41, 12, -- 稀有菁英掉落2~5環物品的機率
+                          0, 20, 55, 25} -- 頭目掉落2~5環物品的機率
+
+    for i = (self.layer_ - 1) * 4 + 1, self.layer_ * 4 do 
+        r = r + DROP_CHANCE[i]
+
+        if r >= rand then
+            -- 階級為1~4，環數為2~5
+            self.attribute_count_limit_ = self.layer_ + 1
+
+            return true
         end
     end
 end
 
-function Equipment:IsFull()
-    return not(self.attributeCount < self.attributeCountLimit)
+-- 檢測還能不能附魔
+function Equipment:IsAttributeFull()
+    return self.attribute_count_ >= self.attribute_count_limit_
 end
 
-function Equipment:IsLimit()
-    return self.attributeCountLimit < 5
+-- 檢測還能不能強化
+function Equipment:IsRingFull()
+    return self.attribute_count_limit_ >= 5
 end
 
 return Equipment

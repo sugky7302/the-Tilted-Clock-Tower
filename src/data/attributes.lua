@@ -21,7 +21,7 @@ local ATTRIBUTE = {
     '生命恢復', '魔力恢復', '移動速度',
 }
 
-local ATTRIBUTE_INDEX = {}
+local ATTRIBUTE_INDEX, ipairs = {}, ipairs
 for i, v in ipairs(ATTRIBUTE) do 
     ATTRIBUTE_INDEX[v] = i
 end
@@ -74,4 +74,7 @@ local ATTRIBUTE_WEIGHT = {
     0.016, 0.016, 0.05,
 }
 
-return ATTRIBUTE, ATTRIBUTE_INDEX, ATTRIBUTE_STATE, ATTRIBUTE_WEIGHT
+-- 因為require函數只能有一個返回值，因此要弄成function()才行
+return function()
+    return ATTRIBUTE, ATTRIBUTE_INDEX, ATTRIBUTE_STATE, ATTRIBUTE_WEIGHT
+end

@@ -23,7 +23,7 @@ end
 -- n, m 非整數會報錯
 math.randomseed(tonumber(tostring(os.time()):reverse():sub(1,6)))
 function MathLib.Random(n, m)
-    local random, modf = math.random, modf
+    local random, modf = math.random, math.modf
     if not n then
         return random()
     end

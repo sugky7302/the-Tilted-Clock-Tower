@@ -29,7 +29,6 @@ function Item:__call(item)
 
     local instance = self[js.H2I(item) .. ""]
     if not instance then
-        local slk = require 'jass.slk'
         local modf = math.modf
         local Id2S = Base.Id2String
     
@@ -41,8 +40,10 @@ function Item:__call(item)
             level_      = modf(cj.GetWidgetLife(item)),
             object_     = item,
         }
+
         -- 記錄使用完會不會消失
-        instance.perishable_ = (slk.item[instance.id_].perishable > 0) and true or false
+        local perishable = require 'jass.slk'.item[instance.id_].perishable -- Hack:調用slk非常耗時
+        instance.perishable_ = (perishable > 0) and true or false
 
         self[js.H2I(item) .. ""] = instance
 

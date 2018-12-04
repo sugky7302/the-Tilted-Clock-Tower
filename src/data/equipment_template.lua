@@ -1,4 +1,4 @@
-EQUIPMENT_TEMPLATE = {
+local EQUIPMENT_TEMPLATE = {
     ['rde4'] = {
         level = 1,
         attribute = {["物理護甲"] = 1}
@@ -21,17 +21,17 @@ EQUIPMENT_TEMPLATE = {
     },
     ['ckng'] = {
         level = 2,
-        ringCount = 1,
+        ring_count = 1,
         attribute = {["法術護甲"] = 1}
     },
     ['tkno'] = {
         level = 2,
-        ringCount = 1,
+        ring_count = 1,
         attribute = {["法術攻擊力"] = 2}
     },
     ['pmna'] = {
         level = 2,
-        ringCount = 2,
+        ring_count = 2,
     }
 }
 

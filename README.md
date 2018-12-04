@@ -35,6 +35,8 @@
 - [2018-10-25] 暫時無法使用出售物品和強制按鍵模擬出充能施法，之後學習圖層混合再來考慮。
 
 ## 注意事項
+### VS Code
+- 可以在keyboard shortcut添加自定義快捷鍵，直接複製f5的設定就好，只要把args的值改成task.json裡的label的值，它就會呼叫。
 ### Git
 - 如果push失敗，就直接到資料夾去pull跟push。
 ### Lua撰寫細則
@@ -49,6 +51,7 @@
 - string.format比..效率低很多，但可讀性大大提高，按需選擇。
 - table.concat對記憶體的開銷較小，".."會一直產生一串新的字串。
 - 判斷數組表是否為空時，一般情況用 #tab>0 即可，除非tab長度特別大，用next(tab)的效率才會更高。
+- 因為require函數只能有一個返回值，如果想要多個返回值要弄成function()才行，詳見attributes。
 ### 修改地圖
 - 如果要修改地圖，請開啟TheTiltedClockTower.w3x，不要開啟.w3x。
 - 使用後，請先用vscode執行Lni一次。
