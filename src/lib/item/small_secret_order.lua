@@ -1,43 +1,48 @@
-local setmetatable = setmetatable
-local table = table
-local AddRecipe = require 'add_recipe'
-require 'attribute_database'
-require 'prefix_lib'
+-- 此module是讀取裝備屬性，賦予裝備小秘物序列效果
+-- 把秘物序列填成配方
 
-local SmallSecretOrder = {}
-setmetatable(SmallSecretOrder, SmallSecretOrder)
+local _, ATTRIBUTE_INDEX, ATTRIBUTE_STATE, _ = require 'attributes'() -- 記得要加括弧，因為它是一個函數
 
--- variables
-local _Detect, _SetSSO
+-- assert
+local ObtainProduct, SetSSO
 
-function SmallSecretOrder:__call(item)
+local function SmallSecretOrder(equipment)
+    local ipairs = ipairs
+
+    -- 裝備屬性通常都排序好了，所以不用特意排序
     local orders = {}
-    for _, tb in ipairs(item.attribute) do
-        table.insert(orders, ATTRIBUTE_INDEX[tb[i]])
+    for _, tb in ipairs(equipment.attribute_) do
+        orders[#orders + 1] = tb[1]
     end
-    table.sort(orders)
-    local sso = _Detect(orders)
+
+    local sso = ObtainProduct(orders)
     if sso then
-        _SetSSO(item, sso)
+        SetSSO(equipment, sso)
     end
 end
 
-_Detect = function(orders)
-    local node = AddRecipe.root
-    for _, v in ipairs(orders) do
-        node = node[v]
+ObtainProduct = function(orders)
+    local ipairs = ipairs
+
+    -- 搜索產品
+    local node = require 'item.add_recipe'.root
+    for _, attribute_name in ipairs(orders) do
+        node = node[attribute_name]
     end
+
     if #node.products > 0 then
-        return node.products[1]
+        return node.products[1][0]
     end
-    return nil
+
+    return false
 end
 
--- TODO:和秘物相同，用名稱儲存詞綴、描述及調用函數
-_SetSSO = function(item, sso)
-    item.smallSecretOrder.name = sso
-    item.smallSecretOrder.prefix = PREFIX_LIB[sso]
-    item.smallSecretOrder.state = ATTRIBUTE_STATE[sso]
+-- 和秘物相同，用名稱儲存詞綴、描述及調用函數
+SetSSO = function(item, sso)
+    local PREFIX_LIB = require 'prefix_lib'
+
+    -- SSO = {效果id, 物品前綴, 效果描述}
+    item.small_secret_order_ = {sso, PREFIX_LIB[sso], ATTRIBUTE_STATE[ATTRIBUTE_INDEX[sso]]}
 end
 
 return SmallSecretOrder

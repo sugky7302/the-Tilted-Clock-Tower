@@ -11,7 +11,7 @@ setmetatable(Equipment, Equipment)
 
 -- assert
 local GetAttribute, GetLevel
-local CompareFn, RandRingCount
+local RandRingCount
 local SetAttributeState
 local DialogDisplay, GetDisplayedInfo
 
@@ -116,9 +116,9 @@ GetDisplayedInfo = function(self)
     end
 
     -- 大型秘物序列敘述
-    if self.small_big_order_.prefix_ then
+    if self.big_secret_order_.prefix_ then
         display_strings[#display_strings + 1] = "|cff804000"
-        display_strings[#display_strings + 1] = self.small_big_order_.state_
+        display_strings[#display_strings + 1] = self.big_secret_order_.state_
         display_strings[#display_strings + 1] = "|r|n"
     end
 
@@ -158,8 +158,8 @@ function Equipment:__call(item)
     
         -- 前綴
         instance.prefix_             = nil 
-        instance.big_secret_order_   = {}
-        instance.small_secret_order_ = {}
+        instance.big_secret_order_   = nil
+        instance.small_secret_order_ = nil
 
         -- 每個元素包含index, value, states, fixed
         instance.attribute_             = GetAttribute(instance.id_)
@@ -230,11 +230,9 @@ end
 
 function Equipment:Sort()
     local table_sort = table.sort
-    table_sort(self.attribute_, CompareFn)
-end
-
-CompareFn = function(a, b)
-    return ATTRIBUTE_INDEX[a[1]] < ATTRIBUTE_INDEX[b[1]]
+    table_sort(self.attribute_, function(a, b)
+        return ATTRIBUTE_INDEX[a[1]] < ATTRIBUTE_INDEX[b[1]]
+    end)
 end
 
 SetAttributeState = function(self)

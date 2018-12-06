@@ -1,5 +1,13 @@
 # 更新日誌
-## 0.31.7 - 2018-12-04
+## 0.31.8 - 2018-12-06
+### Changed:
+- 重構add_recipe。
+- 重構produce_recipe。
+- 重構prefix。
+- 重構small_secret_order。
+- 重構big_secret_order。
+
+## [0.31.7] - 2018-12-04
 ### Changed:
 - 重構equipment。
 ### Fixed:
@@ -480,6 +488,7 @@
 [actboy168-lua-debug]:https://tieba.baidu.com/p/5902146836
 [coordinate_error]:https://tieba.baidu.com/p/5773334779?pid=120570865697&cid=0&red_tag=1133617129#120570865697
 
+[0.31.7]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/8115fd3cef835835235fe4cb405a0398d8389130
 [0.31.6]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/f63758140d34fb65fc2e52363b4c1b17929e84b3
 [0.31.5]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/50b9ed25634ba111c149ed7aef02ee9f8ce68d1e
 [0.31.4]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/83dbeeb735c81e9e80395a7e7fa8342b1f34a9a1

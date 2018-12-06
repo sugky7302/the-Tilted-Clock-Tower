@@ -54,18 +54,18 @@ lib
     - v shield
 - item
     - v core
-    - x add_recipe
-    - x big_secret_order
+    - v add_recipe
+    - v big_secret_order
     - x combine
-    - x detect_recipe
+    - v produce_recipe
     - x enchanted
     - x extend_hole
     - x init
     - x intensify
-    - x prefix
-    - x small_secret_order
+    - v prefix
+    - v small_secret_order
     - v secrets
-    - x equipment
+    - v equipment
 - missile
     - x core
     - x tool
@@ -133,6 +133,12 @@ test
     - v player
     - v item
     - v secrets
+    - v equipment
+    - v add_recipe
+    - v produce_recipe
+    - v prefix
+    - v small_secret_order
+    - v big_secret_order
 
 util
 - behavior_tree

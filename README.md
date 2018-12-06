@@ -52,6 +52,7 @@
 - table.concat對記憶體的開銷較小，".."會一直產生一串新的字串。
 - 判斷數組表是否為空時，一般情況用 #tab>0 即可，除非tab長度特別大，用next(tab)的效率才會更高。
 - 因為require函數只能有一個返回值，如果想要多個返回值要弄成function()才行，詳見attributes。
+- 有一個數組{[0] = 0, 1, 2, 3, 4, 5}，#、ipairs只會讀1~5，要pairs才會讀0~5。
 ### 修改地圖
 - 如果要修改地圖，請開啟TheTiltedClockTower.w3x，不要開啟.w3x。
 - 使用後，請先用vscode執行Lni一次。

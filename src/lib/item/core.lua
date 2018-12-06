@@ -42,8 +42,11 @@ function Item:__call(item)
         }
 
         -- 記錄使用完會不會消失
-        local perishable = require 'jass.slk'.item[instance.id_].perishable -- Hack:調用slk非常耗時
-        instance.perishable_ = (perishable > 0) and true or false
+        if self.IsSecrets(instance) or self.IsRecipe(instance) then
+            instance.perishable_ = true
+        else
+            instance.perishable_ = false
+        end
 
         self[js.H2I(item) .. ""] = instance
 
@@ -71,6 +74,14 @@ end
 
 function mt:IsSecrets()
     return cj.GetItemLevel(self.object_) == 1
+end
+
+function mt:IsMaterial()
+    return cj.GetItemLevel(self.object_) == 2
+end
+
+function mt:IsRecipe()
+    return cj.GetItemLevel(self.object_) == 6
 end
 
 function mt:add(name, val)
