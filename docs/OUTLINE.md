@@ -58,10 +58,10 @@ lib
     - v big_secret_order
     - x combine
     - v produce_recipe
-    - x enchanted
-    - x extend_hole
+    - v enchanted
+    - v extend_hole
     - x init
-    - x intensify
+    - v intensify
     - v prefix
     - v small_secret_order
     - v secrets
@@ -139,6 +139,9 @@ test
     - v prefix
     - v small_secret_order
     - v big_secret_order
+    - v enchanted
+    - v intensify
+    - v extend_hole
 
 util
 - behavior_tree

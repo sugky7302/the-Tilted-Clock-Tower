@@ -1,4 +1,15 @@
 # 更新日誌
+## 0.31.9 - 2018-12-08
+### Changed:
+- [equipment] 獨立完整的物品名稱為一個函數。
+- [test] 強化core功能，添加常用測試函數。
+- 重構enchanted。
+- 重構intensify。
+- 重構extend_hole。
+- 重構combine。
+### Removed:
+- [item] owner_.owner_跟own_player_功能重複，所以刪除了own_player_。
+
 ## 0.31.8 - 2018-12-06
 ### Changed:
 - 重構add_recipe。

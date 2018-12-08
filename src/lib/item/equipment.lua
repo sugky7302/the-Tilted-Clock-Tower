@@ -40,38 +40,7 @@ function Equipment:Display()
 end
 
 GetDisplayedInfo = function(self)
-    local display_strings = {}
-
-    -- 大型秘物序列詞綴
-    if self.big_secret_order_prefix_ then
-        display_strings[#display_strings + 1] = "|cff804000"
-        display_strings[#display_strings + 1] = self.big_secret_order_prefix_
-        display_strings[#display_strings + 1] = "|r|n"
-    end
-
-    -- 小型秘物序列詞綴
-    if self.small_secret_order_prefix_ then
-        display_strings[#display_strings + 1] = "|cffff8d00"
-        display_strings[#display_strings + 1] = self.small_secret_order_prefix_
-        display_strings[#display_strings + 1] = "|r|n"
-    end
-    
-    -- 秘物詞綴
-    if self.prefix_ then
-        display_strings[#display_strings + 1] = self.prefix_
-    end
-
-    -- 精鍊等級
-    if self.intensify_level_ > 0 then
-        display_strings[#display_strings + 1] = "|cff00ff00+"
-        display_strings[#display_strings + 1] = self.intensify_level_
-        display_strings[#display_strings + 1] = " "
-    end
-    
-    -- 名字
-    display_strings[#display_strings + 1] = self.color_
-    display_strings[#display_strings + 1] = self.name_
-    display_strings[#display_strings + 1] = "|n"
+    local display_strings = {self:name(true)}
     
     -- 基本資料
     display_strings[#display_strings + 1] = "|cff808080Lv "
@@ -121,6 +90,47 @@ GetDisplayedInfo = function(self)
         display_strings[#display_strings + 1] = self.big_secret_order_.state_
         display_strings[#display_strings + 1] = "|r|n"
     end
+
+    local table_concat = table.concat
+    return table_concat(display_strings)
+end
+
+-- 獲取完整的物品名字，可選擇要不要加換行符
+function Equipment:name(is_replace)
+    local display_strings = {}
+
+    -- 大型秘物序列詞綴
+    if self.big_secret_order_prefix_ then
+        display_strings[#display_strings + 1] = "|cff804000"
+        display_strings[#display_strings + 1] = self.big_secret_order_prefix_
+        display_strings[#display_strings + 1] = is_replace and "|r|n" or "|r"
+    end
+
+    -- 小型秘物序列詞綴
+    if self.small_secret_order_prefix_ then
+        display_strings[#display_strings + 1] = "|cffff8d00"
+        display_strings[#display_strings + 1] = self.small_secret_order_prefix_
+        display_strings[#display_strings + 1] = is_replace and "|r|n" or "|r"
+    end
+
+    -- 精鍊等級
+    if self.intensify_level_ > 0 then
+        display_strings[#display_strings + 1] = "|cff00ff00+"
+        display_strings[#display_strings + 1] = self.intensify_level_
+        display_strings[#display_strings + 1] = "|r "
+    end
+
+    -- 顏色
+    display_strings[#display_strings + 1] = self.color_
+
+    -- 秘物詞綴
+    if self.prefix_ then
+        display_strings[#display_strings + 1] = self.prefix_
+    end
+    
+    -- 名字
+    display_strings[#display_strings + 1] = self.name_
+    display_strings[#display_strings + 1] = is_replace and "|r|n" or "|r"
 
     local table_concat = table.concat
     return table_concat(display_strings)
@@ -196,6 +206,9 @@ function Equipment:__call(item)
         instance.__index = self
     end
 
+    -- 更新屬性
+    instance:Update()
+    
     return instance
 end
 
@@ -225,7 +238,9 @@ end
 function Equipment:Update()
     self:Sort()
     SetAttributeState(self)
-    -- TODO: Prefix(self)
+
+    local Prefix = require 'item.prefix'
+    Prefix(self)
 end
 
 function Equipment:Sort()

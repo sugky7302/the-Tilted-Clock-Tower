@@ -70,5 +70,11 @@ return {
         cj.ForceClear(force)
         cj.DestroyForce(force)
     end,
+    Tip = function(player, string_tb)
+        local table_concat = table.concat
+        local Text = require 'jass.common'.DisplayTimedTextToPlayer
+    
+        Text(player, 0., 0., 6., table_concat(string_tb))
+    end
 }
     

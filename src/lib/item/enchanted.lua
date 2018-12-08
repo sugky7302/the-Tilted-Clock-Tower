@@ -1,60 +1,69 @@
+-- 此module替裝備附魔秘物
 -- 發動技能效果事件 比 使用物品事件 更早觸發
-local setmetatable = setmetatable
+
 local cj = require 'jass.common'
 
 local Enchanted = {}
 
 function Enchanted.Init()
     local Unit = require 'unit'
-    local Equipment = require 'equipment'
-    local Secrets = require 'secrets'
-    local cj = require 'jass.common'
-    local Item = require 'item'
     
-    Unit:Event "單位-發動技能效果" (function(trigger, source, id, _, targetItem, _)
+    --                                       Unit instance         Item instance
+    Unit:Event "單位-發動技能效果" (function(_, source,       id, _, target_item, _)
+        -- A008 = T秘物附魔
         if id == Base.String2Id('A008') then
-            source.manipulatedItem = Equipment(targetItem)
+            source.manipulated_item_ = target_item
         end
     end)
-    Unit:Event "單位-使用物品" (function(trigger, unit, item)
+    --                                    Unit instance  Item instance
+    Unit:Event "單位-使用物品" (function(_, unit,          item)
         -- 如果是能獲得附魔目標才觸發
-        if unit.manipulatedItem and Item.IsSecrets(item) then
-            unit:UpdateAttributes("減少", unit.manipulatedItem)
-            Enchanted.Insert(unit.manipulatedItem, Secrets(item), false)
-            unit:UpdateAttributes("增加", unit.manipulatedItem)
+        if unit.manipulated_item_ and item:IsSecrets() then
+            unit:UpdateAttributes("減少", unit.manipulated_item_)
+
+            Enchanted.Insert(unit.manipulated_item_, item, false)
+
+            unit:UpdateAttributes("增加", unit.manipulated_item_)
         end
     end)
 end
 
--- 附魔
-function Enchanted.Insert(item, secrets, isFixed)
+function Enchanted.Insert(equipment, secrets, is_fixed)
     -- 檢查屬性數量是否超過限制
-    if item.attributeCount >= item.attributeCountLimit then
-        cj.DisplayTimedTextToPlayer(item.ownPlayer.object, 0., 0., 6., "|cff00ff00提示|r - 已無空的秘環。")
+    if equipment.attribute_count_ >= equipment.attribute_count_limit_ then
+        cj.DisplayTimedTextToPlayer(equipment.owner_.owner_.object_, 0., 0., 6., "|cff00ff00提示|r - 已無空的秘環。")
+
         secrets:add("數量", 1)
-        return
+        
+        return false
     end
     
-    local nameCollection = {}
-    for _, tb in ipairs(item.attribute) do
-        nameCollection[tb[1]] = true
+    local pairs = pairs
+
+    -- 先確認那些屬性已經有了
+    local existed_attribute = {}
+    for _, attribute in pairs(equipment.attribute_) do
+        existed_attribute[attribute[1]] = true
     end
-    for name, val in pairs(secrets.attribute) do
+
+    for name, val in pairs(secrets.attribute_) do
         -- 檢查是否有相同的屬性
-        if nameCollection[name] then
-            cj.DisplayTimedTextToPlayer(item.ownPlayer.object, 0., 0., 6., "|cff00ff00提示|r - 已附魔相同的秘物。")
-            secrets:add('數量', 1) -- 返還數量
+        if existed_attribute[name] then
+            cj.DisplayTimedTextToPlayer(item.owner_.owner_.object_, 0., 0., 6., "|cff00ff00提示|r - 已附魔相同的秘物。")
+
+            -- 返還數量
+            secrets:add('數量', 1)
+
             break
         end
-        item.attributeCount = item.attributeCount + 1
-        item.attribute[item.attributeCount] = {name, val, "", false}
-    end
-    item:Sort()
-    item:Update()
-end
 
--- 拆卸
-function Enchanted.Erase()
+        -- 添加屬性
+        equipment.attribute_count_ = equipment.attribute_count_ + 1
+        equipment.attribute_[equipment.attribute_count_] = {name, val, "", false}
+    end
+
+    -- 更新屬性
+    equipment:Update()
 end
 
 return Enchanted

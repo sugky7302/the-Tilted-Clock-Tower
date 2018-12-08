@@ -1,86 +1,97 @@
-local setmetatable = setmetatable
-local math = math
-local cj = require 'jass.common'
-local MathLib = require 'math_lib'
-local Equipment = require 'equipment'
-require 'intensify_database'
+-- 此module強化裝備屬性
 
-local mt = {}
+local setmetatable = setmetatable
+
 local Intensify = {}
-Intensify.__index = mt
 setmetatable(Intensify, Intensify)
 
--- constants
--- 第一個元素是固定提升值，第二個是隨機提升值
-local _REFINE_TABLE = {{1, 0}, {1, 0}, {1, 0}, {1, 1}, {1, 1}, {1, 1}, {2, 2}, {2, 2}, {2, 2}, {4, 5}}
-local _INTENSIFY_SCALE = {[0] = 1, 2, 3, 4, 6, 8, 10, 14, 18, 22, 31}
-
--- variables
-local _IsEquipmentInBag, _IsGoldEnough, _IsRefine, _GetGoldCost, _NotLimit
+-- assert
+local IsGoldEnough, IsRefine, GetGoldCost, NotLimit
+local Print
 
 function Intensify.Init()
-    local Game = require 'game'
-    local Hero = require 'hero'
+    local Unit = require 'unit'
 
-    -- Game:Event "單位-使用物品" (function(self, unit, item)
-    --     Intensify(Hero(unit))
-    -- end)
+    Unit:Event "單位-使用物品" (function(_, unit, item)
+        Intensify(item)
+    end)
 end
 
-function Intensify:__call(hero)
-    if _IsEquipmentInBag(hero.object) then
-        local item = Equipment(cj.UnitItemInSlot(hero.object, 0))
-        if _NotLimit(item) then
-            local goldCost = _GetGoldCost(item)
-            if _IsGoldEnough(item.ownPlayer, goldCost) then
-                item.ownPlayer:add("黃金", -goldCost)
-                if _IsRefine(item.intensifyLevel) then
-                    item.intensifyFailTimes = 0 -- 重置失敗次數
-                    item.intensifyLevel = item.intensifyLevel + 1
-                    local fixedValue, randomMaxValue = _REFINE_TABLE[item.intensifyLevel][1], _REFINE_TABLE[item.intensifyLevel][2]
-                    for i = 1, item.attributeCount do
-                        if INTENSIFY_ATTRIBUTE[item.attribute[i][1]] then
-                            item.attribute[i][2] = item.attribute[i][2] + fixedValue + MathLib.Random(0, randomMaxValue)
-                        end
-                    end
-                    item:Update()
-                    cj.DisplayTimedTextToPlayer(hero.owner.object, 0., 0., 6., "|cff00ff00提示|r - 裝備精鍊成功。")
-                else
-                    cj.DisplayTimedTextToPlayer(hero.owner.object, 0., 0., 6., "|cff00ff00提示|r - 裝備精鍊失敗。")
-                    item.intensifyFailTimes = item.intensifyFailTimes + 1
-                end
-            else
-                cj.DisplayTimedTextToPlayer(hero.owner.object, 0., 0., 6., "|cff00ff00提示|r - 你攜帶的金錢不足。")
-            end
-        else
-            cj.DisplayTimedTextToPlayer(hero.owner.object, 0., 0., 6., "|cff00ff00提示|r - 裝備精鍊值已達上限。")
-        end
-    else
-        cj.DisplayTimedTextToPlayer(hero.owner.object, 0., 0., 6., "|cff00ff00提示|r - 你第一格沒有裝備。")
+local Random = require 'math_lib'.Random
+local INTENSIFY_COEFFICIENT = {[0] = 1, 2, 3, 4, 6, 8, 10, 14, 18, 22, 31}
+
+function Intensify:__call(equipment)
+    local Tip = require 'jass_tool'.Tip
+
+    if not NotLimit(equipment) then
+        Tip(equipment.own_player_.object_, {"|cff00ff00提示|r - ", equipment:name(), " 的精鍊值已達上限。"})
+
+        return false 
     end
+
+    local gold_cost = GetGoldCost(equipment)
+    if not IsGoldEnough(equipment.own_player_, gold_cost) then
+        Tip(equipment.own_player_.object_, {"|cff00ff00提示|r - 你攜帶的金錢不足。"})
+        return false 
+    end
+
+    equipment.own_player_:add("黃金", -gold_cost)
+
+    -- 精鍊失敗
+    if not IsRefine(equipment.intensify_level_) then
+        Tip(equipment.own_player_.object_, {"|cff00ff00提示|r - ", equipment:name(), " 精鍊失敗。"})
+        
+        -- 失敗次數會提高下次強化的花費
+        equipment.intensify_fail_times_ = equipment.intensify_fail_times_ + 1
+
+        return false 
+    end
+
+    -- 精鍊成功會重置失敗次數
+    equipment.intensify_fail_times_ = 0
+    equipment.intensify_level_ = equipment.intensify_level_ + 1
+    
+    -- 奇數元素是固定提升值，偶數是隨機提升值
+    local REFINE_TABLE = {1, 0,  1, 0,  1, 0,  1, 1,  1, 1,  1, 1,  2, 2,  2, 2,  2, 2,  4, 5}
+
+    local fixed_value      = REFINE_TABLE[2 * equipment.intensify_level_]
+    local random_max_value = REFINE_TABLE[2 * equipment.intensify_level_ + 1]
+
+    local INTENSIFY_ATTRIBUTE = require 'intensify_attribute'
+
+    -- 搜尋可被強化的屬性並增加屬性值
+    for i = 1, equipment.attribute_count_ do
+        if INTENSIFY_ATTRIBUTE[equipment.attribute_[i][1]] then
+            equipment.attribute_[i][2] = equipment.attribute_[i][2] + fixed_value + Random(random_max_value)
+        end
+    end
+    
+    -- 更新屬性
+    equipment:Update()
+    
+    Tip(equipment.own_player_.object_, {"|cff00ff00提示|r - ", equipment:name(), " 精鍊成功。"})
 end
 
-_IsEquipmentInBag = function(owner)
-    return cj.GetItemLevel(cj.UnitItemInSlot(owner, 0)) == 5
+NotLimit = function(item)
+    return item.intensify_level_ < 10
 end
 
-_NotLimit = function(item)
-    return item.intensifyLevel < 10
+GetGoldCost = function(item)
+    local modf = math.modf
+
+    local base = 50 * (2 + modf(item.level_ + item.intensify_level_ - 1) / 8)
+    local punishProc = 1 + 0.2 * item.intensify_fail_times_
+
+    return base * item:GetGearScore() * INTENSIFY_COEFFICIENT[item.intensify_level_] * punishProc
 end
 
-_GetGoldCost = function(item)
-    local base = 50 * (2 + math.modf(item.level + item.intensifyLevel - 1) / 8)
-    local punishProc = 1 + 0.2 * item.intensifyFailTimes
-    return base * item:GetGearScore() * _INTENSIFY_SCALE[item.intensifyLevel] * punishProc
+IsGoldEnough = function(own_player, gold_cost)
+    return own_player:get "黃金" >= gold_cost
 end
 
-_IsGoldEnough = function(ownPlayer, goldCost)
-    return ownPlayer:get "黃金" >= goldCost
-end
-
-_IsRefine = function(intensifyLevel)
-    local p = (intensifyLevel < 4) and 100 - 16 * intensifyLevel or 100 / intensifyLevel
-    return MathLib.Random(100) <= p
+IsRefine = function(intensify_level)
+    local p = (intensify_level < 4) and 100 - 16 * intensify_level or 100 / intensify_level
+    return Random(100) <= p
 end
 
 return Intensify

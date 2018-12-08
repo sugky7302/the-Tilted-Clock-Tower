@@ -1,14 +1,12 @@
+-- 此module會提高裝備可附魔的上限
+
 local setmetatable = setmetatable
-local math = math
-local MathLib = require 'math_lib'
-local cj = require 'jass.common'
-local Equipment = require 'equipment'
 
 local ExtendHole = {}
 setmetatable(ExtendHole, ExtendHole)
 
--- variables
-local _IsEquipmentInBag, _GetGoldCost, _IsGoldEnough
+-- assert
+local GetGoldCost, IsGoldEnough, CanExtend
 
 function ExtendHole.Init()
     local Game = require 'game'
@@ -19,36 +17,39 @@ function ExtendHole.Init()
     -- end)
 end
 
-function ExtendHole:__call(hero)
-    if _IsEquipmentInBag(hero.object) then
-        local item = Equipment(cj.UnitItemInSlot(hero.object, 0))
-        local goldCost = _GetGoldCost(item.level + item.intensifyLevel, item.attributeCount)
-        if _IsGoldEnough(item.ownPlayer, goldCost) then
-            if item:IsLimit() then
-                item.ownPlayer:add("黃金", -goldCost)
-                item.attributeCountLimit = item.attributeCountLimit + 1
-                cj.DisplayTimedTextToPlayer(hero.owner.object, 0., 0., 6., "|cff00ff00提示|r - 鑲環成功。")
-            else
-                cj.DisplayTimedTextToPlayer(hero.owner.object, 0., 0., 6., "|cff00ff00提示|r - 環數已達上限。")
-            end
-        else
-            cj.DisplayTimedTextToPlayer(hero.owner.object, 0., 0., 6., "|cff00ff00提示|r - 你攜帶的金錢不足。")
-        end
-    else
-        cj.DisplayTimedTextToPlayer(hero.owner.object, 0., 0., 6., "|cff00ff00提示|r - 你第一格沒有裝備。")
+function ExtendHole:__call(equipment)
+    local Tip = require 'jass_tool'.Tip
+
+    local gold_cost = GetGoldCost(equipment.level_ + equipment.intensify_level_, equipment.attribute_count_)
+    if not IsGoldEnough(equipment.own_player_, gold_cost) then
+        Tip(equipment.own_player_.object_, {"|cff00ff00提示|r - 你攜帶的金錢不足。"})
+        return false 
     end
+
+    if not CanExtend(equipment) then
+        Tip(equipment.own_player_.object_, {"|cff00ff00提示|r - ", equipment:name(), " 的環數已達上限。"})
+        return false 
+    end
+
+    equipment.own_player_:add("黃金", -gold_cost)
+    
+    equipment.attribute_count_limit_ = equipment.attribute_count_limit_ + 1
+    
+    Tip(equipment.own_player_.object_, {"|cff00ff00提示|r - ", equipment:name(), " 鑲環成功。"})
 end
 
-_IsEquipmentInBag = function(owner)
-    return cj.GetItemLevel(cj.UnitItemInSlot(owner, 0)) == 5
+GetGoldCost = function(level, hole_count)
+    local e, modf = require 'math_lib'.e, math.modf
+
+    return 100 * e ^ hole_count * level * (modf((level-1) / 8) + 1)
 end
 
-_GetGoldCost = function(level, holeCount)
-    return 100 * MathLib.e ^ holeCount * level * (math.modf((level-1) / 8) + 1)
+IsGoldEnough = function(player, gold_cost)
+    return player:get "黃金" >= gold_cost
 end
 
-_IsGoldEnough = function(ownPlayer, goldCost)
-    return ownPlayer:get "黃金" >= goldCost
+CanExtend = function(equip)
+    return equip.attribute_count_limit_ < 5
 end
 
 return ExtendHole
