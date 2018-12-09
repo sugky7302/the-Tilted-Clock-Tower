@@ -1,5 +1,12 @@
 # 更新日誌
-## 0.31.9 - 2018-12-08
+## 0.31.10 - 2018-12-09
+### Changed:
+- 重構unit。
+- 重構hero。
+- 重構pet。
+- 分離attribute，將各屬性獨立寫一個檔案，方便維護，將操作符和事件也獨立出來，縮減unit、hero程式碼長度。
+
+## [0.31.9] - 2018-12-08
 ### Changed:
 - [equipment] 獨立完整的物品名稱為一個函數。
 - [test] 強化core功能，添加常用測試函數。
@@ -10,7 +17,7 @@
 ### Removed:
 - [item] owner_.owner_跟own_player_功能重複，所以刪除了own_player_。
 
-## 0.31.8 - 2018-12-06
+## [0.31.8] - 2018-12-06
 ### Changed:
 - 重構add_recipe。
 - 重構produce_recipe。
@@ -499,6 +506,8 @@
 [actboy168-lua-debug]:https://tieba.baidu.com/p/5902146836
 [coordinate_error]:https://tieba.baidu.com/p/5773334779?pid=120570865697&cid=0&red_tag=1133617129#120570865697
 
+[0.31.9]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/006997172f09a3dfbf163d2be8274a57765e2102
+[0.31.8]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/b9b3610939c1ec9dc7f77d50c89567b5bbcb0e23
 [0.31.7]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/8115fd3cef835835235fe4cb405a0398d8389130
 [0.31.6]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/f63758140d34fb65fc2e52363b4c1b17929e84b3
 [0.31.5]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/50b9ed25634ba111c149ed7aef02ee9f8ce68d1e

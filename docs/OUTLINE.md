@@ -56,7 +56,7 @@ lib
     - v core
     - v add_recipe
     - v big_secret_order
-    - x combine
+    - v combine
     - v produce_recipe
     - v enchanted
     - v extend_hole
@@ -73,7 +73,6 @@ lib
 - texttag
     - v core
     - v arc
-- x attribute
 - x buff
 - x combat
 - x damage
@@ -84,10 +83,8 @@ lib
     - v core
     - v condition
 - x heal
-- x hero
 - x init
 - x map
-- x pet
 - v player
 - v point
 - v polygon
@@ -99,7 +96,14 @@ lib
     - v core
     - v init
 - v trigger
-- x unit
+- unit
+    - attribute
+        - v init
+    - v core
+    - x event
+    - v operator
+    - v hero
+    - v pet
 
 test
 - test
@@ -142,6 +146,10 @@ test
     - v enchanted
     - v intensify
     - v extend_hole
+    - v combine
+    - v unit
+    - v hero
+    - v pet
 
 util
 - behavior_tree

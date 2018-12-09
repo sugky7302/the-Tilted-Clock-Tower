@@ -6,7 +6,7 @@ local Combine = {}
 setmetatable(Combine, Combine)
 
 -- assert
-local CombineItem, _IsAmountsEnough, _IsGoldEnough, _GetCombineCost, _AddItem
+local CombineItem, IsAmountsEnough, IsGoldEnough, GetCombineCost, AddItem
 local COMBINATIONS = require 'combinations'
 
 function Combine.Init()

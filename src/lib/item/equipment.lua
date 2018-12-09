@@ -260,10 +260,11 @@ SetAttributeState = function(self)
     end
 end
 
--- function Unit.__index:DropEquipment(item)
---     local equipment = Equipment(item)
---     equipment:Rand(self.object_:get "等級", self.object_:get "階級")
--- end
+local Unit = require 'unit.core'
+function Unit.__index:DropEquipment(item)
+    local equipment = Equipment(item)
+    equipment:Rand(self.object_:get "等級", self.object_:get "階級")
+end
 
 local MathLib = require 'math_lib'
 
