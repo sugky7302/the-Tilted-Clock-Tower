@@ -9,14 +9,6 @@ setmetatable(Intensify, Intensify)
 local IsGoldEnough, IsRefine, GetGoldCost, NotLimit
 local Print
 
-function Intensify.Init()
-    local Unit = require 'unit'
-
-    Unit:Event "單位-使用物品" (function(_, unit, item)
-        Intensify(item)
-    end)
-end
-
 local Random = require 'math_lib'.Random
 local INTENSIFY_COEFFICIENT = {[0] = 1, 2, 3, 4, 6, 8, 10, 14, 18, 22, 31}
 

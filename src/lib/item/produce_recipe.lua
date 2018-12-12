@@ -11,25 +11,6 @@ local last_enum_product = 1
 local CollectMaterial, CheckRecipe, Exist
 local CostMaterial, UnitAddItem
 
-function ProduceRecipe.Init()
-    local Player = require 'player'
-
-    Player:Event "玩家-對話框被點擊" (function(_, player, button)
-        -- 查詢最後點擊的產品
-        local ipairs = ipairs
-        for i, btn in ipairs(player.dialog_.buttons_) do
-            if btn == button then
-                last_enum_product = i
-                break
-            end
-        end
-
-        -- 關閉對話框
-        player.dialog_:Show(false)
-        player.dialog_:Clear()
-    end)
-end
-
 function ProduceRecipe:__call(unit)
     local materials = CollectMaterial(unit) -- 存Item instance
     local recipe = CheckRecipe(materials)   -- 存Item instance, [0]存products(table)
@@ -56,7 +37,7 @@ CollectMaterial = function(unit)
         local item = cj.UnitItemInSlot(unit, i)
 
         -- 先檢測有沒有物品再檢測是不是材料
-        if item and Item(item):IsMaterial() then
+        if item and Item.IsMaterial(item) then
             materials[#materials + 1] = Item(item)
         end
     end

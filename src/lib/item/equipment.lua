@@ -70,13 +70,6 @@ GetDisplayedInfo = function(self)
         display_strings[#display_strings + 1] = "|n"
     end
 
-    -- 銘文
-    if self.inscriptions_.state_ then
-        display_strings[#display_strings + 1] = "|cff3366ff◆|r"
-        display_strings[#display_strings + 1] = self.inscriptions_.state_
-        display_strings[#display_strings + 1] = "|n"
-    end
-
     -- 小型秘物序列敘述
     if self.small_secret_order_.prefix_ then
         display_strings[#display_strings + 1] = "|cffff8d00"
@@ -182,9 +175,6 @@ function Equipment:__call(item)
 
         -- 額外效果
         instance.additional_effect_ = {} 
-
-        -- 銘文
-        instance.inscriptions_ = {} 
 
         instance.color_ = "|cffffffff"
         

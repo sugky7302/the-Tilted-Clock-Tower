@@ -1,5 +1,15 @@
 # 更新日誌
-## 0.31.10 - 2018-12-09
+## 0.31.11 - 2018-12-11
+### Added:
+- 添加try-catch函數，可以執行異常處理。
+### Changed:
+- 把unit、item的所有事件獨立成event模塊。
+- 重構skill，並分離成4個模塊。
+- 重構talent。
+### Removed:
+- [equipment] 刪除銘文附魔。
+
+## [0.31.10] - 2018-12-09
 ### Changed:
 - 重構unit。
 - 重構hero。
@@ -506,6 +516,7 @@
 [actboy168-lua-debug]:https://tieba.baidu.com/p/5902146836
 [coordinate_error]:https://tieba.baidu.com/p/5773334779?pid=120570865697&cid=0&red_tag=1133617129#120570865697
 
+[0.31.10]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/4d3a6725f22b60047db5e9ab81c655103b3b16f0
 [0.31.9]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/006997172f09a3dfbf163d2be8274a57765e2102
 [0.31.8]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/b9b3610939c1ec9dc7f77d50c89567b5bbcb0e23
 [0.31.7]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/8115fd3cef835835235fe4cb405a0398d8389130

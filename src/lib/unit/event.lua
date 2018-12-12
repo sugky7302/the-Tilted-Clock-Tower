@@ -1,4 +1,5 @@
--- 此module註冊單位事件
+-- 處理單位事件
+-- 要注意某些事件參數可以傳instance，有些只能傳jass參數
 
 local cj = require 'jass.common'
 local js = require 'jass_tool'
@@ -8,6 +9,11 @@ local Game = require 'game'
 local Point = require 'point'
 local Item = require 'item.core'
 local Timer = require 'timer.core'
+local Equipment = require 'item.equipment'
+local Secrets = require 'item.secrets'
+
+-- assert
+local ipairs = ipairs
 
 -- 註冊單位死亡要刷新的事件
 local trg = War3.CreateTrigger(function()
@@ -33,8 +39,7 @@ Unit:Event "單位-掉落物品" (function(_, unit)
         return false
     end
 
-    local Rand = require 'math_lit'.Random
-    local ipairs = ipairs
+    local Rand = require 'math_lib'.Random
     local p = Point:GetUnitLoc(unit.object_)
 
     for i = 1, #DROP_LIB[unit.id_], 2 do 
@@ -42,9 +47,17 @@ Unit:Event "單位-掉落物品" (function(_, unit)
             local item = Item.Create(DROP_LIB[i], p)
 
             -- 掉落裝備
-            if cj.GetItemLevel(item) == 5 then
+            if Item.IsEquipment(item) then
                 unit:DropEquipment(item)
             end
+
+            -- 設定成秘物
+            if Item.IsSecrets(item) then
+                Secrets(item)
+            end
+
+            -- 非上面類別就設定成普通物品
+            Item(item)
         end
     end
 
@@ -69,63 +82,6 @@ Unit:Event "單位-刷新" (function(_, unit)
     end)
 end)
 
-Unit:Event "單位-發布命令" (function(_, unit, order, target)
-    -- 中斷施法
-    if (order == Base.String2OrderId('smart')) or
-       (order == Base.String2OrderId('stop')) or
-       (order == Base.String2OrderId('attack')) then
-        for _, skill in ipairs(unit.each_casting_) do
-            skill:Break()
-        end
-    end
-end)
-
-Game:Event "單位-創建" (function(_, target)
-    cj.TriggerRegisterUnitEvent(trg, target, cj.EVENT_UNIT_DEATH)
-end)
-
-local Hero = require 'unit.hero'
-
-local order_trg = War3.CreateTrigger(function()
-    Hero(cj.GetOrderedUnit()):EventDispatch("單位-發布命令", cj.GetIssuedOrderId(), cj.GetOrderTarget())
-        return true
-end)
-
-Unit:Event "單位-發布命令" (function(_, hero, order, target)
-    if order == Base.String2OrderId('smart') then
-        StackItem(hero.object_, target)
-    end
-end)
-
-local unitIs_casted = War3.CreateTrigger(function()
-    Hero(cj.GetTriggerUnit()):EventDispatch("單位-準備施放技能", cj.GetSpellAbilityId(), Unit(cj.GetSpellTargetUnit()), Point:GetLoc(cj.GetSpellTargetLoc()))
-    return true
-end)
-
-Unit:Event '單位-準備施放技能' (function(_, hero, id, target_unit, target_loc)
-    -- 打斷正在施法的技能
-    for _, skill in ipairs(hero.each_casting_) do
-        if skill.order_id_ ~= Base.Id2String(id) then
-            skill:Break()
-        end
-    end
-
-    -- 獲取技能
-    local ipairs = ipairs
-    for _, skill in ipairs(hero.hero_datas[hero.name_].skill_datas) do
-        if skill.order_id_ == Base.Id2String(id) then
-            if skill.can_use_ then
-                ChekMultiCast(skill, hero)
-                GenerateSkillObject(skill, hero, target_unit, target_loc)
-            else 
-                hero:ResetAbility(skill.order_id_)
-            end
-
-            return true
-        end
-    end
-end)
-
 Unit:Event "英雄-復活" (function(_, self)
     for _, skill in ipairs(self.each_casting_) do
         skill:Break()
@@ -142,152 +98,253 @@ Unit:Event "英雄-復活" (function(_, self)
     end)
 end)
 
--- TODO:以下未完成
-    -- 創建使用物品事件
-    local _useItemTrg = War3.CreateTrigger(function()
-        Hero(cj.GetTriggerUnit()):EventDispatch("單位-使用物品", cj.GetManipulatedItem())
-        return true
-    end)
-
-    -- 創建獲得物品事件
-    local _obtainItemTrg = War3.CreateTrigger(function()
-        if cj.GetManipulatedItem() ~= nil then
-            Hero(cj.GetTriggerUnit()):EventDispatch("單位-獲得物品", cj.GetManipulatedItem())
-        end
-        return true
-    end)
-    Unit:Event "單位-獲得物品" (function(trigger, hero, item)
-        if Item.IsEquipment(item) then
-            Equipment(item).owner = hero
-            Equipment(item).ownPlayer = hero.owner
-            hero:UpdateAttributes("增加", Equipment(item))
-        elseif Item.IsSecrets(item) then
-            Secrets(item).owner = hero
-            Secrets(item).ownPlayer = hero.owner
-        elseif hero:AcceptQuest(string_sub(cj.GetItemName(item), 10)) then
-                return 
-        else
-            Item(item).owner = hero
-            Item(item).ownPlayer = hero.owner
-        end
-        _StackItem(hero.object, item)
-    end)
+Unit:Event "寵物-清除" (function(_, self)
+    -- 寵物的擁有者要清除寵物，不然有機會報錯
+    self.owner_.pet_ = nil
     
-    -- 創建丟棄物品事件
-    local _dropItemTrg = War3.CreateTrigger(function()
-        Hero(cj.GetTriggerUnit()):EventDispatch("單位-丟棄物品", cj.GetManipulatedItem())
-        return true
-    end)
+    self:Remove()
+end)
 
-    Unit:Event "單位-丟棄物品" (function(trigger, hero, item)
-        if Item.IsEquipment(item) then
-            hero:UpdateAttributes("減少", Equipment(item))
-        end
-    end)
-    
-    -- 創建出售物品事件
-    local _sellItemTrg = War3.CreateTrigger(function()
-        Hero(cj.GetTriggerUnit()):EventDispatch("單位-出售物品", cj.GetSoldItem())
-        return true
-    end)
+-- assert
+local IsHero, LookupQuests
 
-    local _spellEffectTrg = War3.CreateTrigger(function()
-        Hero(cj.GetTriggerUnit()):EventDispatch("單位-發動技能效果", cj.GetSpellAbilityId(), cj.GetSpellTargetUnit(), cj.GetSpellTargetItem(), cj.GetSpellTargetLoc())
-        return true
-    end)
+Unit:Event "任務-更新" (function(_, self)
+    if IsHero(self.killer_) then
+        LookupQuests(self.killer_.quests_, self.id_)
+    end
+end)
 
-    -- 添加事件
-    Game:Event "單位-創建" (function(trigger, target)
-        if Hero(target).type == "Hero" then
-            cj.TriggerRegisterUnitEvent(unitIsCasted, target, cj.EVENT_UNIT_SPELL_CHANNEL)
-            cj.TriggerRegisterUnitEvent(orderTrg, target, cj.EVENT_UNIT_ISSUED_TARGET_ORDER)
-            cj.TriggerRegisterUnitEvent(orderTrg, target, cj.EVENT_UNIT_ISSUED_POINT_ORDER)
-            cj.TriggerRegisterUnitEvent(orderTrg, target, cj.EVENT_UNIT_ISSUED_ORDER)
-            cj.TriggerRegisterUnitEvent(_useItemTrg, target, cj.EVENT_UNIT_USE_ITEM) -- 使用物品事件
-            cj.TriggerRegisterUnitEvent(_obtainItemTrg, target, cj.EVENT_UNIT_PICKUP_ITEM) -- 獲得物品事件
-            cj.TriggerRegisterUnitEvent(_dropItemTrg, target, cj.EVENT_UNIT_DROP_ITEM) -- 丟棄物品事件
-            cj.TriggerRegisterUnitEvent(_sellItemTrg, target, cj.EVENT_UNIT_SELL_ITEM) -- 出售物品事件
-            cj.TriggerRegisterUnitEvent(_spellEffectTrg, target, cj.EVENT_UNIT_SPELL_EFFECT)
-        end
-    end)
+IsHero = function(unit)
+    return not (not unit.quests_)
 end
 
-_ChekMultiCast = function(skill, hero)
-    if skill.isMultiCast then
-        skill.multiCastCount = skill.multiCastCount + 1
-        local Texttag = require 'texttag'
-        if _IsShowMultiCast(skill) then
-            skill.multiCastText = Texttag{
-                msg = "|cffff0000" .. skill.multiCastCount .. "重施法|r",
-                loc = Point:GetUnitLoc(hero.object),
-                timeout = 2,
-                skill = skill,
-                multiCastCount = skill.multiCastCount,
-                isPermanant = false,
+LookupQuests = function(quests, id)
+    for _, quest in ipairs(quests) do 
+        if quest.demands_[id] then
+            quest:Update(id)
+        end
+    end
+end
+
+Game:Event "單位-創建" (function(_, target)
+    cj.TriggerRegisterUnitEvent(trg, target, cj.EVENT_UNIT_DEATH)
+end)
+
+Unit:Event "單位-發布命令" (function(_, unit, order, target)
+    -- 中斷施法
+    if (order == Base.String2OrderId('smart')) or
+       (order == Base.String2OrderId('stop')) or
+       (order == Base.String2OrderId('attack')) then
+        for _, skill in ipairs(unit.each_casting_) do
+            skill:Break()
+        end
+    end
+end)
+
+local Hero = require 'unit.hero'
+
+local order_trg = War3.CreateTrigger(function()
+    Hero(cj.GetOrderedUnit()):EventDispatch("單位-發布命令", cj.GetIssuedOrderId(), Unit(cj.GetOrderTarget()))
+    return true
+end)
+
+Unit:Event "單位-發布命令" (function(_, hero, order, target)
+    if order == Base.String2OrderId('smart') then
+        StackItem(hero.object_, target)
+    end
+end)
+
+local unit_is_casted = War3.CreateTrigger(function()
+    Hero(cj.GetTriggerUnit()):EventDispatch("單位-準備施放技能", cj.GetSpellAbilityId(), Unit(cj.GetSpellTargetUnit()), Point:GetLoc(cj.GetSpellTargetLoc()))
+    return true
+end)
+
+-- assert
+local GenerateSkillObject, ChekMultiCast
+
+Unit:Event '單位-準備施放技能' (function(_, hero, id, target_unit, target_loc)
+    -- 打斷正在施法的技能
+    for _, skill in ipairs(hero.each_casting_) do
+        if skill.order_id_ ~= Base.Id2String(id) then
+            skill:Break()
+        end
+    end
+
+    -- 獲取技能
+    for _, skill in ipairs(hero.hero_datas[hero.name_].skill_datas) do
+        if skill.order_id_ == Base.Id2String(id) then
+            if skill.can_use_ then
+                ChekMultiCast(skill, hero)
+                GenerateSkillObject(skill, hero, target_unit, target_loc)
+            else 
+                hero:ResetAbility(skill.order_id_)
+            end
+
+            return true
+        end
+    end
+end)
+
+ChekMultiCast = function(skill, hero)
+    if skill.is_multi_cast_ then
+        skill.multi_cast_count_ = skill.multi_cast_count_ + 1
+
+        local Texttag = require 'texttag.core'
+        if IsShowMultiCast(skill) then
+            skill.multi_cast_text_ = Texttag{
+                msg_ = "|cffff0000" .. skill.multi_cast_count_ .. "重施法|r",
+                loc_ = Point:GetUnitLoc(hero.object_),
+                timeout_ = 2,
+                skill_ = skill,
+                multi_cast_count_ = skill.multi_cast_count_,
+                is_permanant_ = false,
+
                 Initialize = function(obj)
-                    cj.SetTextTagText(obj.texttag, obj.msg, 0.04)
-                    cj.SetTextTagPos(obj.texttag, obj.loc.x, obj.loc.y, 10)
-                    cj.SetTextTagPermanent(obj.texttag, obj.isPermanant)
-                    cj.SetTextTagLifespan(obj.texttag, obj.timeout)
-                    cj.SetTextTagFadepoint(obj.texttag, 0.3)
+                    cj.SetTextTagText(obj.texttag_, obj.msg_, 0.04)
+                    cj.SetTextTagPos(obj.texttag_, obj.loc_.x_, obj.loc_.y_, 10)
+                    cj.SetTextTagPermanent(obj.texttag_, obj.is_permanant_)
+                    cj.SetTextTagLifespan(obj.texttag_, obj.timeout_)
+                    cj.SetTextTagFadepoint(obj.texttag_, 0.3)
                 end,
+
                 Update = function(obj)
-                    if obj.multiCastCount < obj.skill.multiCastCount then
-                        obj.msg = "|cffff0000" .. obj.skill.multiCastCount .. "重施法|r"
-                        cj.SetTextTagText(obj.texttag, obj.msg, 0.03)
-                        cj.SetTextTagPos(obj.texttag, obj.loc.x, obj.loc.y, 10)
-                        cj.SetTextTagLifespan(obj.texttag, 2)
-                        obj.timeout = 2
+                    if obj.multi_cast_count_ < obj.skill.multi_cast_count_ then
+                        -- 更新文字
+                        obj.msg_ = "|cffff0000" .. obj.skill.multi_cast_count_ .. "重施法|r"
+
+                        -- 重新調整漂浮文字的位置
+                        cj.SetTextTagText(obj.texttag_, obj.msg_, 0.03)
+                        cj.SetTextTagPos(obj.texttag_, obj.loc_.x_, obj.loc_.y_, 10)
+                        cj.SetTextTagLifespan(obj.texttag_, 2)
+
+                        obj.timeout_ = 2
                     end
                 end,
-                Remove = function(obj)
-                    Texttag.Remove(obj)
-                end
             }
         end
     else
-        skill.multiCastCount = 0
+        skill.multi_cast_count_ = 0
     end
-    skill.isMultiCast = false
+
+    -- 結束判斷，
+    skill.is_multi_cast_ = false
 end
 
-_IsShowMultiCast = function(skill)
-    if not skill.multiCastText then
-        return true
-    elseif not skill.multiCastText.invalid then
+IsShowMultiCast = function(skill)
+    if not skill.multi_cast_text_ then
         return true
     end
+    
+    if not skill.multi_cast_text_.invalid_ then
+        return true
+    end
+
     return false
 end
 
-_GenerateSkillObject = function(skill, hero, targetUnit, targetLoc)
-    local skillCopy = skill:New(hero, targetUnit, targetLoc)
-    table.insert(hero.eachCasting, skillCopy)
-    skillCopy:_cast_start()
+GenerateSkillObject = function(skill, hero, target_unit, target_loc)
+    local skill_copy = skill:New(hero, target_unit, target_loc)
+    hero.each_casting_[#hero.each_casting_ + 1] = skill_copy
+    skill_copy:_cast_start()
 end
 
-_StackItem = function(hero, item)
-    if _IsItem(item) and cj.GetItemCharges(item) > 0 then
+-- 創建使用物品事件
+local use_item_trg = War3.CreateTrigger(function()
+    Hero(cj.GetTriggerUnit()):EventDispatch("單位-使用物品", cj.GetManipulatedItem())
+    return true
+end)
+
+-- 創建獲得物品事件
+local obtain_item_trg = War3.CreateTrigger(function()
+    if cj.GetManipulatedItem() ~= nil then
+        Hero(cj.GetTriggerUnit()):EventDispatch("單位-獲得物品", cj.GetManipulatedItem())
+    end
+    return true
+end)
+
+Unit:Event "單位-獲得物品" (function(trigger, hero, item)
+    if Item.IsEquipment(item) then
+        Equipment(item).owner_ = hero
+        Equipment(item).own_player_ = hero.owner_
+        hero:UpdateAttributes("增加", Equipment(item))
+    elseif Item.IsSecrets(item) then
+        Secrets(item).owner_ = hero
+        Secrets(item).own_player_ = hero.owner_
+    elseif hero:AcceptQuest(string_sub(cj.GetItemName(item), 10)) then
+        return 
+    else
+        Item(item).owner_ = hero
+        Item(item).own_player_ = hero.owner_
+    end
+
+    StackItem(hero.object_, item)
+end)
+    
+-- 創建丟棄物品事件
+local drop_item_trg = War3.CreateTrigger(function()
+    Hero(cj.GetTriggerUnit()):EventDispatch("單位-丟棄物品", cj.GetManipulatedItem())
+    return true
+end)
+
+Unit:Event "單位-丟棄物品" (function(trigger, hero, item)
+    if Item.IsEquipment(item) then
+        hero:UpdateAttributes("減少", Equipment(item))
+    end
+end)
+    
+-- 創建出售物品事件
+local sell_itemT_trg = War3.CreateTrigger(function()
+    Hero(cj.GetTriggerUnit()):EventDispatch("單位-出售物品", cj.GetSoldItem())
+    return true
+end)
+
+local spell_effect_trg = War3.CreateTrigger(function()
+    Hero(cj.GetTriggerUnit()):EventDispatch("單位-發動技能效果", cj.GetSpellAbilityId(), Unit(cj.GetSpellTargetUnit()), cj.GetSpellTargetItem(), Point:GetLoc(cj.GetSpellTargetLoc()))
+    return true
+end)
+
+Unit:Event "單位-發動技能效果" (function(_, target, id)
+    target:LearnTalent(id)
+end)
+
+-- 添加事件
+Game:Event "單位-創建" (function(_, target)
+    if Unit.IsHero(target) then
+        cj.TriggerRegisterUnitEvent(unit_is_casted, target, cj.EVENT_UNIT_SPELL_CHANNEL)
+
+        -- 發布命令
+        cj.TriggerRegisterUnitEvent(order_trg, target, cj.EVENT_UNIT_ISSUED_TARGET_ORDER)
+        cj.TriggerRegisterUnitEvent(order_trg, target, cj.EVENT_UNIT_ISSUED_POINT_ORDER)
+        cj.TriggerRegisterUnitEvent(order_trg, target, cj.EVENT_UNIT_ISSUED_ORDER)
+
+        cj.TriggerRegisterUnitEvent(use_item_trg, target, cj.EVENT_UNIT_USE_ITEM) -- 使用物品事件
+        cj.TriggerRegisterUnitEvent(obtain_item_trg, target, cj.EVENT_UNIT_PICKUP_ITEM) -- 獲得物品事件
+        cj.TriggerRegisterUnitEvent(drop_item_trg, target, cj.EVENT_UNIT_DROP_ITEM) -- 丟棄物品事件
+        cj.TriggerRegisterUnitEvent(sell_item_trg, target, cj.EVENT_UNIT_SELL_ITEM) -- 出售物品事件
+        cj.TriggerRegisterUnitEvent(spell_effect_trg, target, cj.EVENT_UNIT_SPELL_EFFECT)
+    end
+end)
+
+StackItem = function(hero, item)
+    if not(Item.IsSecrets(item) or Item.IsMaterial(item)) then
+        return false
+    end
+
+    if item:get "數量" == 0 then
+        return false
+    end
+
         for i = 0, 5 do
-            local bagItem = cj.UnitItemInSlot(hero, i)
-            if _IsTypeSame(bagItem, item) then
-                cj.SetItemCharges(bagItem, cj.GetItemCharges(bagItem) + cj.GetItemCharges(item))
-                Item(item):Remove()
-                return
+            local bag_item = Item(cj.UnitItemInSlot(hero, i))
+            if IsTypeSame(bag_item, item) then
+                bag_item:add("數量", item:get "數量")
+                
+                item:Remove()
+                return true
             end
         end
-    end
 end
 
-_IsItem = function(item)
-    return cj.GetItemLevel(item) == 1
+IsTypeSame = function(bag_item, target_item)
+    return (bag_item.id_ == target_item.id_) and (bag_item ~= target_item)
 end
-
-_IsTypeSame = function(bagItem, target)
-    return (js.Item2Id(bagItem) == js.Item2Id(target)) and (bagItem ~= target)
-end
-
-Unit:Event "寵物-清除" (function(trigger, pet)
-    pet.owner.pet = nil
-    pet:Remove()
-end)

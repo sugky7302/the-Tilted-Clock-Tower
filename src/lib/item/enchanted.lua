@@ -5,29 +5,6 @@ local cj = require 'jass.common'
 
 local Enchanted = {}
 
-function Enchanted.Init()
-    local Unit = require 'unit'
-    
-    --                                       Unit instance         Item instance
-    Unit:Event "單位-發動技能效果" (function(_, source,       id, _, target_item, _)
-        -- A008 = T秘物附魔
-        if id == Base.String2Id('A008') then
-            source.manipulated_item_ = target_item
-        end
-    end)
-    --                                    Unit instance  Item instance
-    Unit:Event "單位-使用物品" (function(_, unit,          item)
-        -- 如果是能獲得附魔目標才觸發
-        if unit.manipulated_item_ and item:IsSecrets() then
-            unit:UpdateAttributes("減少", unit.manipulated_item_)
-
-            Enchanted.Insert(unit.manipulated_item_, item, false)
-
-            unit:UpdateAttributes("增加", unit.manipulated_item_)
-        end
-    end)
-end
-
 function Enchanted.Insert(equipment, secrets, is_fixed)
     -- 檢查屬性數量是否超過限制
     if equipment.attribute_count_ >= equipment.attribute_count_limit_ then

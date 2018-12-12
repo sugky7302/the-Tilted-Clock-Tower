@@ -60,7 +60,8 @@ lib
     - v produce_recipe
     - v enchanted
     - v extend_hole
-    - x init
+    - v init
+    - v event
     - v intensify
     - v prefix
     - v small_secret_order
@@ -91,7 +92,7 @@ lib
 - x quest
 - v region
 - x skill
-- x talent
+- v talent
 - timer
     - v core
     - v init
@@ -100,7 +101,7 @@ lib
     - attribute
         - v init
     - v core
-    - x event
+    - v event
     - v operator
     - v hero
     - v pet
@@ -150,6 +151,9 @@ test
     - v unit
     - v hero
     - v pet
+    - v unit_event
+    - v item_event
+    - v try_catch
 
 util
 - behavior_tree
@@ -172,6 +176,7 @@ util
 - v math_lib
 - v random_number_generator
 - v hexadecimal
+- v try_catch
 
 war3
 - v api

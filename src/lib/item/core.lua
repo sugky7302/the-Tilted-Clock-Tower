@@ -68,20 +68,20 @@ function mt:Remove()
     self = nil
 end
 
-function mt:IsEquipment()
-    return cj.GetItemLevel(self.object_) == 5
+function Item.IsEquipment(item)
+    return cj.GetItemLevel(item) == 5
 end
 
-function mt:IsSecrets()
-    return cj.GetItemLevel(self.object_) == 1
+function Item.IsSecrets(item)
+    return cj.GetItemLevel(item) == 1
 end
 
-function mt:IsMaterial()
-    return cj.GetItemLevel(self.object_) == 2
+function Item.IsMaterial(item)
+    return cj.GetItemLevel(item) == 2
 end
 
-function mt:IsRecipe()
-    return cj.GetItemLevel(self.object_) == 6
+function Item.IsRecipe(item)
+    return cj.GetItemLevel(item) == 6
 end
 
 function mt:add(name, val)

@@ -21,26 +21,6 @@ local _announceDur = 6
 local _IsHero, _LookupQuests, _AccepteMessage, _CreateQuestList, _Generate, _SetNewQuest, _FinishMessage
 local _UpdateDemands, _UpdateMessage, _CanRepeat, _IsFinished, _CheckQuest
 
-function Quest.Init()
-    Unit:Event "任務-更新" (function(trigger, self)
-        if _IsHero(self.killer) then
-            _LookupQuests(self.killer.quests, self.id)
-        end
-    end)
-end
-
-_IsHero = function(unit)
-    return not (not unit.quests)
-end
-
-_LookupQuests = function(quests, id)
-    for _, quest in ipairs(quests) do 
-        if quest.demands[id] then
-            quest:Update(id)
-        end
-    end
-end
-
 function mt:Update(id)
     _CheckQuest(self, id)
     if _IsFinished(self) then

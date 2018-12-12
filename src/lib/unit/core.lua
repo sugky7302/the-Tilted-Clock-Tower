@@ -154,6 +154,10 @@ function mt:IsAlive()
     return self:get "生命" > 0.3
 end
 
+function Unit.IsHero(unit)
+    return cj.IsUnitType(unit, cj.UNIT_TYPE_HERO)
+end
+
 function Unit.RemoveUnit(unit)
     local RemoveUnit = require 'jass_tool'.RemoveUnit
     RemoveUnit(unit)

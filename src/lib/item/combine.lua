@@ -6,37 +6,8 @@ local Combine = {}
 setmetatable(Combine, Combine)
 
 -- assert
-local CombineItem, IsAmountsEnough, IsGoldEnough, GetCombineCost, AddItem
+local CombineItem, IsAmountsEnough, IsGoldEnough, AddItem
 local COMBINATIONS = require 'combinations'
-
-function Combine.Init()
-    local slk_item = require 'jass.slk'.item
-
-    -- 解析資料庫
-    local ipairs = ipairs
-    for _, tb in ipairs(COMBINATIONS) do 
-        for i = 1, #tb - 1 do 
-            -- 使用鏈表的方式串住材料
-            COMBINATIONS[tb[i]] = tb[i+1]
-            COMBINATIONS[tb[i] .. "_cost"] = GetCombineCost(slk_item[tb[i]].HP)
-        end
-    end
-
-    -- local Game = require 'game'
-    -- local Hero = require 'hero'
-    -- Game:Event "單位-發動技能效果" (function(trigger, source, id)
-    --     if id == Base.String2Id('') then
-    --         Combine(Hero(source))
-    --     end
-    -- end)
-end
-
--- TODO: 合成物品的生命值為材料等級
-GetCombineCost = function(lv)
-    local math = math
-
-    return 50 * math.exp(lv - 1)
-end
 
 function Combine:__call(item)
     local Tip = require 'jass_tool'.Tip

@@ -1,11 +1,27 @@
--- 初始化附魔
-require 'enchanted'.Init()
+-- assert
+local GetCombineCost
 
--- 初始化精鍊
-require 'intensify'.Init()
+local function Combine()
+    local slk_item = require 'jass.slk'.item
 
--- 初始化鑲環
-require 'extend_hole'.Init()
+    -- 解析資料庫
+    local ipairs = ipairs
+    local COMBINATIONS = require 'combinations'
+    for _, tb in ipairs(COMBINATIONS) do 
+        for i = 1, #tb - 1 do 
+            -- 使用鏈表的方式串住材料
+            COMBINATIONS[tb[i]] = tb[i+1]
+            COMBINATIONS[tb[i] .. "_cost"] = GetCombineCost(slk_item[tb[i]].HP)
+        end
+    end
+end
 
--- 初始化合成
-require 'combine'.Init()
+-- TODO: 合成物品的生命值為材料等級
+GetCombineCost = function(lv)
+    local math = math
+
+    return 50 * math.exp(lv - 1)
+end
+
+-- call
+Combine()
