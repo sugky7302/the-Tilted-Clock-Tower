@@ -17,7 +17,7 @@ function GroupCondition.IsHero(u, filter)
 end
 
 function GroupCondition.IsNonHero(u, filter)
-    return not cj.IsUnitType(u, cj.UNIT_TYPE_HERO)
+    return not(cj.IsUnitType(u, cj.UNIT_TYPE_HERO))
 end
 
 function GroupCondition.Nil(u, filter)

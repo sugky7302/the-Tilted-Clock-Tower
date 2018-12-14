@@ -90,6 +90,7 @@ function Point.DistanceInSpace(p1, p2)
     return sqrt((p1.x_ - p2.x_) ^ 2 + (p1.y_ - p2.y_) ^ 2 + (p1.z_ - p2.z_) ^ 2)
 end
 
+-- 注意是 . 不是 :
 function Point.GetUnitLoc(unit)
     return Point(cj.GetUnitX(unit), cj.GetUnitY(unit))
 end

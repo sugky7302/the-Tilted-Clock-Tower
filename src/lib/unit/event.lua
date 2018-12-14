@@ -1,6 +1,7 @@
 -- 處理單位事件
 -- 要注意某些事件參數可以傳instance，有些只能傳jass參數
 
+-- package
 local cj = require 'jass.common'
 local js = require 'jass_tool'
 local War3 = require 'api'
@@ -14,6 +15,33 @@ local Secrets = require 'item.secrets'
 
 -- assert
 local ipairs = ipairs
+
+local unit_is_attacked = War3.CreateTrigger(function()
+    local source, target = Unit(cj.GetEventDamageSource()), Unit(cj.GetTriggerUnit())
+
+    -- 先將當前傷害值歸零，以免實際扣血 ~= 預計扣血
+    local SetEventDamage = require 'jass.japi'.EXSetEventDamage
+    SetEventDamage(0)
+
+    -- 怕技能攻擊又會再次調用此觸發，形成死循環
+    if source.is_spell_damaged_ == false then
+        source:EventDispatch("單位-造成傷害", target)
+        source:EventDispatch("單位-傷害完成", target)
+    end
+
+    return true
+end)
+
+Unit:Event "單位-造成傷害" (function(_, source, target)
+    local Damage = require 'damage'
+    Damage{
+        source_ = source,
+        target_ = target,
+        type_ = "物理",
+        name_ = "普通攻擊",
+        element_type_ = "無",
+    }
+end)
 
 -- 註冊單位死亡要刷新的事件
 local trg = War3.CreateTrigger(function()
@@ -128,18 +156,10 @@ end
 
 Game:Event "單位-創建" (function(_, target)
     cj.TriggerRegisterUnitEvent(trg, target, cj.EVENT_UNIT_DEATH)
+    cj.TriggerRegisterUnitEvent(unit_is_attacked, target, cj.EVENT_UNIT_DAMAGED)
 end)
 
-Unit:Event "單位-發布命令" (function(_, unit, order, target)
-    -- 中斷施法
-    if (order == Base.String2OrderId('smart')) or
-       (order == Base.String2OrderId('stop')) or
-       (order == Base.String2OrderId('attack')) then
-        for _, skill in ipairs(unit.each_casting_) do
-            skill:Break()
-        end
-    end
-end)
+
 
 local Hero = require 'unit.hero'
 
@@ -154,99 +174,7 @@ Unit:Event "單位-發布命令" (function(_, hero, order, target)
     end
 end)
 
-local unit_is_casted = War3.CreateTrigger(function()
-    Hero(cj.GetTriggerUnit()):EventDispatch("單位-準備施放技能", cj.GetSpellAbilityId(), Unit(cj.GetSpellTargetUnit()), Point:GetLoc(cj.GetSpellTargetLoc()))
-    return true
-end)
 
--- assert
-local GenerateSkillObject, ChekMultiCast
-
-Unit:Event '單位-準備施放技能' (function(_, hero, id, target_unit, target_loc)
-    -- 打斷正在施法的技能
-    for _, skill in ipairs(hero.each_casting_) do
-        if skill.order_id_ ~= Base.Id2String(id) then
-            skill:Break()
-        end
-    end
-
-    -- 獲取技能
-    for _, skill in ipairs(hero.hero_datas[hero.name_].skill_datas) do
-        if skill.order_id_ == Base.Id2String(id) then
-            if skill.can_use_ then
-                ChekMultiCast(skill, hero)
-                GenerateSkillObject(skill, hero, target_unit, target_loc)
-            else 
-                hero:ResetAbility(skill.order_id_)
-            end
-
-            return true
-        end
-    end
-end)
-
-ChekMultiCast = function(skill, hero)
-    if skill.is_multi_cast_ then
-        skill.multi_cast_count_ = skill.multi_cast_count_ + 1
-
-        local Texttag = require 'texttag.core'
-        if IsShowMultiCast(skill) then
-            skill.multi_cast_text_ = Texttag{
-                msg_ = "|cffff0000" .. skill.multi_cast_count_ .. "重施法|r",
-                loc_ = Point:GetUnitLoc(hero.object_),
-                timeout_ = 2,
-                skill_ = skill,
-                multi_cast_count_ = skill.multi_cast_count_,
-                is_permanant_ = false,
-
-                Initialize = function(obj)
-                    cj.SetTextTagText(obj.texttag_, obj.msg_, 0.04)
-                    cj.SetTextTagPos(obj.texttag_, obj.loc_.x_, obj.loc_.y_, 10)
-                    cj.SetTextTagPermanent(obj.texttag_, obj.is_permanant_)
-                    cj.SetTextTagLifespan(obj.texttag_, obj.timeout_)
-                    cj.SetTextTagFadepoint(obj.texttag_, 0.3)
-                end,
-
-                Update = function(obj)
-                    if obj.multi_cast_count_ < obj.skill.multi_cast_count_ then
-                        -- 更新文字
-                        obj.msg_ = "|cffff0000" .. obj.skill.multi_cast_count_ .. "重施法|r"
-
-                        -- 重新調整漂浮文字的位置
-                        cj.SetTextTagText(obj.texttag_, obj.msg_, 0.03)
-                        cj.SetTextTagPos(obj.texttag_, obj.loc_.x_, obj.loc_.y_, 10)
-                        cj.SetTextTagLifespan(obj.texttag_, 2)
-
-                        obj.timeout_ = 2
-                    end
-                end,
-            }
-        end
-    else
-        skill.multi_cast_count_ = 0
-    end
-
-    -- 結束判斷，
-    skill.is_multi_cast_ = false
-end
-
-IsShowMultiCast = function(skill)
-    if not skill.multi_cast_text_ then
-        return true
-    end
-    
-    if not skill.multi_cast_text_.invalid_ then
-        return true
-    end
-
-    return false
-end
-
-GenerateSkillObject = function(skill, hero, target_unit, target_loc)
-    local skill_copy = skill:New(hero, target_unit, target_loc)
-    hero.each_casting_[#hero.each_casting_ + 1] = skill_copy
-    skill_copy:_cast_start()
-end
 
 -- 創建使用物品事件
 local use_item_trg = War3.CreateTrigger(function()
@@ -310,8 +238,6 @@ end)
 -- 添加事件
 Game:Event "單位-創建" (function(_, target)
     if Unit.IsHero(target) then
-        cj.TriggerRegisterUnitEvent(unit_is_casted, target, cj.EVENT_UNIT_SPELL_CHANNEL)
-
         -- 發布命令
         cj.TriggerRegisterUnitEvent(order_trg, target, cj.EVENT_UNIT_ISSUED_TARGET_ORDER)
         cj.TriggerRegisterUnitEvent(order_trg, target, cj.EVENT_UNIT_ISSUED_POINT_ORDER)

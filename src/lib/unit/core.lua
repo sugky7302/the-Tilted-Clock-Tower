@@ -78,7 +78,7 @@ InitUnitState = function(self)
     self['元素屬性'] = "無"
     self['體型'] = GetBodySize(data.collision)
 
-    if self.type == 'Unit' then
+    if self.type_ == 'Unit' then
         self['刷新時間'] = data.stockRegen
     end
 end 
@@ -94,7 +94,9 @@ GetBodySize = function(collision)
 end
 
 function mt:Remove()
-    Unit[H2I(self.object) .. ""] = nil -- 清除實例
+    Unit.RemoveUnit(self.object_)
+
+    Unit[H2I(self.object_) .. ""] = nil -- 清除實例
 
     local pairs = pairs
     for _, var in pairs(self) do

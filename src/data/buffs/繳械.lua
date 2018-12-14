@@ -1,12 +1,12 @@
-local mt = require 'buff' "繳械"
+local mt = require 'buff.core' "繳械"
 
 -- constants
-mt.id = 'Abun'
+mt.id_ = 'Abun'
 
 function mt:on_add()
-    self.target:AddAbility(mt.id)
+    self.target_:AddAbility(mt.id_)
 end
 
 function mt:on_remove()
-    self.target:RemoveAbility(mt.id)
+    self.target_:RemoveAbility(mt.id_)
 end

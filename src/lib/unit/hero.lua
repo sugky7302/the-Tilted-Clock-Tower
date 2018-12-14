@@ -2,6 +2,9 @@
 
 local setmetatable = setmetatable
 
+-- package
+local Skill = require 'skill.core'
+
 local Hero, Unit = {}, require 'unit.core'
 setmetatable(Hero, Hero)
 Hero.__index = Unit
@@ -24,8 +27,12 @@ function Hero:__call(hero)
     if not instance then
         instance = Unit(hero)
 
+        -- 施法序列
         instance.each_casting_ = {}
-        -- instance["專長"] = Skill[self.hero_datas[instance.name_].specialty_name]
+
+        if self.hero_datas[instance.name_] and self.hero_datas[instance.name_].specialty_name then
+            instance["專長"] = Skill[self.hero_datas[instance.name_].specialty_name]
+        end
         
         setmetatable(instance, instance)
         instance.__index = self
@@ -54,18 +61,22 @@ InitHeroState = function(self)
     self['精通'] = 0
     self['幸運'] = 0
     self['靈敏'] = 0
+
     self['傷害擴散'] = 0
     self['減少魔力消耗'] = 0
+
     self['固定物理傷害'] = 0
-    self['固定法術傷害'] = 0
     self['額外物理傷害'] = 0
     self['額外法術傷害'] = 0
     self['特殊物理傷害'] = 0
     self['特殊法術傷害'] = 0
+
+    self['固定物理護甲'] = 0
     self['額外物理護甲'] = 0
     self['額外法術護甲'] = 0
     self['特殊物理護甲'] = 0
     self['特殊法術護甲'] = 0
+    
     self['近戰減傷'] = 0
     self['遠程減傷'] = 0
     self['護盾'] = 0

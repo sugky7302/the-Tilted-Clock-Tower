@@ -43,4 +43,23 @@ function MathLib.Difference(value, compareValue)
     return abs(value - compareValue)
 end
 
+function MathLib.BoundValue(value_min, value, value_max)
+    local max, min = math.max, math.min
+
+    -- 沒有上下限，直接回傳值
+    if not(value_min or value_max) then
+        return value
+    end
+
+    if not value_min then
+        return min(value_max, value)
+    end
+
+    if not value_max then
+        return max(value_min, value)
+    end
+
+    return min(value_max, max(value_min, value))
+end
+
 return MathLib

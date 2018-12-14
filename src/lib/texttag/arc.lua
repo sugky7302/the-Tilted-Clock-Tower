@@ -2,19 +2,20 @@
 
 local cj = require 'jass.common'
 
--- assert
+-- constants
 local PI = math.pi
 local DEFAULT_ANGLE, IS_ANGLE_RANDOM = PI / 2, true
 local TIME_LIFE = 0.7
 local VELOCITY = 5
 local SIZE = 0.9
-local sin, cos = math.sin, math.cos
 
+-- assert
+local sin, cos = math.sin, math.cos
 local Initialize, Update
 
-function ArcText(str, loc, scale)
+local function ArcText(str, loc, scale)
     local angle = IS_ANGLE_RANDOM and cj.GetRandomReal(0, 2 * PI) or DEFAULT_ANGLE
-    
+
     -- 設定漂浮文字比例，初始值=1
     scale = scale or 1
 
@@ -50,7 +51,7 @@ end
 
 -- assert
 local SIZE_BONUS = 0.012
-local Z_OFFSET_BONUS = 55
+local Z_OFFSET_BONUS = 120 -- 55
 
 Update = function(self)
     -- 設定運動軌跡
@@ -61,6 +62,7 @@ Update = function(self)
 
     local z_offset = self._size_ * (Z_OFFSET + Z_OFFSET_BONUS * trace)
     local size = self._size_ * (SIZE_MIN + SIZE_BONUS * trace)
+
     cj.SetTextTagPos(self._texttag_, self._loc_.x_, self._loc_.y_, z_offset)    
     cj.SetTextTagText(self._texttag_, self._msg_, size)
 end

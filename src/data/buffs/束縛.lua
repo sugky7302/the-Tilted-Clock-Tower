@@ -1,9 +1,9 @@
-local Buff = require 'buff'
+local Buff = require 'buff.core'
 
 local mt = Buff "束縛"
 
 -- constants
-mt.id = 'Abun'
+mt.id_ = 'Abun'
 
 function mt:on_add()
     Buff["定身"].on_add(self)

@@ -3,7 +3,7 @@
 local setmetatable = setmetatable
 
 -- package
-local Skill = require 'skill'
+local Skill = require 'skill.core'
 local Unit = require 'unit.core'
 
 local Talent, mt = {}, {}

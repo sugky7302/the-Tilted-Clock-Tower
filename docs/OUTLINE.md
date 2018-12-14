@@ -68,22 +68,32 @@ lib
     - v secrets
     - v equipment
 - missile
-    - x core
-    - x tool
-    - x trace
+    - v core
+    - v trace
+    - v util
 - texttag
     - v core
     - v arc
-- x buff
-- x combat
-- x damage
+- combat
+    - v checker
+    - v conversion
+    - v damage
+    - x heal
+    - v num
+    - v type
+- buff
+    - attribute
+        - v init
+    - v core
+    - v init
+    - v operator
+    - v unit
 - v dialog
 - v event
 - v game
 - group
     - v core
     - v condition
-- x heal
 - x init
 - x map
 - v player
@@ -91,7 +101,11 @@ lib
 - v polygon
 - x quest
 - v region
-- x skill
+- skill
+    - v cast
+    - v core
+    - v init
+    - v util
 - v talent
 - timer
     - v core
@@ -154,6 +168,11 @@ test
     - v unit_event
     - v item_event
     - v try_catch
+    - v damage
+    - v skill
+    - v missile
+    - v talent
+    - v buff
 
 util
 - behavior_tree

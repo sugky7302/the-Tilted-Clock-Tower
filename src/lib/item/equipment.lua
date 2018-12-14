@@ -258,11 +258,11 @@ end
 
 local MathLib = require 'math_lib'
 
-function Equipment:Rand(lv, layer)
+function Equipment:Rand(lv, class)
     local modf = math.modf
-    self.level_ = MathLib.Random(modf(lv + layer / 2), lv + layer)
+    self.level_ = MathLib.Random(modf(lv + class / 2), lv + class)
 
-    self.layer_ = layer -- 掉落的強度[1, 4]
+    self.class_ = class -- 掉落的強度[1, 4]
     
     RandRingCount(self)
 end
@@ -274,12 +274,12 @@ RandRingCount = function(self)
                          12, 35, 41, 12, -- 稀有菁英掉落2~5環物品的機率
                           0, 20, 55, 25} -- 頭目掉落2~5環物品的機率
 
-    for i = (self.layer_ - 1) * 4 + 1, self.layer_ * 4 do 
+    for i = (self.class_ - 1) * 4 + 1, self.class_ * 4 do 
         r = r + DROP_CHANCE[i]
 
         if r >= rand then
             -- 階級為1~4，環數為2~5
-            self.attribute_count_limit_ = self.layer_ + 1
+            self.attribute_count_limit_ = self.class_ + 1
 
             return true
         end

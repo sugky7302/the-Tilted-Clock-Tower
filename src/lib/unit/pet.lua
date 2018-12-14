@@ -39,6 +39,9 @@ function Pet:__call(pet)
     return instance
 end
 
+-- package
+local cj = require 'jass.common'
+
 -- dur不填 = 無限
 function Pet.Create(id, owner, loc, dur)
     local pet = Unit.Create(owner.owner_.object_, id, loc, cj.GetUnitFacing(owner.object_))

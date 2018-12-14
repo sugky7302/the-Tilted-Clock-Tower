@@ -5,23 +5,23 @@ local setmetatable = setmetatable
 
 local cj = require 'jass.common'
 local Array = require 'stl.array'
-local Queue = require 'stl.queue'
 
 local Texttag, mt = {}, {}
 setmetatable(Texttag, Texttag)
 Texttag.__index = mt
 
 -- assert
-local executing_order, recycle_texttags = Array(), Queue()
+local executing_order = Array()
 local New, Initialize
 local RunTimer, PauseTimer, Expire
 local GetEmptyTexttag, RecycleTexttag
 
 -- 創建固定的漂浮文字
+-- 不要重複使用漂浮文字，因為只要設定成不永久顯示，系統會自動刪除
 function Texttag:__call(str, loc, dur, is_permanant)
     str = (type(str) == 'table') and str or New(self, str, loc, dur, is_permanant)
     str._invalid_ = false
-    str._texttag_ = GetEmptyTexttag()
+    str._texttag_ = cj.CreateTextTag()
 
     setmetatable(str, self)
     str.__index = str
@@ -32,16 +32,6 @@ function Texttag:__call(str, loc, dur, is_permanant)
 
     RunTimer(self)
     return str
-end
-
-GetEmptyTexttag = function()
-    if recycle_texttags:IsEmpty() then
-        return cj.CreateTextTag()
-    end
-
-    local texttag = recycle_texttags:front()
-    recycle_texttags:PopFront()
-    return texttag
 end
 
 New = function(self, str, loc, dur, is_permanant)
@@ -117,7 +107,7 @@ PauseTimer = function(self)
 end
 
 function mt:Remove()
-    RecycleTexttag(self._texttag_)
+    cj.DestroyTextTag(self._texttag_)
     self._loc_:Remove()
 
     local pairs = pairs
@@ -126,17 +116,6 @@ function mt:Remove()
     end
 
     self = nil
-end
-
-RecycleTexttag = function(texttag)
-    local MAX_COUNT = 100
-
-    if recycle_texttags:getLength() >= MAX_COUNT then
-        cj.DestroyTextTag(texttag)
-    else
-        -- 回收漂浮文字，減少ram開銷
-        recycle_texttags:PushBack(texttag)
-    end
 end
 
 function mt:Invalid()

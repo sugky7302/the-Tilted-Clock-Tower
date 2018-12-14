@@ -72,6 +72,8 @@
 - 技能要做2個，一個是一般技能，另一個是暗圖標。
 ### 任務
 - 觸發物品的前綴一定是"[任務] "。
+### 漂浮文字
+- 系統會自動刪除無法永久顯示的漂浮文字，且內建回收利用的機制。
 
 ## 資源
 - [技能音效] Hero Of the Storm\mods\heros.stormmod\base.stormassets\assets\sounds\heros

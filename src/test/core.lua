@@ -26,7 +26,22 @@ function Test.EnumUnit()
     -- 選取英雄
     local Group = require 'group.core'
     local group = Group()
-    group:EnumUnitsInRange(15009, 9869, 200, "IsHero")
+    group:EnumUnitsInRange(15009, 9869, 1000, "IsHero")
+
+    -- 暫存
+    local enum_unit = group.units_[1]
+
+    group:Remove()
+
+    return enum_unit
+end
+
+-- 為了在測試時能夠直接獲取測試單位，使測試簡化
+function Test.EnumTestUnit()
+    -- 選取英雄
+    local Group = require 'group.core'
+    local group = Group()
+    group:EnumUnitsInRange(15009, 9869, 1000, "IsNonHero")
 
     -- 暫存
     local enum_unit = group.units_[1]
@@ -78,6 +93,15 @@ end
 function Test.AddRecipe(recipe)
     -- 設定配方
     require 'item.add_recipe'(test_recipe)
+end
+
+-- 啟動中心計時器
+function Test.InitTimer()
+    require 'timer.init'.Init()
+end
+
+function Test.InitAttribute()
+    require 'unit.attribute.init'
 end
 
 return Test

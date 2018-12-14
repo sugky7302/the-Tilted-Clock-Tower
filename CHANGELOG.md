@@ -1,12 +1,21 @@
 # 更新日誌
-## 0.31.11 - 2018-12-11
+## 0.31.11 - 2018-12-14
 ### Added:
 - 添加try-catch函數，可以執行異常處理。
+- [math_lib] 添加BoundValue，可對值設定上下界。
 ### Changed:
 - 把unit、item的所有事件獨立成event模塊。
 - 重構skill，並分離成4個模塊。
 - 重構talent。
+- 重構damage，重新命名為combat，分成damage、heal、checker、conversion、num、type。
+- 重構buff。
+- 重構missile
+- [timer] execution_更名為Execute。
+### Fixed:
+- [hero] 修正 讀取不到hero_datas導致instance[專長]報錯的問題。
+- [texttag] 修正系統會自動刪除沒有永久顯示的漂浮文字，導致自己設計的回收再利用漂浮文字機制無效的問題。
 ### Removed:
+- 刪除combat，事件加到unit_event內。
 - [equipment] 刪除銘文附魔。
 
 ## [0.31.10] - 2018-12-09
@@ -468,7 +477,7 @@
 ## [0.4.0] - 2018-10-04 - 純vscode作圖
 ### Added:
 - 新增test，用於測試程式碼。
-- [texttag] 將原先texttag的戰鬥漂浮文字獨立成text_to_attch_unit模塊。
+- [texttag] 將原先texttag的戰鬥漂浮文字獨立成text_to_attach_unit模塊。
 ### Changed:
 - 利用[魔獸吧裡面有人提出的vscode問題][actboy168-lua-debug]完成了之前一直想用vscode直接作圖的功能。
 - [texttag] 將原先的戰鬥漂浮文字功能拆解成獨立模塊，核心只提供固定漂浮文字功能。
@@ -548,15 +557,15 @@
 [0.12.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/abadd348e45f3b5e962031a81c87524f6445171f
 [0.11.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/a11b6d9647e589f7abe8974d15d2475377f8ff2a
 [0.10.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/418eb1acb3add779ecb1d1d0a336a5087323ddac
-[0.9.1] :https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/e9f9329e3de4de4c181048e1ac5eaf205d3e8bdb
-[0.9.0] :https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/8802052739c32a80c48c5aa114ca29e7dc4f70b9
-[0.8.0] :https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/f20b9948fc90b4514128a9154970869953adc34a
-[0.7.0] :https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/59f0cd6dc685cd8419bd68c647d6d7ef21dbb2d8
-[0.6.1] :https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/6f2da005e378697a095f33346ec7ba2af74cdd08
-[0.6.0] :https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/6f2da005e378697a095f33346ec7ba2af74cdd08
-[0.5.0] :https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/ec3e5a98dc8a5d6176fe39eeca3eb8a7985a9291
-[0.4.0] :https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/af30d9215a7e0265cbb6562f0cff86c66868778a
-[0.3.0] :https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/434371820ce88be522cd0b2f41a5a2cb97f887d8
-[0.2.0] :https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/63c6f063208896d6ca19fccbefbc9b9d05aec106
-[0.1.1] :https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/4ec8da80ac520ebd9d8a99a2ad768fdccc01c608
-[0.1.0] :https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/3171a30af526c25bd858956c8fbaa9c669115964
+[0.9.1]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/e9f9329e3de4de4c181048e1ac5eaf205d3e8bdb
+[0.9.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/8802052739c32a80c48c5aa114ca29e7dc4f70b9
+[0.8.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/f20b9948fc90b4514128a9154970869953adc34a
+[0.7.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/59f0cd6dc685cd8419bd68c647d6d7ef21dbb2d8
+[0.6.1]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/6f2da005e378697a095f33346ec7ba2af74cdd08
+[0.6.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/6f2da005e378697a095f33346ec7ba2af74cdd08
+[0.5.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/ec3e5a98dc8a5d6176fe39eeca3eb8a7985a9291
+[0.4.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/af30d9215a7e0265cbb6562f0cff86c66868778a
+[0.3.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/434371820ce88be522cd0b2f41a5a2cb97f887d8
+[0.2.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/63c6f063208896d6ca19fccbefbc9b9d05aec106
+[0.1.1]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/4ec8da80ac520ebd9d8a99a2ad768fdccc01c608
+[0.1.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/3171a30af526c25bd858956c8fbaa9c669115964

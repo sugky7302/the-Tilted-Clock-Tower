@@ -14,7 +14,7 @@ function EquipmentTest()
     equip:Rand(5, 3)
 
     print(equip:GetGearScore())
-    print(equip.level_, "/",equip.layer_)
+    print(equip.level_, "/",equip.class_)
 
     if equip:IsAttributeFull() then
         print "1"

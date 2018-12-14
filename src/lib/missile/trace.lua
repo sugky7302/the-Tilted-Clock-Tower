@@ -1,9 +1,12 @@
-local MissileTool = require 'missile_tool'
+-- 提供常用的軌跡函數
+
+-- package
+local Util = require 'missile.util'
 
 local TraceLib = {}
 
 function TraceLib.StraightLine(self)
-    MissileTool.Move(self)
+    Util.Move(self)
 end
 
 function TraceLib.ArcLine()
@@ -13,16 +16,24 @@ function TraceLib.Parabola()
 end
 
 function TraceLib.Surround(self)
-    local math = math
-    local Point = require 'point'
-    local cj = require 'jass.common'
+    local cos, sin, rad = math.cos, math.sin, math.rad
+    local GetUnitLoc = require 'point'.GetUnitLoc
+    local SetUnitPosition = require 'jass.common'.SetUnitPosition
 
-    self.maxDistance = self.maxDistance + 31 -- 防止終止條件成立
-    self.angle = self.angle + 5
-    local unitPoint = Point:GetUnitLoc(self.owner.object)
-    local x, y = unitPoint.x + self.radius * math.cos(math.rad(self.angle)), unitPoint.y + self.radius * math.sin(math.rad(self.angle))
-    cj.SetUnitPosition(self.missile, x, y)
-    unitPoint:Remove()
+    -- 防止終止條件成立
+    self.max_distance_ = self.max_distance_ + 31
+
+    -- 繞一圈約 0.03 * 360 / 5 = 2.16 秒
+    -- 這裡的angle_是角度不是弧度
+    self.angle_ = self.angle_ + 5
+
+    -- 移動投射物
+    local unit_point = GetUnitLoc(self.owner_.object_)
+    local x = unit_point.x_ + self.radius_ * cos(rad(self.angle_))
+    local y = unit_point.y_ + self.radius_ * sin(rad(self.angle_))
+    SetUnitPosition(self.missile_.object_, x, y)
+
+    unit_point:Remove()
 end
 
 return TraceLib

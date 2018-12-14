@@ -11,7 +11,7 @@ CenterTimer.PERIOD = 0.001
 local current_frame, _max_frame, _back_frame = 0, 0, 0
 
 --- 中心計時器動作
-local _ExecuteFrameAction, _Wakeup
+local ExecuteFrameAction, Wakeup
 
 function CenterTimer.Init()
     local cj = require 'jass.common'
@@ -30,13 +30,13 @@ function CenterTimer.Init()
         _max_frame = _max_frame + loop_count
         for i = current_frame, _max_frame do
             current_frame = current_frame + 1
-            _ExecuteFrameAction()
+            ExecuteFrameAction()
         end
     end)
 end
 
 -- 若此幀無動作則跳出
-_ExecuteFrameAction = function()
+ExecuteFrameAction = function()
     local frame_queue = CenterTimer[current_frame]
     if not frame_queue then
 		_back_frame = 0 -- 不需要補幀
@@ -50,7 +50,7 @@ _ExecuteFrameAction = function()
 
         callback = frame_queue[i]
 		if callback then
-			_Wakeup(callback)
+			Wakeup(callback)
         end
 
         frame_queue[i] = nil 
@@ -64,13 +64,13 @@ _ExecuteFrameAction = function()
 end
 
 -- 判定回調是否失效，並處理執行函數(有可能會暫停或移除動作)
-_Wakeup = function(callback)
+Wakeup = function(callback)
     if callback.invalid_ then
         callback:Remove()
         return 
     end
 
-    callback:execution_() -- 執行函數
+    callback:Execute() -- 執行函數
 
     -- 處理調用執行函數後，停用計時器的情況
     if callback.pause_remaining_ then

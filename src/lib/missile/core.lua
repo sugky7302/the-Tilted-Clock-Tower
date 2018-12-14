@@ -1,97 +1,139 @@
-local setmetatable = setmetatable
-local cj = require 'jass.common'
-local js = require 'jass_tool'
-local Point = require 'point'
-local Timer = require 'timer'
-local Group = require 'group'
-local Object = require 'object'
-local MissileTool = require 'missile_tool'
+-- 高擴展性的投射物，可自定義軌跡
 
-local Missile = {}
-local mt = {traceLib = require 'trace_lib'}
+local setmetatable = setmetatable
+
+local Missile, mt = {}, {trace_lib = require 'missile.trace'}
 setmetatable(Missile, Missile)
-Missile.__index = mt 
+Missile.__index = mt
 
 -- constants
-local _MOTIVATION, _STANDARD_HEIGHT, _MISSILE_ID  = 30, 50, 'u007'
+local MOTIVATION= 30
 
--- variables
-local _GetMissile, _GetStartingHeight, _At_EndCondition, _SetTrace
+-- assert
+local type = type
+local GetMissile, GetStartingHeight
+local Move, IsEnd
 
--- object 包含 owner, modelName, startingPoint, targetPoint, maxDistance, traceMode, hitMode, execution
--- traceMode可以調用trace_lib的函數或自己寫
--- 如果是要用trace_lib的函數，只要寫上函數名即可，不用寫結構名
--- 如果要自己寫，請遵照此格式 function(self) 動作 end
--- hitMode有1.2.3...或infinity
--- 數字表示擊中數達預設目標即停止
--- infinity表示投射物達最大距離才會停止
--- execution為group的loop函數，因此格式一定要遵照 function(group, i) 動作 end
-function Missile:__call(obj)
-    obj = Object(obj) -- 轉成Object
-    setmetatable(obj, self)
-    obj.__index = obj
-    obj.startingHeight = obj.startingHeight or _GetStartingHeight(obj.startingPoint)
-    obj.traceMode = (type(obj.traceMode) == 'string') and mt.traceLib[obj.traceMode] or obj.traceMode
-    obj.angle = obj.angle or Point.Rad(obj.startingPoint, obj.targetPoint)
-    obj.SetHeight = obj.SetHeight or MissileTool.SetHeight
-    obj.missile = _GetMissile(obj)
-    obj.unitDetermined = Group(obj.missile)
-    obj:SetHeight(0)
-    _SetTrace(obj)
-    return obj
+-- instance = {
+--     owner_
+--     model_name_
+--     hit_mode_ = 1 2 3 or inf:數字表示擊中數達此值即停止，inf表示到最大距離才停止
+
+--     starting_point_
+--     target_point_(trace_mode_ = surround不使用)
+
+--     angle(可選，trace_mode_ = surround使用)
+--     radius(可選，trace_mode_ = surround使用)
+--     starting_height_(可選，trace_mode_ = surround使用)
+--     max_distance_
+
+--     TraceMode
+--     Execute(為group的loop函數，因此格式一定要遵照 function(group, i) 動作 end)
+-- }
+function Missile:__call(instance)
+    setmetatable(instance, self)
+
+    instance.starting_height_ = instance.starting_height_ or GetStartingHeight(instance.starting_point_)
+    
+    local Point = require 'point'
+    instance.angle_ = instance.angle_ or Point.Rad(instance.starting_point_, instance.target_point_)
+
+    instance.missile_ = GetMissile(instance)
+    local Group = require 'group.core'
+    instance.units_ = Group(instance.missile_.object_)
+
+    local Util = require 'missile.util'
+    instance.SetHeight = instance.SetHeight or Util.SetHeight
+    instance:SetHeight(0)
+
+    -- TraceMode可以用trace_lib的內建函數或自己寫
+    -- 自己寫，請遵照 function(self) 動作 end 的格式
+    instance.TraceMode = (type(instance.TraceMode) == "string") and mt.trace_lib[instance.TraceMode] or instance.TraceMode
+    Move(instance)
+
+    return instance
 end
 
-_GetMissile = function(obj)
-    local missile = cj.CreateUnit(cj.GetOwningPlayer(obj.owner.object), Base.String2Id(_MISSILE_ID), obj.startingPoint.x, obj.startingPoint.y, math.deg(obj.angle))
-    cj.UnitAddAbility(missile, Base.String2Id(obj.modelName))
+GetStartingHeight = function(starting_point)
+    local  STANDARD_HEIGHT = 50
+
+    starting_point:UpdateZ()
+    return starting_point.z_ + STANDARD_HEIGHT
+end
+
+GetMissile = function(self)
+    local Pet = require 'unit.pet'
+    local MISSILE_ID = 'u007'
+    local missile = Pet.Create(MISSILE_ID, self.owner_, self.starting_point_)
+    
+    -- 投射物本身沒有模型，必須添加以 球體 為模板的技能，其綁定模型
+    missile:AddAbility(self.model_name_)
+    
     return missile
 end
 
--- 獲得投射物初始高度
-_GetStartingHeight = function(startingPoint)
-    startingPoint:GetZ()
-    return startingPoint.z + _STANDARD_HEIGHT
-end
+Move = function(self)
+    local current_distance, hit = 0, 0
 
--- 設定軌跡
-_SetTrace = function(self)
-    local currentDistance, hit = 0, 0
-    self.timer = Timer(0.03, true, function()
-        currentDistance = currentDistance + _MOTIVATION
-        self:traceMode() -- 調用軌跡函數，設定投射物軌跡
-        self:SetHeight(currentDistance)
-        self.unitDetermined:EnumUnitsInRange(cj.GetUnitX(self.missile), cj.GetUnitY(self.missile), 50., Group.IsEnemy)
-        if not self.unitDetermined:IsEmpty() then
+    local Timer = require 'timer.core'
+    local cj    = require 'jass.common'
+    local PERIOD, MOTIVATION, ENUM_RANGE = 0.03, 30, 50
+    self.timer_ = Timer(PERIOD, true, function()
+        -- 儲存當前移動距離
+        current_distance = current_distance + MOTIVATION
+
+        -- 設定投射物軌跡
+        self:TraceMode()
+
+        -- 根據地形起伏設定當前高度
+        self:SetHeight(current_distance)
+
+        self.units_:EnumUnitsInRange(cj.GetUnitX(self.missile_.object_), cj.GetUnitY(self.missile_.object_), ENUM_RANGE, "IsEnemy")
+        if not self.units_:IsEmpty() then
             hit = hit + 1
-            self.unitDetermined:Loop(self.execution)
+
+            if self.Execute and type(self.Execute) == 'function' then
+                self.units_:Loop(self.Execute)
+            end
         end
-        if _At_EndCondition(self, currentDistance, hit) then
+
+        if IsEnd(self, current_distance, hit) then
+print "end"
             self:Remove()
         end
-        self.unitDetermined:Clear() -- 清空單位組，不然先前保存的單位會一直存留，導致判定會失準
+
+        -- 清空單位組，不然先前保存的單位會一直存留，導致判定會失準
+        self.units_:Clear()
     end)
 end
 
-_At_EndCondition = function(self, currentDistance, hit)
-    if currentDistance >= self.maxDistance then
-        return true
-    elseif type(self.hitMode) == "number" and hit >= self.hitMode then
+IsEnd = function(self, current_distance, hit)
+    if current_distance >= self.max_distance_ then
         return true
     end
+
+    -- 擊中超過目標值就停止
+    if type(self.hit_mode_) == 'number' and hit >= self.hit_mode_ then
+        return true
+    end
+
     return false
 end
 
 function mt:Remove()
-    self.timer:Break()
-    js.RemoveUnit(self.missile)
-    self.missile = nil
-    if self.startingPoint then
-        self.startingPoint:Remove()
+    self.missile_:Remove()
+    self.timer_:Break()
+
+    if self.starting_point_ then
+        self.starting_point_:Remove()
     end
-    if self.targetPoint then
-        self.targetPoint:Remove()
+
+    if self.target_point_ then
+        self.target_point_:Remove()
     end
-    self.unitDetermined:Remove()
+
+    self.units_:Remove()
+
     self = nil
 end
 
