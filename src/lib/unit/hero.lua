@@ -106,18 +106,8 @@ function Hero.Create(name)
         -- 註冊技能
         obj.skill_datas = {}
         
-        local type = type
-        -- 技能少用string存，技能多用table存
-        if type(obj.skill_names) == 'string' then
-            local gmatch = string.gmatch
-            for name in gmatch(obj.skill_names, '%S+') do
-				obj.skill_datas[#obj.skill_datas + 1] = Skill[name]
-			end
-        elseif type(obj.skill_names) == 'table' then
-            local ipairs = ipairs
-			for _, name in ipairs(obj.skill_names) do
-				obj.skill_datas[#obj.skill_datas + 1] = Skill[name]
-			end
+        for _, name in ipairs(obj.skill_names) do
+            obj.skill_datas[#obj.skill_datas + 1] = Skill[name]
         end
 
         return obj

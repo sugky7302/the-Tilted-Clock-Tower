@@ -1,73 +1,96 @@
-local Skill = require 'skill'
-local cj = require 'jass.common'
-local Group = require 'group'
-local Damage = require 'damage'
-local Unit = require 'unit'
-local js = require 'jass_tool'
-local Point = require 'point'
-local Timer = require 'timer'
-
-local mt = Skill '霜之環' {
-    orderId = 'A00U',
-    disBlp = 'A00Y',
-    area = 400,
-    hotkey = "E",
-    damage = {{20, 30}},
-    proc = 0.8,
-    tip = "冷卻時間: |Cffffcc0012|n|r|n延遲|Cffffcc001.25|r秒後，在目標地點產生一圈霜之環，" ..
+local mt = require 'skill.core' '霜之環' {
+    order_id_ = 'A00U',
+    hotkey_ = "E",
+    tip_ = "冷卻時間: |Cffffcc0012|n|r|n延遲|Cffffcc001.25|r秒後，在目標地點產生一圈霜之環，" ..
     "造成|Cffffcc00N|r|Cff99ccff[+P]|r點冰寒傷害，並且使敵人定身|Cff99ccff3|r秒。",
-    proficiencyNeed = {50},
-    castStartTime = 1.25,
+    dis_blp_ = 'A00Y',
+    
+    area_ = 400,
+    
+    damage_ = {20, 30},
+    proc_ = 0.8,
+    proficiency_need_ = {50},
+
+    cast_start_time_ = 1.25,
 }
 
--- variables
-local _area = 300
+-- package
+local js = require 'jass_tool'
+local Point = require 'point'
+local AddEffect = require 'jass.common'.AddSpecialEffect
 
+-- constants
+local AREA = 300
+
+-- 顯示霜之環的最大影響範圍
 function mt:on_cast_start()
     js.Sound("gg_snd_jaina_ringoffrost_launch01")
-    local count = 25
-    Timer(self.castStartTime / count, count, function(callback)
-        local offset = Point(_area, 0)
-        offset:Rotate(callback.isPeriod * 360 / count)
-        local p = self.targetLoc + offset
-        js.TimeEffect(cj.AddSpecialEffect("Abilities\\Weapons\\FrostWyrmMissile\\FrostWyrmMissile.mdl", p.x, p.y), self.castStartTime * callback.isPeriod / count)
+
+    local Timer = require 'timer.core'
+    local COUNT = 25
+    Timer(self.cast_start_time_ / COUNT, COUNT, function(callback)
+        local offset = Point(AREA, 0)
+        offset:Rotate(callback.is_period_ * 360 / COUNT)
+
+        local p = self.target_loc_ + offset
+        js.TimeEffect(AddEffect("Abilities\\Weapons\\FrostWyrmMissile\\FrostWyrmMissile.mdl", p.x_, p.y_),
+                      self.cast_start_time_ * callback.is_period_ / COUNT)
+        
         offset:Remove()
         p:Remove()
+
+        -- 回報當前計時器動作完成，讓階段計時器能夠轉階段
+        if callback.is_period_ == 0 then
+            self.end_cast_start_ = true
+        end
     end)
 end
 
+-- 顯示霜之環特效
 function mt:on_cast_channel()
-    local count = 15
-    for i = 1, count do
-        local offset = Point(_area, 0)
-        offset:Rotate(i * 360 / count)
-        local p = self.targetLoc + offset
-        js.TimeEffect(cj.AddSpecialEffect("Abilities\\Spells\\Undead\\FrostNova\\FrostNovaTarget.mdl", p.x, p.y), 1.2)
+    local COUNT = 15
+    for i = 1, COUNT do
+        local offset = Point(AREA, 0)
+        offset:Rotate(i * 360 / COUNT)
+        local p = self.target_loc_ + offset
+
+        js.TimeEffect(AddEffect("Abilities\\Spells\\Undead\\FrostNova\\FrostNovaTarget.mdl", p.x_, p.y_), 1.2)
+        
         offset:Remove()
         p:Remove()
     end
 end 
 
 function mt:on_cast_shot()
-    local g = Group(self.owner.object)
-    g:EnumUnitsInRange(self.targetLoc.x, self.targetLoc.y, self.area, Group.IsEnemy)
-    g:Loop(function(group, i)
-        local p = Point:GetUnitLoc(group.units[i])
-        if Point.Distance(self.targetLoc, p) > 250 then
+    local Unit   = require 'unit.core'
+    local Group  = require 'group.core'
+    local Damage = require 'combat.damage'
+
+    local enum_units = Group(self.owner_.object_)
+    enum_units:EnumUnitsInRange(self.target_loc_.x_, self.target_loc_.y_, self.area_, "IsEnemy")
+    enum_units:Loop(function(group, i)
+        local p = Point.GetUnitLoc(group.units_[i])
+
+        -- 只選取[250, 400]範圍的敵人
+        if Point.Distance(self.target_loc_, p) > 250 then
             Damage{
-                source = self.owner,
-                target = Unit(group.units[i]),
-                type = "法術",
-                name = "霜之環",
-                elementType = "水",
+                source_ = self.owner_,
+                target_ = Unit(group.units_[i]),
+                
+                name_ = "霜之環",
+                type_ = "法術",
+                element_type_ = "水",
             }
-            Unit(group.units[i]):AddBuff "定身"
+
+            Unit(group.units_[i]):AddBuff "定身"
             {
                 dur = 3,
                 skill = self,
             }
-            self.owner:get "專長":EventDispatch("擊中單位", false, self.owner, Unit(group.units[i]))
+
+            self.owner_:get "專長":EventDispatch("技能-擊中單位", false, self.owner_, Unit(group.units_[i]))
         end
     end)
-    g:Remove()
+
+    enum_units:Remove()
 end

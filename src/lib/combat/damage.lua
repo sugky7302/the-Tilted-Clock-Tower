@@ -6,16 +6,18 @@ local Damage = {}
 setmetatable(Damage, Damage)
 
 -- assert
-local ComputeAttack, ComputeDefense, SetDamageType
+local SetDamageRatio, ObtainSkillData
+local ComputeAttack, ComputeDefense
 
 -- instance = {
 --     source_(Hero type),
 --     target_(Hero type),
---     type_,
+
 --     name_,
---     skill_(關聯技能),
+--     type_,
 --     element_type_,
---     ratio_(混合傷害的物法比例)
+
+--     ratio_(混合傷害的物法比例，只有type = 混合才使用)
 function Damage:__call(instance)
     -- DealDamge的扣血可能會造成二次觸發，這時來源跟目標會是同一單位
     -- 因此使用判斷式排除 "來源 = 目標" 的情況
@@ -23,7 +25,16 @@ function Damage:__call(instance)
         return false
     end
 
-    SetDamageType(instance)
+    -- 防止技能攻擊二次觸發
+    -- 使用instance.type_會比較不準確，比如混合傷害可以是技能，也可以是普攻
+    if instance.name_ ~= "普通攻擊" then
+        instance.target_.is_spell_damaged_ = true
+    end
+
+    SetDamageRatio(instance)
+
+    -- 計算matk會用到skill的damage、proc
+    ObtainSkillData(instance)
 
     local atk, def = ComputeAttack(instance), ComputeDefense(instance)
 
@@ -59,16 +70,10 @@ function Damage:__call(instance)
     instance.target_.is_spell_damaged_ = false 
 
     -- 有些天賦會觸發結算事件
-    -- instance.source_:EventDispatch("單位-傷害結算", instance.name_)
+    instance.source_:EventDispatch("單位-傷害結算", instance.name_)
 end
 
-SetDamageType = function(self)
-    -- 防止技能攻擊二次觸發
-    -- 使用self.type_會比較不準確，比如混合傷害可以是技能，也可以是普攻
-    if self.name_ ~= "普通攻擊" then
-        self.target_.is_spell_damaged_ = true
-    end
-    
+SetDamageRatio = function(self)
     if self.ratio_ then
         return true
     end
@@ -82,6 +87,14 @@ SetDamageType = function(self)
     -- type == 法術
     self.ratio_ = {0, 1}
     return true
+end
+
+ObtainSkillData = function(self)
+    local skill = require 'skill.core'[self.name_]
+    if skill then
+        self.damage_ = {skill.damage_[2 * skill.level_ - 1], skill.damage_[2 * skill.level_]}
+        self.proc_ = skill.proc_
+    end
 end
 
 local Num = require 'combat.num'

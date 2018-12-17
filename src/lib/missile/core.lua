@@ -6,9 +6,6 @@ local Missile, mt = {}, {trace_lib = require 'missile.trace'}
 setmetatable(Missile, Missile)
 Missile.__index = mt
 
--- constants
-local MOTIVATION= 30
-
 -- assert
 local type = type
 local GetMissile, GetStartingHeight
@@ -27,8 +24,9 @@ local Move, IsEnd
 --     starting_height_(可選，trace_mode_ = surround使用)
 --     max_distance_
 
+--     SetHeight(可選，trace_mode_ = surround使用)
 --     TraceMode
---     Execute(為group的loop函數，因此格式一定要遵照 function(group, i) 動作 end)
+--     Execute(可選，為group的loop函數，格式一定要遵照 function(group, i, ...) 動作 end)
 -- }
 function Missile:__call(instance)
     setmetatable(instance, self)
@@ -43,7 +41,12 @@ function Missile:__call(instance)
     instance.units_ = Group(instance.missile_.object_)
 
     local Util = require 'missile.util'
-    instance.SetHeight = instance.SetHeight or Util.SetHeight
+    if not instance.SetHeight then
+        instance.SetHeight = Util.SetHeight
+    elseif type(instance.SetHeight) == 'string' then
+        instance.SetHeight = Util[instance.SetHeight]
+    end
+
     instance:SetHeight(0)
 
     -- TraceMode可以用trace_lib的內建函數或自己寫
@@ -77,6 +80,8 @@ Move = function(self)
 
     local Timer = require 'timer.core'
     local cj    = require 'jass.common'
+
+    -- 位移 = 速度 * 週期 = 1000 * 週期
     local PERIOD, MOTIVATION, ENUM_RANGE = 0.03, 30, 50
     self.timer_ = Timer(PERIOD, true, function()
         -- 儲存當前移動距離
@@ -92,18 +97,17 @@ Move = function(self)
         if not self.units_:IsEmpty() then
             hit = hit + 1
 
-            if self.Execute and type(self.Execute) == 'function' then
+            if self.Execute then
                 self.units_:Loop(self.Execute)
             end
         end
 
-        if IsEnd(self, current_distance, hit) then
-print "end"
-            self:Remove()
-        end
-
         -- 清空單位組，不然先前保存的單位會一直存留，導致判定會失準
         self.units_:Clear()
+
+        if IsEnd(self, current_distance, hit) then
+            self:Remove()
+        end
     end)
 end
 
@@ -121,6 +125,12 @@ IsEnd = function(self, current_distance, hit)
 end
 
 function mt:Remove()
+    -- 回傳任務完成
+    if self.handle_ then
+        local TaskTracker = require 'task_tracker'
+        TaskTracker.finish(self.handle_)
+    end
+
     self.missile_:Remove()
     self.timer_:Break()
 

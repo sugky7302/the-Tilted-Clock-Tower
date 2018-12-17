@@ -10,13 +10,13 @@ setmetatable(Group, Group)
 Group.__index = mt
 
 -- constants
-local _QUANTITY = 128
+local QUANTITY = 128
 
 -- assert
 -- 使用queue是因為要重複利用we的單位組，盡量減少ram的開銷
-local _recycle_group = Queue()
+local recycle_group = Queue()
 
-local _GetEmptyGroup
+local GetEmptyGroup
 
 -- 建構函式
 function Group:__call(filter)
@@ -25,7 +25,7 @@ function Group:__call(filter)
     local instance = {
         _ignore_label_ = {},
 
-        object_ = _GetEmptyGroup(),
+        object_ = GetEmptyGroup(),
         units_  = Array(),
         filter_ = filter or 0, -- 用於條件判定，如果filter沒有傳參，要設定成0才不會出問題
     }
@@ -35,30 +35,30 @@ function Group:__call(filter)
     return instance
 end
 
-_GetEmptyGroup = function()
+GetEmptyGroup = function()
     -- 超過上限報錯
-    -- 用 ">" 是因為這個函式會減少_recycle_group的數量
-    if _recycle_group:getLength() > _QUANTITY then
+    -- 用 ">" 是因為這個函式會減少recycle_group的數量
+    if recycle_group:getLength() > QUANTITY then
         local ErrorHandle = Base.ErrorHandle
         ErrorHandle("單位組超過上限。")
         return false
     end
 
-    if _recycle_group:IsEmpty() then
+    if recycle_group:IsEmpty() then
         return cj.CreateGroup()
     end
     
-    local empty_group = _recycle_group:front()
-    _recycle_group:PopFront()
+    local empty_group = recycle_group:front()
+    recycle_group:PopFront()
     return empty_group
 end
 
 function mt:Remove()
-    -- 用 ">=" 是因為這個函式會增加_recycle_group的數量
-    if _recycle_group:getLength() >= _QUANTITY then
+    -- 用 ">=" 是因為這個函式會增加recycle_group的數量
+    if recycle_group:getLength() >= QUANTITY then
         cj.DestroyGroup(self.object_)
     else
-        _recycle_group:PushBack(self.object_)
+        recycle_group:PushBack(self.object_)
     end
 
     self:Clear()
@@ -72,7 +72,9 @@ end
 
 function mt:Clear()
     self:Loop(function(self, i)
-        self:RemoveUnit(self[i])
+        -- x self[i]
+        -- v self.units_[i]
+        self:RemoveUnit(self.units_[i])
     end)
 
     cj.GroupClear(self.object_)
@@ -80,15 +82,15 @@ function mt:Clear()
 end
 
 -- action的格式要是
--- function(self, i)
+-- function(self, i, ...)
 --     script
 -- end
 -- 順序循環在執行改變array長度的動作時，由於最後一個元素會補到空位，而導致順序不正確
 -- 只有2個元素的array，如果delete array[1]刪掉，會讀不到array[2]
 -- 使用倒序循環就不會出現這樣的問題
-function mt:Loop(action)
+function mt:Loop(action, ...)
     for i = self.units_:getLength(), 1, -1 do
-        action(self, i)
+        action(self, i, ...)
     end
 end
 

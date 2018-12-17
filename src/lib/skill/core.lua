@@ -58,7 +58,7 @@ function mt:Remove()
             break
         end
     end
-    
+
     -- 副本只需要刪除這四個值(可以看mt:New)
     self.owner_       = nil
     self.target_unit_ = nil
@@ -68,8 +68,8 @@ end
 
 -- 調用施法動作
 function mt:Cast()
-    local CastStart = require 'skill.cast'
-    CastStart(self)
+    local Cast = require 'skill.cast'
+    Cast(self)
 end
 
 -- 不打斷直接施放的階段，只打斷需要時間的階段
@@ -98,30 +98,30 @@ function mt:Break()
 end
 
 -- 沒有返回值用notify，有返回值才用dispatch
-function mt:EventNotify(name, force, ...)
-    -- force是檢測要不要強制執行
+function mt:EventDispatch(name, force, ...)
     force = force or false
+
+    -- force是檢測要不要強制執行
     if not force then
         if self.invalid_ then
             return false
         end
     end
-    
+
     -- 事件名轉換成實際動作函數名
     local EVENT_NAME = {
-        ['施法開始'] = 'on_cast_start',
-        ['施法引導'] = 'on_cast_channel',
-        ['施法出手'] = 'on_cast_shot',
-        ['施法完成'] = 'on_cast_finish',
-        ['擊中單位'] = 'on_hit',
-        ['造成傷害'] = 'on_deal_damage',
+        ['技能-施法開始'] = 'on_cast_start',
+        ['技能-施法引導'] = 'on_cast_channel',
+        ['技能-施法出手'] = 'on_cast_shot',
+        ['技能-施法完成'] = 'on_cast_finish',
+        ['技能-擊中單位'] = 'on_hit',
+        ['技能-造成傷害'] = 'on_deal_damage',
     }
 
     -- 調用該技能的階段事件
     name = EVENT_NAME[name]
     if self[name] then
-        self[name](self, ...)
-        return true
+        return self[name](self, ...)
     end
     
     return false
@@ -136,7 +136,7 @@ function mt:UpdateName()
     local print_tb = {self.name_, "(|cffffcc00", self.hotkey_, "|r) - [等級 |cffffcc00", self.level_, "|r"}
 
     -- 達最大等級就不顯示熟練度
-    if self.level == self.maxLevel then
+    if self.level_ == self.max_level_ then
         print_tb[#print_tb + 1] = "]"
     else
         print_tb[#print_tb + 1] = " - |cffffcc00"
@@ -157,8 +157,8 @@ function mt:UpdateTip()
     -- 有技能傷害表示更新技能說明需要替換值，不然不用更動
     if self.damage_ then
         -- 替換傷害值
-        local state = string_gsub(self.tip_, "N", table_concat({self.damage_[self.level_][1], "-",
-                                                                self.damage_[self.level_][2]}))
+        local state = string_gsub(self.tip_, "N", table_concat({self.damage_[2 * self.level_ - 1], "-",
+                                                                self.damage_[2 * self.level_]}))
 
         -- 替換技能係數
         state = string_gsub(state, "P", self.proc_ .. "")

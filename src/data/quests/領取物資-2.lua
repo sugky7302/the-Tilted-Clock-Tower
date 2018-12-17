@@ -1,10 +1,10 @@
-local mt = require 'quest' "領取物資-2"
+local mt = require 'quest.core' "領取物資-2"
 {
-    detail = "希望你能好好使用這把武器，趕緊去找|cffffcc00拉菲-欺詐|r領取物資吧！有了那些物資，在戰場上才能更好地生存下來。",
-    required = {"找到拉菲-欺詐"},
-    demands = {'n000'},
-    talk = "新人，你走大運了。",
-    rewards = {"3瓶生命藥水"}, 
+    detail_ = "希望你能好好使用這把武器，趕緊去找|cffffcc00拉菲-欺詐|r領取物資吧！有了那些物資，在戰場上才能更好地生存下來。",
+    required_ = {"找到拉菲-欺詐"},
+    demands_ = {'n000', true},
+    talk_ = "新人，你走大運了。",
+    rewards_ = {"3瓶生命藥水"}, 
 }
 
 function mt:on_reward()

@@ -1,11 +1,15 @@
-local cj = require 'jass.common'
+-- 利用 動畫-改變單位的轉向角度 達成此效果，原因不明
 
 local mt = require 'buff.core' "定身"
 
+-- assert
+local SetUnitPropWindow = require 'jass.common'.SetUnitPropWindow
+local GetUnitDefaultPropWindow = require 'jass.common'.GetUnitDefaultPropWindow
+
 function mt:on_add()
-    cj.SetUnitPropWindow(self.target_.object_, 0)
+    SetUnitPropWindow(self.target_.object_, 0)
 end
 
 function mt:on_remove()
-    cj.SetUnitPropWindow(self.target_.object_, cj.GetUnitDefaultPropWindow(self.target_.object_))
+    SetUnitPropWindow(self.target_.object_, GetUnitDefaultPropWindow(self.target_.object_))
 end

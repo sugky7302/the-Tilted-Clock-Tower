@@ -5,19 +5,32 @@
 require 'id'
 require 'order_id'
 
-local function _Main()
-    local js = require 'jass_tool'
-    -- print('Welcome to Orlando') -- 測試lua check訊息
-    -- js.Debug("Welcome to Orlando") -- 測試遊戲訊息
+local function Main()
+    -- 啟動中心計時器
+    require 'timer.init'.Init()
 
-    -- require 'Type.init'
-    -- require 'Tool.init'
-    -- require 'Item.init'
-    require 'test.core'("buff")
+    -- 註冊事件
+    require 'unit.event'
+    require 'item.event'
+    require 'skill.event'
+
+    -- 初始化數據
+    require 'unit.attribute.init'
+    require 'item.init'
+    require 'buff.attribute.init'
+    require 'buffs.init'
+    require 'quests.init'
+
+    -- 初始化單位事件
+    require 'buff.unit'
+    require 'quest.unit'
+    require 'talent'
     
-    -- -- 替所有單位註冊事件，因此一定要放在最後
-    -- Map.Init() 
+    -- 替所有單位註冊事件，因此一定要放在最後
+    require 'map'
+
+    require 'test.core'('player')
 end
 
-_Main()
+Main()
     

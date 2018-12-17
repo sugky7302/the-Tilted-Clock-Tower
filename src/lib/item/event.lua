@@ -1,8 +1,8 @@
 -- 統一處理物品事件
 
 local Player = require 'player'
-local Hero = require 'hero'
-local Unit = require 'unit'
+local Hero = require 'unit.hero'
+local Unit = require 'unit.core'
 
 -- Unit:Event "單位-發動技能效果" (function(_, source, id)
 --     if id == Base.String2Id('') then
@@ -56,4 +56,20 @@ Player:Event "玩家-對話框被點擊" (function(_, player, button)
     -- 關閉對話框
     player.dialog_:Show(false)
     player.dialog_:Clear()
+end)
+
+Unit:Event "單位-使用物品" (function(_, unit, equipment)
+    if equipment:IsEquipment() then
+        equipment:Update()
+        equipment:Display()
+    end
+end)
+
+-- 裝備顯示框被點擊事件
+Player:Event "玩家-對話框被點擊" (function(_, player, button)
+    -- 關閉對話框
+    if player.dialog_:Find("關閉") == button then
+        player.dialog_:Show(false)
+        player.dialog_:Clear()
+    end
 end)

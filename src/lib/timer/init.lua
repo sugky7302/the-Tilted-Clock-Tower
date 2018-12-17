@@ -1,4 +1,4 @@
--- 建立0.01秒一幀的中心計時器
+-- 建立0.01秒十幀的中心計時器
 -- 執行每幀的列表(最多10個動作)，若因為計時器誤差而導致丟幀，就於下次進行補幀。
 -- 參考moe-master 2.1
 
@@ -15,8 +15,9 @@ local ExecuteFrameAction, Wakeup
 
 function CenterTimer.Init()
     local cj = require 'jass.common'
-
     local center_timer = cj.CreateTimer()
+
+    -- 因為jass計時器只能到0.01秒精度，我們利用迴圈將精度再提高到0.001秒
     local period = CenterTimer.PERIOD * 10
     cj.TimerStart(center_timer, period, true, function()
         local loop_count = 10
@@ -26,7 +27,7 @@ function CenterTimer.Init()
             current_frame = current_frame - 1
         end
 
-        -- 執行每幀動作
+        -- 一次處理10幀動作
         _max_frame = _max_frame + loop_count
         for i = current_frame, _max_frame do
             current_frame = current_frame + 1

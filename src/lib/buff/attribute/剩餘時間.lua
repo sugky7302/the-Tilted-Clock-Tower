@@ -2,7 +2,7 @@
 local Timer = require 'timer.core'
 
 -- assert
-local RemoveTimer, CreateTimer
+local ResetTimer
 
 require 'buff.core'.Register("剩餘時間", {
     set = function(self, timeout)
@@ -13,9 +13,7 @@ require 'buff.core'.Register("剩餘時間", {
         self.timeout_ = timeout
         self.begin_timestep_ = Timer.clock()
     
-        -- 重置計時器
-        RemoveTimer(self.timer_)
-        CreateTimer(self)
+        ResetTimer(self)
     end,
 
     get = function(self)
@@ -27,13 +25,11 @@ require 'buff.core'.Register("剩餘時間", {
     end
 })
 
-RemoveTimer = function(timer)
-    if timer then
-        timer:Remove()
+ResetTimer = function(self)
+    if self.timer_ then
+        self.timer_:Remove()
     end
-end
 
-CreateTimer = function(self)
     if self.pulse_ then
         self.timer_ = Timer(self.pulse_, self.timeout_ / self.pulse_, function(callback)
             if not self.target_ then

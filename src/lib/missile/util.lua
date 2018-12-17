@@ -26,8 +26,8 @@ function MissileUtil.SetHeight(self, current_distance)
 
     -- 添加烏鴉技能，使觸發可以更改投射物高度
     local FLYSKILL_ID = 'Arav'
-    self.missile:AddAbility(FLYSKILL_ID)
-    self.missile:RemoveAbility(FLYSKILL_ID)
+    self.missile_:AddAbility(FLYSKILL_ID)
+    self.missile_:RemoveAbility(FLYSKILL_ID)
     
     -- 實際高度 = 預估高度 - 當前投射物所在地面高度
     local height = self.starting_height_ + current_distance * slope - missile_z
@@ -41,7 +41,7 @@ function MissileUtil.SetHeight(self, current_distance)
 end
 
 GetSlope = function(self)
-    local missile_point = Point(cj.GetUnitX(self.missile_.object_), cj.GetUnitY(self.missile_.object_))
+    local missile_point = Point.GetUnitLoc(self.missile_.object_)
 
     -- 獲取高度
     missile_point:UpdateZ()
@@ -56,6 +56,15 @@ GetSlope = function(self)
     missile_point:Remove()
 
     return z_difference / distance, missile_z
+end
+
+function MissileUtil.SetSurroundHeight(self)
+    self.missile_:AddAbility 'Arav'
+    self.missile_:RemoveAbility 'Arav'
+
+    if self.starting_height_ > 0 then
+        cj.SetUnitFlyHeight(self.missile_, self.starting_height_, 0.)
+    end
 end
 
 return MissileUtil

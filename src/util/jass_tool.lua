@@ -46,7 +46,7 @@ return {
     end,
     -- TODO:之後要移到Effect結構
     TimeEffect = function(effect, timeout)
-        local Timer = require 'timer'
+        local Timer = require 'timer.core'
         Timer(timeout, false, function()
             cj.DestroyEffect(effect)
         end)

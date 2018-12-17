@@ -10,15 +10,6 @@ local Talent, mt = {}, {}
 setmetatable(Talent, Talent)
 Talent.__index = mt
 
--- constants
-local EVENT_NAME = {
-    ['初始化'] = 'on_init',
-    ['添加'] = 'on_add',
-    ['呼叫'] = 'on_call',
-    ['刪除'] = 'on_remove',
-    ['施法'] = 'on_cast',
-}
-
 -- assert
 -- 事件預設值
 mt.on_init   = nil
@@ -77,6 +68,14 @@ function Unit.__index:TalentDispatch(name, event, ...)
         return false
     end
 
+    local EVENT_NAME = {
+        ['初始化'] = 'on_init',
+        ['添加'] = 'on_add',
+        ['呼叫'] = 'on_call',
+        ['刪除'] = 'on_remove',
+        ['施法'] = 'on_cast',
+    }
+    
     if HasTalent(self, Talent[name]) then
         return CallEvent(Talent[name], EVENT_NAME[event], self, ...)
     end

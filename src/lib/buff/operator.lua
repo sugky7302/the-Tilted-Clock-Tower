@@ -19,6 +19,10 @@ function Operator.Obtain(self)
             end
                 
             Operator.Delete(this)
+
+            -- 儲存
+            GetBuffList(self)
+            self.target_.buffs[self.name_] = self
         end
     elseif self.cover_type_ == 1 then -- 共存模式
         local table_insert = table.insert
@@ -139,7 +143,7 @@ end
 RemoveEffect = function(self)
     if self.effect_ then
         local DestroyEffect = require 'jass.common'.DestroyEffect
-        DestroyEffect(self.effect)
+        DestroyEffect(self.effect_)
     end
 
     -- 刪除buff圖標技能

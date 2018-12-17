@@ -30,12 +30,13 @@ function Unit:__call(unit)
         local Point = require 'point'
 
         instance = {
-            object_       = unit,
-            id_           = Base.Id2String(U2Id(unit)),
-            handle_       = H2I(unit),
-            name_         = cj.GetUnitName(unit),
-            owner_        = Player(cj.GetOwningPlayer(unit)),
-            revive_point_ = Point:GetUnitLoc(unit)
+            object_           = unit,
+            id_               = Base.Id2String(U2Id(unit)),
+            handle_           = H2I(unit),
+            name_             = cj.GetUnitName(unit),
+            owner_            = Player(cj.GetOwningPlayer(unit)),
+            revive_point_     = Point.GetUnitLoc(unit),
+            is_spell_damaged_ = false
         }
 
         self[H2I(unit) .. ""] = instance

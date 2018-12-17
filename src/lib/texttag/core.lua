@@ -107,6 +107,12 @@ PauseTimer = function(self)
 end
 
 function mt:Remove()
+    -- 回傳任務完成
+    if self.handle_ then
+        local TaskTracker = require 'task_tracker'
+        TaskTracker.finish(self.handle_)
+    end
+
     cj.DestroyTextTag(self._texttag_)
     self._loc_:Remove()
 

@@ -40,15 +40,9 @@ function Num.BuffInAtk(source)
 end
 
 function Num.Matk(self, EAtk)
-    local basic_dmg = self.skill.damage_[self.skill.level_]
+    local basic_dmg = Rand(self.damage_[1], self.damage_[2])
 
-    -- 檢查基礎傷害是定值還是區間內隨機值
-    local type = type
-    if type(basic_dmg) == 'table' then
-        basic_dmg = Rand(basic_dmg[1], basic_dmg[2])
-    end
-
-    local matk = basic_dmg + self.skill.proc_ * self.source_:get "法術攻擊力" + self.source_:get "額外法術傷害"
+    local matk = basic_dmg + self.proc_ * self.source_:get "法術攻擊力" + self.source_:get "額外法術傷害"
 
     return (matk + EAtk) * Num.TalentBuffInMatk(self.source_) * Num.BuffInMatk(self.source_)
 end
@@ -63,7 +57,7 @@ function Num.BuffInMatk(source)
     local bonus = 1
 
     -- 霜寒刺骨加成
-    bonus = bonus + source:get "霜寒刺骨"
+    bonus = bonus + source:get "霜寒刺骨加成"
 
     return bonus
 end

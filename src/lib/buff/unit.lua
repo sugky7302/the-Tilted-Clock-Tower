@@ -5,6 +5,7 @@ local Unit = require 'unit.core'
 local Buff = require 'buff.core'
 local Operator = require 'buff.operator'
 
+-- instance內部的name可以填寫自己想要的名稱
 function Unit.__index:AddBuff(name, delay)
     return function(instance)
         local data = Buff[name]
@@ -54,8 +55,8 @@ function Unit.__index:FindBuff(name)
         return nil
     end
 
-    for buff in pairs(self.buffs_) do
-        if buff.name_ == name then
+    for buff_name, buff in pairs(self.buffs_) do
+        if buff_name == name then
             return buff
         end
     end

@@ -12,7 +12,7 @@ Pet.type = "Pet"
 -- assert
 local SetPetLifePeriod
 
-function Pet:__call(pet)
+function Pet:__call(pet, owner)
     local H2I = require 'jass_tool'.H2I
 
     if H2I(pet) == 0 then
@@ -23,6 +23,11 @@ function Pet:__call(pet)
     if not instance then
         instance = Unit(pet)
 
+        -- 設定擁有者
+        if owner then
+            instance.owner_ = owner
+        end
+        
         -- 寵物都不需要復活
         instance.revive_point_:Remove()
         instance.revive_point_ = nil
@@ -31,9 +36,6 @@ function Pet:__call(pet)
         instance.__index = self
     
         Unit[H2I(pet) .. ""] = instance
-        
-        local Game = require 'game'
-        Game:EventDispatch("單位-創建", pet)
     end
 
     return instance
@@ -46,11 +48,11 @@ local cj = require 'jass.common'
 function Pet.Create(id, owner, loc, dur)
     local pet = Unit.Create(owner.owner_.object_, id, loc, cj.GetUnitFacing(owner.object_))
     
+    local obj = Pet(pet, owner)
+    SetPetLifePeriod(pet, dur)
+
     -- 播放出生動畫
     cj.SetUnitAnimation(pet, "birth")
-    
-    local obj = Pet(pet)
-    SetPetLifePeriod(pet, dur)
     
     return obj
 end

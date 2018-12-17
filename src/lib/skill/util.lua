@@ -42,6 +42,12 @@ function SkillUtil.RootCast(self, timeout)
             -- 移除光環
             local RemoveUnit = require 'jass_tool'.RemoveUnit
             RemoveUnit(dummy)
+
+            -- 回傳任務完成
+            if self.root_cast_timer_.handle_ then
+                local TaskTracker = require 'task_tracker'
+                TaskTracker.finish(self.root_cast_timer_.handle_)
+            end
         end
     end)
 end

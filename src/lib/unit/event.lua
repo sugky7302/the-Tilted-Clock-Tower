@@ -33,12 +33,13 @@ local unit_is_attacked = War3.CreateTrigger(function()
 end)
 
 Unit:Event "單位-造成傷害" (function(_, source, target)
-    local Damage = require 'damage'
+    local Damage = require 'combat.damage'
     Damage{
         source_ = source,
         target_ = target,
-        type_ = "物理",
+        
         name_ = "普通攻擊",
+        type_ = "物理",
         element_type_ = "無",
     }
 end)
@@ -46,7 +47,6 @@ end)
 -- 註冊單位死亡要刷新的事件
 local trg = War3.CreateTrigger(function()
     local target = Unit(cj.GetTriggerUnit())
-
     if target.type == "Unit" then
         target:EventDispatch("單位-掉落物品")
         target:EventDispatch("單位-刷新")
@@ -68,10 +68,10 @@ Unit:Event "單位-掉落物品" (function(_, unit)
     end
 
     local Rand = require 'math_lib'.Random
-    local p = Point:GetUnitLoc(unit.object_)
+    local p = Point.GetUnitLoc(unit.object_)
 
     for i = 1, #DROP_LIB[unit.id_], 2 do 
-        if Random(100) < DROP_LIB[i+1] then
+        if Rand(100) < DROP_LIB[i+1] then
             local item = Item.Create(DROP_LIB[i], p)
 
             -- 掉落裝備
@@ -137,8 +137,8 @@ end)
 local IsHero, LookupQuests
 
 Unit:Event "任務-更新" (function(_, self)
-    if IsHero(self.killer_) then
-        LookupQuests(self.killer_.quests_, self.id_)
+    if IsHero(self.attacker_) then
+        LookupQuests(self.attacker_.quests_, self.id_)
     end
 end)
 
@@ -159,8 +159,6 @@ Game:Event "單位-創建" (function(_, target)
     cj.TriggerRegisterUnitEvent(unit_is_attacked, target, cj.EVENT_UNIT_DAMAGED)
 end)
 
-
-
 local Hero = require 'unit.hero'
 
 local order_trg = War3.CreateTrigger(function()
@@ -174,8 +172,6 @@ Unit:Event "單位-發布命令" (function(_, hero, order, target)
     end
 end)
 
-
-
 -- 創建使用物品事件
 local use_item_trg = War3.CreateTrigger(function()
     Hero(cj.GetTriggerUnit()):EventDispatch("單位-使用物品", cj.GetManipulatedItem())
@@ -187,10 +183,13 @@ local obtain_item_trg = War3.CreateTrigger(function()
     if cj.GetManipulatedItem() ~= nil then
         Hero(cj.GetTriggerUnit()):EventDispatch("單位-獲得物品", cj.GetManipulatedItem())
     end
+
     return true
 end)
 
 Unit:Event "單位-獲得物品" (function(trigger, hero, item)
+    local string_sub = string.sub
+    
     if Item.IsEquipment(item) then
         Equipment(item).owner_ = hero
         Equipment(item).own_player_ = hero.owner_
@@ -260,15 +259,15 @@ StackItem = function(hero, item)
         return false
     end
 
-        for i = 0, 5 do
-            local bag_item = Item(cj.UnitItemInSlot(hero, i))
-            if IsTypeSame(bag_item, item) then
-                bag_item:add("數量", item:get "數量")
+    for i = 0, 5 do
+        local bag_item = Item(cj.UnitItemInSlot(hero, i))
+        if IsTypeSame(bag_item, item) then
+            bag_item:add("數量", item:get "數量")
                 
-                item:Remove()
-                return true
-            end
+            item:Remove()
+            return true
         end
+    end
 end
 
 IsTypeSame = function(bag_item, target_item)

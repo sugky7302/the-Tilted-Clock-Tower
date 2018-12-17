@@ -1,5 +1,29 @@
 # 更新日誌
-## 0.31.11 - 2018-12-14
+## 0.31.12 - 2018-12-17 - 重構完成
+### Added:
+- 新增task_tracker，能夠追蹤任務是否完成，目前用在skill.cast上，missile、texttag內建任務完成回報機制。
+### Changed:
+- 調整天賦，以技能分類，不再是全部混在一起。
+- 重構hero_list，加入初始化專長的功能。
+- 重構buff模板。
+- 重構quest。
+- 重構冰霜秘術師技能、天賦。
+- [combat.damage] 不再設定相關技能來獲取matk，而是直接拿matk想要的相關技能的數據。
+- [combat.num] 法術傷害都是區間值。
+- [unit.pet] 建構函式添加參數-擁有者。
+- [test.skill] 開放全部技能測試。
+### Fixed:
+- [冬之蕭瑟] 修正新投射物和原投射物共享同目標點，在新投射物刪除後，原投射物找不到目標點而報錯的問題。
+- [冰晶] 修正投射物和寒冰箭共享同目標點，在投射物刪除後，寒冰箭找不到目標點而報錯的問題。
+- [冰晶] 修正獲取不到水元素的擁有者的問題。
+- [buff.operator] 修正Delete函數沒有刪除特效的問題。
+- [group] 修正clear函數移除單位的參數錯誤，導致報錯的問題。
+- [hero] 修正專長無法獲取的問題。
+- [jass_tool] 修正TimerEffect因為Timer.lua更名而無法獲取Timer的問題。
+- [missile.core] 修正當投射物終止條件生效，觸發刪除函數，導致清空單位組這個動作會因為找不到單位組而報錯的問題。
+- [unit.event] 修正投射物註冊Pet，導致任務-更新無法獲得attacker_的問題。
+
+## [0.31.11] - 2018-12-14
 ### Added:
 - 添加try-catch函數，可以執行異常處理。
 - [math_lib] 添加BoundValue，可對值設定上下界。
@@ -525,6 +549,7 @@
 [actboy168-lua-debug]:https://tieba.baidu.com/p/5902146836
 [coordinate_error]:https://tieba.baidu.com/p/5773334779?pid=120570865697&cid=0&red_tag=1133617129#120570865697
 
+[0.31.11]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/1d48661a6c1ddf22372e3759bc84be4d4887436b
 [0.31.10]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/4d3a6725f22b60047db5e9ab81c655103b3b16f0
 [0.31.9]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/006997172f09a3dfbf163d2be8274a57765e2102
 [0.31.8]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/b9b3610939c1ec9dc7f77d50c89567b5bbcb0e23

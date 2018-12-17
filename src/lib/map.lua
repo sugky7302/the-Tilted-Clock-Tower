@@ -1,45 +1,37 @@
-local Map = {}
+-- 初始化地圖數據
 
--- variables
-local _RegUnits
+-- assert
+local RegUnits
 
-function Map.Init()
-    local Combat = require 'combat'
-    local Quest = require 'quest'
+local function Map()
 	-- 英雄初始化
     require 'heros.init'
-    -- 增益效果初始化
-    require 'buffs.init'
-    -- 天賦初始化
-    require 'talents.init'
-    -- 任務初始化
-    require 'quests.init'
-    -- 戰鬥系統初始化
-    Combat:Init()
-    -- 任務系統初始化
-    Quest.Init()
+
     -- 註冊單位
-    _RegUnits()
+    RegUnits()
 end
 
-_RegUnits = function()
-    local cj = require 'jass.common'
-    local Hero = require 'hero'
-    local Unit = require 'unit'
+RegUnits = function()
+    local Hero = require 'unit.hero'
+    local Unit = require 'unit.core'
     local Game = require 'game'
-    local Group = require 'group'
+    local Group = require 'group.core'
+
     -- 為單位生成結構與註冊事件
     local g = Group()
-    g:EnumUnitsInRange(0, 0, 9999999, Group.Nil)
+    g:EnumUnitsInRange(0, 0, 9999999, "Nil")
     g:Loop(function(self, i)
-        if cj.IsUnitType(self.units[i], cj.UNIT_TYPE_HERO) then
-            Hero(self.units[i])
+        if Unit.IsHero(self.units_[i]) then
+            Hero(self.units_[i])
         else
-            Unit(self.units[i])
+            Unit(self.units_[i])
         end
-        Game:EventDispatch("單位-創建", self.units[i])
+
+        Game:EventDispatch("單位-創建", self.units_[i])
     end)
+
     g:Remove()
 end
 
-return Map
+-- call
+Map()

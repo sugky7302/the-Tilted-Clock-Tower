@@ -5,6 +5,7 @@ require 'unit.operator'.Register("生命", {
         if life > 1 then
             SetLife(self.object_, life)
         else
+            -- 用觸發設定成0，會導致單位無法死亡
             SetLife(self.object_, 1)
         end
     end,

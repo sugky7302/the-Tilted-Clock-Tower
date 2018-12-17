@@ -12,31 +12,28 @@ data
 - heros
     - 冰霜秘術師
         - skills
-            - x init
-            - x 召喚水元素
-            - x 寒冰箭
-            - x 暴風雪
-            - x 霜之環
-            - x 霜寒刺骨
+            - v 召喚水元素
+            - v 寒冰箭
+            - v 暴風雪
+            - v 霜之環
+            - v 霜寒刺骨
         - talents
-            - x init
-            - x 冬之蕭瑟
-            - x 冰晶
-            - x 冰晶裂片
-            - x 冰雪襲境
-            - x 冰霜長矛
-            - x 嚴寒壓境
-            - x 霜雪暴
-    - x hero_list
-    - x init_talent
-    - x init
+            - v 冬之蕭瑟
+            - v 冰晶
+            - v 冰晶裂片
+            - v 冰雪襲境
+            - v 冰霜長矛
+            - v 嚴寒壓境
+            - v 霜雪暴
+    - v hero_list
+    - v init
 - quests
-    - x init
-    - x 報到
-    - x 清掃
-    - x 領取物資-1
-    - x 領取物資-2
-    - x 領取物資-3
+    - v init
+    - v 報到
+    - v 清掃
+    - v 領取物資-1
+    - v 領取物資-2
+    - v 領取物資-3
 - v attributes
 - v combinations
 - v drop_lib
@@ -94,12 +91,15 @@ lib
 - group
     - v core
     - v condition
-- x init
-- x map
+- v map
 - v player
 - v point
 - v polygon
-- x quest
+- quest
+    - v core
+    - v unit
+    - v util
+
 - v region
 - skill
     - v cast
@@ -173,6 +173,7 @@ test
     - v missile
     - v talent
     - v buff
+    - v quest
 
 util
 - behavior_tree
@@ -196,6 +197,7 @@ util
 - v random_number_generator
 - v hexadecimal
 - v try_catch
+- v task_tracker
 
 war3
 - v api
