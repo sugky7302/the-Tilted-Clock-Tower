@@ -20,7 +20,7 @@ end
 
 CollectSSO = function(hero)
     local UnitItemInSlot = require 'jass.common'.UnitItemInSlot
-    local Equipment = require 'item.equipment'
+    local Equipment = require 'item.equipment.core'
     local H2I = require 'jass_tool'.H2I
 
     local ssoes = {}

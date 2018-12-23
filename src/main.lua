@@ -17,6 +17,7 @@ local function Main()
     -- 初始化數據
     require 'unit.attribute.init'
     require 'item.init'
+    require 'player'.Init()
     require 'buff.attribute.init'
     require 'buffs.init'
     require 'quests.init'
@@ -24,6 +25,7 @@ local function Main()
     -- 初始化單位事件
     require 'buff.unit'
     require 'quest.unit'
+    require 'item.unit'
     require 'talent'
     
     -- 替所有單位註冊事件，因此一定要放在最後

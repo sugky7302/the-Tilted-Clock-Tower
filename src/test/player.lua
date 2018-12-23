@@ -3,7 +3,7 @@ function PlayerTest()
     local cj = require 'jass.common'
     
     local player = Player(cj.Player(0))
-    player:add("黃金", 100)
+    player:add("黃金", 1000)
     print(player:get "黃金")
     Player:Event "測試" (function(_)
         print "1"

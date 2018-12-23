@@ -1,5 +1,15 @@
 # 更新日誌
-## 0.31.12 - 2018-12-17 - 重構完成
+## 0.31.13 - 2018-12-23
+### Added:
+- [intensify_attribute] 擴充可精鍊屬性。
+### Changed:
+- [item.equipment] 把equipment拆得更細。
+### Fixed:
+- [dialog] 修正Show函數調用玩家錯誤，導致無法顯示對話框的問題。
+- [item.equipment.printer] 修正參數設定錯誤，導致無法顯示對話框的問題。
+- [item.event] 〝玩家—對話框被點擊〞事件無法找到按鈕的問題。
+
+## [0.31.12] - 2018-12-17 - 重構完成
 ### Added:
 - 新增task_tracker，能夠追蹤任務是否完成，目前用在skill.cast上，missile、texttag內建任務完成回報機制。
 ### Changed:
@@ -549,6 +559,7 @@
 [actboy168-lua-debug]:https://tieba.baidu.com/p/5902146836
 [coordinate_error]:https://tieba.baidu.com/p/5773334779?pid=120570865697&cid=0&red_tag=1133617129#120570865697
 
+[0.31.12]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/8f10ffdf193710480fe4464d94a51328de02495a
 [0.31.11]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/1d48661a6c1ddf22372e3759bc84be4d4887436b
 [0.31.10]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/4d3a6725f22b60047db5e9ab81c655103b3b16f0
 [0.31.9]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/006997172f09a3dfbf163d2be8274a57765e2102

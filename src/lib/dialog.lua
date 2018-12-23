@@ -47,7 +47,7 @@ function mt:FindButton(key)
 end
 
 function mt:Show(is_show)
-    cj.DialogDisplay(self.owner_.object, self.object_, is_show)
+    cj.DialogDisplay(self.owner_.object_, self.object_, is_show)
 end
 
 function mt:SetTitle(title)

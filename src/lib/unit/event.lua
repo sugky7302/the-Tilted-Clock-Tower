@@ -10,7 +10,7 @@ local Game = require 'game'
 local Point = require 'point'
 local Item = require 'item.core'
 local Timer = require 'timer.core'
-local Equipment = require 'item.equipment'
+local Equipment = require 'item.equipment.core'
 local Secrets = require 'item.secrets'
 
 -- assert
@@ -174,7 +174,7 @@ end)
 
 -- 創建使用物品事件
 local use_item_trg = War3.CreateTrigger(function()
-    Hero(cj.GetTriggerUnit()):EventDispatch("單位-使用物品", cj.GetManipulatedItem())
+    Hero(cj.GetTriggerUnit()):EventDispatch("單位-使用物品", Item(cj.GetManipulatedItem()))
     return true
 end)
 
