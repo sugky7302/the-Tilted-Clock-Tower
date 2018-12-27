@@ -25,23 +25,15 @@ function SkillUtil.RootCast(self, timeout)
     
     -- 創建施法光環
     local Timer = require 'timer.core'
-    local dummy = CreateDummy(self.owner_)
-    local period = 0.1
+    local PERIOD = 0.1
 
     -- 因為cast有可能結束比這裡快，所以要暫存owner_，不然會報錯
     local owner = self.owner_
-    self.root_cast_timer_ = Timer(period, timeout / period, function(callback)
-        -- 縮放施法光環，從0 -> timeout秒，但is_period_是倒數，所以這樣算
-        ZoomDummy(dummy, timeout - callback.is_period_ * period)
-
+    self.root_cast_timer_ = Timer(PERIOD, timeout / PERIOD, function(callback)
         -- 施法中斷或時間到都關閉此計時器
         if self.castbar_.invalid_ or (callback.is_period_ < 1) then
             -- 恢復轉身
             SkillUtil.ChangeTurnRate(owner, 0x02, 0.5)
-
-            -- 移除光環
-            local RemoveUnit = require 'jass_tool'.RemoveUnit
-            RemoveUnit(dummy)
 
             -- 回傳任務完成
             if self.root_cast_timer_.handle_ then
@@ -59,22 +51,6 @@ function SkillUtil.ChangeTurnRate(hero, index, val)
 
     val = val or 0.5
     hero:set("轉身速度", val)
-end
-
-CreateDummy = function(hero)
-    local CreateUnit = require 'unit.core'.Create
-    local Point      = require 'point'
-
-    local unit_point, motivation = Point.GetUnitLoc(hero.object_), Point(-16, -16)
-    local dummy = CreateUnit(hero.owner_.object_, "u009", unit_point - motivation, cj.GetUnitFacing(hero.object_))
-    return dummy
-end
-
--- 縮放施法光環
-ZoomDummy = function(dummy, dur)
-    -- 以2秒為一個週期，100%(0秒) -> 200%(1秒) -> 100%(2秒) 循環
-    local scale = (dur % 2 <= 1) and dur % 2 or -1 * (dur % 2) + 2
-    cj.SetUnitScale(dummy, 1 + scale, 1 + scale, 1)
 end
 
 -- assert 

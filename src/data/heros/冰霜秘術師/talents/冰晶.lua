@@ -53,7 +53,10 @@ function mt:on_add(target, damage)
             
         angle_ = Rand(0, 360),
         radius_ = 50,
-        starting_height_ = p.z_ + 50, 
+        starting_height_ = p.z_ + 50,
+        velocity_ = 1,
+        velocity_max_ = 5,
+        acceleration_ = 0.1,
         max_distance_ = 0,
 
         SetHeight = "SetSurroundHeight",
@@ -84,6 +87,7 @@ end
 -- 跟隨寒冰箭出去
 function mt:on_call(target, target_point, range)
     local TraceLib = require 'missile.trace'
+    local frost_bolt = require 'skill.core'[self.skill_]
 
     local ipairs = ipairs
     for _, tb in ipairs(target.ice_crystals_) do
@@ -91,6 +95,11 @@ function mt:on_call(target, target_point, range)
 
         -- 改變投射物軌跡
         tb[1].target_point_ = target_point + Point(0, 0)
+
+        -- 要注意寒冰箭改了哪些
+        tb[1].velocity_ = frost_bolt.velocity_
+        tb[1].velocity_max_ = frost_bolt.velocity_
+        tb[1].acceleration_ = 0
 
         -- 要用加法是因為環繞函數會一直增加max distance
         -- 如果沒加，會導致投射物的移動距離比寒冰箭短

@@ -42,6 +42,9 @@ function Player:__call(player)
         local Dialog = require 'dialog'
         instance.dialog_ = Dialog(instance)
 
+        local Multiboard = require 'multiboard'
+        instance.multiboard_ = Multiboard(instance)
+
         self[cj.GetPlayerId(player) + 1] = instance
 
         setmetatable(instance, self)

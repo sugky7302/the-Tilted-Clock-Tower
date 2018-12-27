@@ -1,6 +1,8 @@
 -- 此module是預設group的條件
 
+-- package
 local cj = require 'jass.common'
+local Point = require 'point'
 
 local GroupCondition = {}
 

@@ -119,6 +119,8 @@ lib
     - v operator
     - v hero
     - v pet
+- intelligence
+- v multiboard
 
 test
 - test

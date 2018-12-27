@@ -21,11 +21,10 @@ function TraceLib.Surround(self)
     local SetUnitPosition = require 'jass.common'.SetUnitPosition
 
     -- 防止終止條件成立
-    self.max_distance_ = self.max_distance_ + 31
+    self.max_distance_ = self.max_distance_ + self.motivation_ + 1
 
-    -- 繞一圈約 0.03 * 360 / 5 = 2.16 秒
     -- 這裡的angle_是角度不是弧度
-    self.angle_ = self.angle_ + 5
+    self.angle_ = self.angle_ + self.velocity_
 
     -- 移動投射物
     local unit_point = GetUnitLoc(self.owner_.object_)

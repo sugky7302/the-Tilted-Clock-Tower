@@ -1,12 +1,12 @@
 local mt = require 'skill.core' '寒冰箭' {
     order_id_ = 'A000',
     hotkey_ = "Q",
-    tip_ = "冷卻時間: |Cffffcc004|r|n|n對目標造成|Cffffcc00N|r|Cff99ccff[+P]|r點冰寒傷害。" .. 
-    "寒冰箭對被冰凍的目標造成|Cffffcc002.25|r倍傷害。",
+    tip_ = "冷卻時間: |Cffffcc004|r|n|n對目標造成|Cffffcc00N|r|Cff99ccff[+P]|r點冰寒傷害。",
     dis_blp_ = 'A00W',
     
     area_ = 100,
     range_ = 800,
+    velocity_ = 1000,
     
     damage_ = {10, 15, 20, 25},
     proc_ = 1,
@@ -42,6 +42,7 @@ function mt:on_cast_shot()
         starting_point_ = Point.GetUnitLoc(self.owner_.object_),
         target_point_ = self.target_loc_,
         
+        velocity_ = self.velocity_,
         max_distance_ = self.range_,
         
         TraceMode = "StraightLine",

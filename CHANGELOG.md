@@ -1,4 +1,22 @@
 # 更新日誌
+## 0.31.14 - 2018-12-27
+### Added:
+- 新增多面板模塊，提供簡易化操作多面板的方法。
+- [item.core] 添加handle_成員變量，能辨別兩物品是否相同。
+### Changed:
+- [dialog] 為了減少內存，把button直接儲存在dialog裡，而不是再開一個table存。
+- [missile] 位移量改成跟速度、加速度有關，並設定上限。
+- [missile] 軌跡會根據弧度而有所變化。
+- [skill.util] 刪除施法光環。
+### Fixed:
+- [霜之環] 修正沒有聲音，且定身沒有效果的問題。
+- [dialog] 修正buttons不會清除的問題。
+- [item.event] 修正不同藥品也能疊加的問題。
+- [missile.core] 修正投射物近距離撞擊到障礙物，觸發Remove但計時器動作還有一次，導致獲取不到units_.units_而報錯的問題。
+- [unit.event] 修正傳參錯誤，導致無法疊加物品的問題。
+- [unit.event] 修正擊殺怪物後，無法掉落物品的問題。
+- [unit.pet] 修正冬之蕭瑟在創建投射物會因為owner_.owner_是單位而不是玩家而無法創建的問題。
+
 ## 0.31.13 - 2018-12-23
 ### Added:
 - [intensify_attribute] 擴充可精鍊屬性。

@@ -8,7 +8,7 @@ local Item = require 'item.core'
 -- Unit:Event "單位-發動技能效果" (function(_, source, id)
 --     if id == Base.String2Id('') then
 --         local Combine = require 'item.combine'
---         Combine(Hero(source)) -- FIXME:
+--         Combine(Hero(source))
 --     end
 -- end)
 
@@ -46,10 +46,10 @@ end)
 
 Player:Event "玩家-對話框被點擊" (function(_, player, button)
     -- 查詢最後點擊的產品
-    local ipairs = ipairs
-    for i, btn in ipairs(player.dialog_.buttons_) do
+    local pairs = pairs
+    for key, btn in pairs(player.dialog_) do
         if btn == button then
-            last_enum_product = i
+            last_enum_product = key
             break
         end
     end

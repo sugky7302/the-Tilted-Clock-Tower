@@ -16,7 +16,6 @@ function mt:on_call(target, id, skill)
     local Unit = require 'unit.core'
 
     -- 這裡skill是傳寒冰箭的投射物
-    -- FIXME:這裡的投射物比較早撞到目標，會導致寒冰箭丟失目標點
     if id == 'A000' then
         local Missile = require 'missile.core'
         local Point = require 'point'
@@ -29,6 +28,7 @@ function mt:on_call(target, id, skill)
             starting_point_ = Point.GetUnitLoc(target.pet_.object_),
             target_point_ = skill.target_point_ + Point(0, 0), -- 利用加法生成新目標點，讓這個投射物在刪除時，不會刪掉原目標點
 
+            velocity_ = skill.velocity_,
             max_distance_ = skill.max_distance_,
                 
             TraceMode = "StraightLine",

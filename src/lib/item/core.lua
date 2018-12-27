@@ -25,9 +25,9 @@ function Item.Init()
 end
 
 function Item:__call(item)
-    local js = require 'jass_tool'
+    local H2I = require 'jass_tool'.H2I
 
-    local instance = self[js.H2I(item) .. ""]
+    local instance = self[H2I(item) .. ""]
     if not instance then
         local modf = math.modf
         local Id2S = Base.Id2String
@@ -35,6 +35,7 @@ function Item:__call(item)
         instance = {
             name_       = cj.GetItemName(item),
             id_         = Id2S(cj.GetItemTypeId(item)),
+            handle_     = H2I(item),
             owner_      = nil,
             own_player_ = nil,
             level_      = modf(cj.GetWidgetLife(item)),
@@ -48,7 +49,7 @@ function Item:__call(item)
             instance.perishable_ = false
         end
 
-        self[js.H2I(item) .. ""] = instance
+        self[H2I(item) .. ""] = instance
 
         setmetatable(instance, self)
         instance.__index = instance

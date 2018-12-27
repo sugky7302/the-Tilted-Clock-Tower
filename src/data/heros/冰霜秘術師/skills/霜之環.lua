@@ -84,8 +84,8 @@ function mt:on_cast_shot()
 
             Unit(group.units_[i]):AddBuff "定身"
             {
-                dur = 3,
-                skill = self,
+                dur_ = 3,
+                skill_ = self,
             }
 
             self.owner_:get "專長":EventDispatch("技能-擊中單位", false, self.owner_, Unit(group.units_[i]))

@@ -37,6 +37,7 @@ sound gg_snd_jaina_blizzard_impact01= null
 sound gg_snd_jaina_frostbolt_activate01= null
 sound gg_snd_jaina_frostbolt_launch01= null
 sound gg_snd_jaina_ringoffrost_loop01= null
+sound gg_snd_jaina_ringoffrost_launch01= null
 
 
 //JASSHelper struct globals:
@@ -205,6 +206,11 @@ function InitSounds takes nothing returns nothing
     call SetSoundChannel(gg_snd_jaina_ringoffrost_loop01, 0)
     call SetSoundVolume(gg_snd_jaina_ringoffrost_loop01, 127)
     call SetSoundPitch(gg_snd_jaina_ringoffrost_loop01, 1.0)
+    set gg_snd_jaina_ringoffrost_launch01=CreateSound("war3mapImported\\jaina_ringoffrost_launch01.wav", false, false, false, 10, 10, "")
+    call SetSoundDuration(gg_snd_jaina_ringoffrost_launch01, 1225)
+    call SetSoundChannel(gg_snd_jaina_ringoffrost_launch01, 0)
+    call SetSoundVolume(gg_snd_jaina_ringoffrost_launch01, 127)
+    call SetSoundPitch(gg_snd_jaina_ringoffrost_launch01, 1.0)
 endfunction
 //***************************************************************************
 //*

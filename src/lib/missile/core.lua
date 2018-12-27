@@ -2,9 +2,16 @@
 
 local setmetatable = setmetatable
 
+-- package
+local Point = require 'point'
+local Util = require 'missile.util'
+
 local Missile, mt = {}, {trace_lib = require 'missile.trace'}
 setmetatable(Missile, Missile)
 Missile.__index = mt
+
+-- constant
+mt.PERIOD = 0.03
 
 -- assert
 local type = type
@@ -19,8 +26,12 @@ local Move, IsEnd
 --     starting_point_
 --     target_point_(trace_mode_ = surround不使用)
 
---     angle(可選，trace_mode_ = surround使用)
---     radius(可選，trace_mode_ = surround使用)
+--     velocity_(可選，trace_mode_ ~= surround使用)
+--     velocity_max_(可選，trace_mode_ ~= surround使用)
+--     acceleration_
+--     theta_(拋體與直線彈道的夾角)
+--     angle_(可選，trace_mode_ = surround使用)
+--     radius_(可選，trace_mode_ = surround使用)
 --     starting_height_(可選，trace_mode_ = surround使用)
 --     max_distance_
 
@@ -31,16 +42,28 @@ local Move, IsEnd
 function Missile:__call(instance)
     setmetatable(instance, self)
 
-    instance.starting_height_ = instance.starting_height_ or GetStartingHeight(instance.starting_point_)
-    
-    local Point = require 'point'
+    -- 設定位移量
+    instance.velocity_max_ = instance.velocity_max_ or instance.velocity_
+    instance.acceleration_ = instance.acceleration_ or 0
+
+    -- 設定拋體運動
+    instance._dur_ = 0
+    instance.height_ = instance.height_ or 0
+
     instance.angle_ = instance.angle_ or Point.Rad(instance.starting_point_, instance.target_point_)
 
     instance.missile_ = GetMissile(instance)
+    
     local Group = require 'group.core'
     instance.units_ = Group(instance.missile_.object_)
 
-    local Util = require 'missile.util'
+    instance.starting_height_ = instance.starting_height_ or GetStartingHeight(instance.starting_point_)
+    
+    -- 添加烏鴉技能，使觸發可以更改投射物高度
+    local SetUnitFlyHeight = require 'jass.common'.SetUnitFlyHeight
+    Util.Fly(instance.missile_)
+    SetUnitFlyHeight(instance.missile_.object_, instance.starting_height_, 0.)
+
     if not instance.SetHeight then
         instance.SetHeight = Util.SetHeight
     elseif type(instance.SetHeight) == 'string' then
@@ -57,9 +80,10 @@ function Missile:__call(instance)
     return instance
 end
 
-GetStartingHeight = function(starting_point)
-    local  STANDARD_HEIGHT = 50
+-- assert
+local STANDARD_HEIGHT = 50
 
+GetStartingHeight = function(starting_point)
     starting_point:UpdateZ()
     return starting_point.z_ + STANDARD_HEIGHT
 end
@@ -81,11 +105,16 @@ Move = function(self)
     local Timer = require 'timer.core'
     local cj    = require 'jass.common'
 
-    -- 位移 = 速度 * 週期 = 1000 * 週期
-    local PERIOD, MOTIVATION, ENUM_RANGE = 0.03, 30, 50
+    local PERIOD, ENUM_RANGE = 0.03, 50
     self.timer_ = Timer(PERIOD, true, function()
+        -- 計算速度會用到
+        self._dur_ = self._dur_ + PERIOD
+
+        -- 計算速度、加速度、位移
+        Util.ComputeMotivation(self, PERIOD)
+
         -- 儲存當前移動距離
-        current_distance = current_distance + MOTIVATION
+        current_distance = current_distance + self.motivation_
 
         -- 設定投射物軌跡
         self:TraceMode()
@@ -93,17 +122,36 @@ Move = function(self)
         -- 根據地形起伏設定當前高度
         self:SetHeight(current_distance)
 
-        self.units_:EnumUnitsInRange(cj.GetUnitX(self.missile_.object_), cj.GetUnitY(self.missile_.object_), ENUM_RANGE, "IsEnemy")
-        if not self.units_:IsEmpty() then
-            hit = hit + 1
+        -- Remove後計時器還會動作，但group裡的units_已經被清除了，因此要防止它調用units_
+        if self.units_.units_ then
+            self.units_:EnumUnitsInRange(cj.GetUnitX(self.missile_.object_), cj.GetUnitY(self.missile_.object_), ENUM_RANGE, "IsEnemy")
 
-            if self.Execute then
-                self.units_:Loop(self.Execute)
+            -- 計算投射物在z軸會不會撞到單位
+            self.units_:Loop(function(instance, i)
+                local p_missile = Point.GetUnitLoc(self.missile_.object_)
+                local p_u = Point.GetUnitLoc(instance.units_[i])
+            
+                p_missile:UpdateZ()
+                p_u:UpdateZ()
+            
+                if p_missile.z_ + cj.GetUnitFlyHeight(self.missile_.object_)
+                   - p_u.z_ - cj.GetUnitFlyHeight(instance.units_[i]) - STANDARD_HEIGHT
+                   > ENUM_RANGE then
+                    instance:RemoveUnit(instance.units_[i])
+                end
+            end)
+
+            if not self.units_:IsEmpty() then
+                hit = hit + 1
+
+                if self.Execute then
+                    self.units_:Loop(self.Execute)
+                end
             end
-        end
 
-        -- 清空單位組，不然先前保存的單位會一直存留，導致判定會失準
-        self.units_:Clear()
+            -- 清空單位組，不然先前保存的單位會一直存留，導致判定會失準
+            self.units_:Clear()
+        end
 
         if IsEnd(self, current_distance, hit) then
             self:Remove()

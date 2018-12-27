@@ -46,7 +46,7 @@ local cj = require 'jass.common'
 
 -- dur不填 = 無限
 function Pet.Create(id, owner, loc, dur)
-    local pet = Unit.Create(owner.owner_.object_, id, loc, cj.GetUnitFacing(owner.object_))
+    local pet = Unit.Create(cj.GetOwningPlayer(owner.object_), id, loc, cj.GetUnitFacing(owner.object_))
     
     local obj = Pet(pet, owner)
     SetPetLifePeriod(pet, dur)

@@ -28,6 +28,8 @@ Color.skin         = "|cffffd8ae"
 -- 參數可能會給"顏色的英文名字"或"RGB數字"
 function Color:__call(...) 
     local r, g, b = ...
+
+    local type = type
     if type(r) == 'string' then
         return Color[r]
     end
@@ -40,6 +42,7 @@ function Color:__call(...)
         local Hex = require 'hexadecimal'
         self[color_nums] = '|cff' .. Hex.I2S(r) .. Hex.I2S(g) .. Hex.I2S(b)
     end
+
     return self[color_nums]
 end
 

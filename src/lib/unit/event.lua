@@ -70,9 +70,9 @@ Unit:Event "單位-掉落物品" (function(_, unit)
     local Rand = require 'math_lib'.Random
     local p = Point.GetUnitLoc(unit.object_)
 
-    for i = 1, #DROP_LIB[unit.id_], 2 do 
-        if Rand(100) < DROP_LIB[i+1] then
-            local item = Item.Create(DROP_LIB[i], p)
+    for i = 1, #DROP_LIB[unit.id_], 2 do
+        if Rand(100) < DROP_LIB[unit.id_][i+1] then
+            local item = Item.Create(DROP_LIB[unit_id_][i], p)
 
             -- 掉落裝備
             if Item.IsEquipment(item) then
@@ -162,15 +162,15 @@ end)
 local Hero = require 'unit.hero'
 
 local order_trg = War3.CreateTrigger(function()
-    Hero(cj.GetOrderedUnit()):EventDispatch("單位-發布命令", cj.GetIssuedOrderId(), Unit(cj.GetOrderTarget()))
+    Hero(cj.GetOrderedUnit()):EventDispatch("單位-發布命令", cj.GetIssuedOrderId(), cj.GetOrderTarget())
     return true
 end)
 
-Unit:Event "單位-發布命令" (function(_, hero, order, target)
-    if order == Base.String2OrderId('smart') then
-        StackItem(hero.object_, target)
-    end
-end)
+-- Unit:Event "單位-發布命令" (function(_, hero, order, target)
+--     if order == Base.String2OrderId('smart') then
+--         StackItem(hero.object_, Item(target))
+--     end
+-- end)
 
 -- 創建使用物品事件
 local use_item_trg = War3.CreateTrigger(function()
@@ -204,7 +204,7 @@ Unit:Event "單位-獲得物品" (function(trigger, hero, item)
         Item(item).own_player_ = hero.owner_
     end
 
-    StackItem(hero.object_, item)
+    StackItem(hero.object_, Item(item))
 end)
     
 -- 創建丟棄物品事件
@@ -251,7 +251,7 @@ Game:Event "單位-創建" (function(_, target)
 end)
 
 StackItem = function(hero, item)
-    if not(Item.IsSecrets(item) or Item.IsMaterial(item)) then
+    if not(Item.IsSecrets(item.object_) or Item.IsMaterial(item.object_)) then
         return false
     end
 
@@ -271,5 +271,5 @@ StackItem = function(hero, item)
 end
 
 IsTypeSame = function(bag_item, target_item)
-    return (bag_item.id_ == target_item.id_) and (bag_item ~= target_item)
+    return (bag_item.id_ == target_item.id_) and (bag_item.handle_ ~= target_item.handle_)
 end
