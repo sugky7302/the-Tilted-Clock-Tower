@@ -27,7 +27,7 @@ function mt:on_cast_channel()
 end
 
 function mt:on_cast_shot()
-    local Missile = require 'missile.core'
+    local Missile = require 'mover.missile'
     local Point = require 'point'
     local Damage = require 'combat.damage'
     local Unit = require 'unit.core'
@@ -43,11 +43,11 @@ function mt:on_cast_shot()
         target_point_ = self.target_loc_,
         
         velocity_ = self.velocity_,
-        max_distance_ = self.range_,
+        max_dist_ = self.range_,
         
-        TraceMode = "StraightLine",
+        TraceMode = "Line",
 
-        Execute = function(group, i)
+        GroupExecute = function(group, i)
             Damage{
                 source_ = self.owner_,
                 target_ = Unit(group.units_[i]),

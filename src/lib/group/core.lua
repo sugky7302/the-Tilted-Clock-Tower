@@ -89,7 +89,7 @@ end
 -- 只有2個元素的array，如果delete array[1]刪掉，會讀不到array[2]
 -- 使用倒序循環就不會出現這樣的問題
 function mt:Loop(action, ...)
-    for i = self.units_:getLength(), 1, -1 do -- FIXME: 寒冰箭投射物結束後，有時會獲取不到self.units_而報錯
+    for i = self.units_:getLength(), 1, -1 do -- BUG: 寒冰箭投射物結束後，有時會獲取不到self.units_而報錯
         action(self, i, ...)
     end
 end

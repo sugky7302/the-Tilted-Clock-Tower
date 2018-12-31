@@ -1,5 +1,18 @@
 # 更新日誌
-## 0.31.14 - 2018-12-27
+## 0.31.15 - 2018-12-31
+### Added:
+- 新增情報系統，擴展遊戲的可玩性。
+- 新增mover，整合missile資料夾，變得更有可讀性。
+- [point] 新增Slope函數，可以計算兩點之間的斜率。
+### Changed:
+- CHANGELOG改成3個月1個md檔，簡短大小，方便閱讀。
+- [mover.util] GetSlope3D整合到Point內，並更名為SlopeInSpace。
+### Fixed:
+- [寒冰箭] 修正參數名。
+- [冬之蕭瑟] 修正參數名。
+- [冰晶] 修正冰晶環繞高度不正確，導致環繞時因為高度為負而直接刪除的問題。
+
+## [0.31.14] - 2018-12-27
 ### Added:
 - 新增多面板模塊，提供簡易化操作多面板的方法。
 - [item.core] 添加handle_成員變量，能辨別兩物品是否相同。
@@ -16,6 +29,7 @@
 - [unit.event] 修正傳參錯誤，導致無法疊加物品的問題。
 - [unit.event] 修正擊殺怪物後，無法掉落物品的問題。
 - [unit.pet] 修正冬之蕭瑟在創建投射物會因為owner_.owner_是單位而不是玩家而無法創建的問題。
+- [war3map.j] 修正gg_snd_jaina_ringoffrost_launch01沒有放入聲音，導致霜之環無法播放的問題。
 
 ## 0.31.13 - 2018-12-23
 ### Added:
@@ -577,6 +591,8 @@
 [actboy168-lua-debug]:https://tieba.baidu.com/p/5902146836
 [coordinate_error]:https://tieba.baidu.com/p/5773334779?pid=120570865697&cid=0&red_tag=1133617129#120570865697
 
+[0.31.14]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/d1616a91d2dac04ce9af4b95d3aa8dee8d7e9554
+[0.31.13]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/4f1a6319ff3ee002e2ebcc4b6a4765442beacfff
 [0.31.12]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/8f10ffdf193710480fe4464d94a51328de02495a
 [0.31.11]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/1d48661a6c1ddf22372e3759bc84be4d4887436b
 [0.31.10]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/4d3a6725f22b60047db5e9ab81c655103b3b16f0

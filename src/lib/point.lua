@@ -80,6 +80,22 @@ function Point.Rad(p1, p2)
     return atan(p2.y_ - p1.y_, p2.x_ - p1.x_)
 end
 
+function Point.Slope(p1, p2)
+    return (p2.y_ - p1.y_) / (p2.x_ - p1.x_)
+end
+
+function Point.SlopeInSpace(p1, p2)
+    -- 獲取高度
+    p1:UpdateZ()
+    p2:UpdateZ()
+    
+    local z_difference = p2.z_ - p1.z_
+    local distance = Point.Distance(p1, p2)
+
+    return z_difference / distance
+end
+
+
 function Point.Distance(p1, p2)
     local sqrt = math.sqrt
     return sqrt((p1.x_ - p2.x_) ^ 2 + (p1.y_ - p2.y_) ^ 2)

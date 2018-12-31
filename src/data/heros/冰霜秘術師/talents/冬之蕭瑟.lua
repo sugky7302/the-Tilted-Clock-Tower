@@ -17,7 +17,7 @@ function mt:on_call(target, id, skill)
 
     -- 這裡skill是傳寒冰箭的投射物
     if id == 'A000' then
-        local Missile = require 'missile.core'
+        local Missile = require 'mover.missile'
         local Point = require 'point'
 
         local missile = Missile{
@@ -29,10 +29,10 @@ function mt:on_call(target, id, skill)
             target_point_ = skill.target_point_ + Point(0, 0), -- 利用加法生成新目標點，讓這個投射物在刪除時，不會刪掉原目標點
 
             velocity_ = skill.velocity_,
-            max_distance_ = skill.max_distance_,
+            max_dist_ = skill.max_dist_,
                 
-            TraceMode = "StraightLine",
-            Execute = function(group, i)
+            TraceMode = "Line",
+            GroupExecute = function(group, i)
                 Damage{
                     source_ = target,
                     target_ = Unit(group.units_[i]),

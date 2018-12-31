@@ -40,7 +40,7 @@ function mt:on_add(target, damage)
     local p = Point.GetUnitLoc(target.object_)
     p:UpdateZ()
 
-    local Missile = require 'missile.core'
+    local Missile = require 'mover.missile'
     local Rand = require 'math_lib'.Random
     local SetUnitHeight = require 'jass.common'.SetUnitFlyHeight
 
@@ -53,13 +53,11 @@ function mt:on_add(target, damage)
             
         angle_ = Rand(0, 360),
         radius_ = 50,
-        starting_height_ = p.z_ + 50,
-        velocity_ = 1,
-        velocity_max_ = 5,
-        acceleration_ = 0.1,
-        max_distance_ = 0,
+        starting_height_ = 50,
+        velocity_ = 10,
+        velocity_max_ = 50,
+        acceleration_ = 5,
 
-        SetHeight = "SetSurroundHeight",
         TraceMode = "Surround",
     }
 
@@ -86,12 +84,12 @@ end
 
 -- 跟隨寒冰箭出去
 function mt:on_call(target, target_point, range)
-    local TraceLib = require 'missile.trace'
+    local TraceLib = require 'mover.trace'
     local frost_bolt = require 'skill.core'[self.skill_]
 
     local ipairs = ipairs
     for _, tb in ipairs(target.ice_crystals_) do
-        local missile_point = Point.GetUnitLoc(tb[1].missile_.object_)
+        local missile_point = Point.GetUnitLoc(tb[1].mover_.object_)
 
         -- 改變投射物軌跡
         tb[1].target_point_ = target_point + Point(0, 0)
@@ -103,11 +101,11 @@ function mt:on_call(target, target_point, range)
 
         -- 要用加法是因為環繞函數會一直增加max distance
         -- 如果沒加，會導致投射物的移動距離比寒冰箭短
-        tb[1].max_distance_ = tb[1].max_distance_ + range
+        tb[1].max_dist_ = range
 
-        tb[1].TraceMode = TraceLib.StraightLine
+        tb[1].TraceMode = TraceLib.Line
         tb[1].hit_mode_ = 1
-        tb[1].angle_ = Point.Rad(missile_point, target_point)
+        tb[1].angle_ = Point.Deg(missile_point, target_point)
 
         missile_point:Remove()
     end
