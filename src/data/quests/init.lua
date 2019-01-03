@@ -1,5 +1,5 @@
 require 'quests.報到'
-require 'quests.領取物資-1'
+require 'quests.入營試煉'
+require 'quests.學習附魔'
 require 'quests.領取物資-2'
 require 'quests.領取物資-3'
-require 'quests.清掃'

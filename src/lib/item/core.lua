@@ -43,7 +43,7 @@ function Item:__call(item)
         }
 
         -- 記錄使用完會不會消失
-        if self.IsSecrets(instance) or self.IsRecipe(instance) then
+        if self.IsSecrets(item) or self.IsRecipe(item) then
             instance.perishable_ = true
         else
             instance.perishable_ = false
@@ -117,11 +117,11 @@ set['數量'] = function(self, val)
     local max = math.max
     val  = max(val, 0) -- <0 跟 =0 是一樣是刪除的意思
 
-    local charges = cj.GetItemCharges(self.object_)
     if val == 0 then
         return false
     end
 
+    local charges = cj.GetItemCharges(self.object_)
     if charges > 0 then
         cj.SetItemCharges(self.object_, val)
     elseif charges == 0 and self.perishable_ then
@@ -136,7 +136,7 @@ RecreateItem = function(self, val)
 
     local Point = require 'point'
     local p = Point.GetUnitLoc(self.owner_.object_)
-    self.object_ = mt.Create(self.id_, p)
+    self.object_ = Item.Create(self.id_, p)
     cj.SetItemCharges(self.object_, val)
 
     -- 檢查單位還在不在，在的話重新創建物品給他

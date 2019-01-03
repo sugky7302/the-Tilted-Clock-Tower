@@ -100,8 +100,8 @@ function mt:Remove()
     Unit[H2I(self.object_) .. ""] = nil -- 清除實例
 
     local pairs = pairs
-    for _, var in pairs(self) do
-        var = nil
+    for key in pairs(self) do
+        self[key] = nil
     end
 
     self = nil

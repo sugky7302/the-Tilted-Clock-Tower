@@ -27,6 +27,9 @@ function Hero:__call(hero)
     if not instance then
         instance = Unit(hero)
 
+        local ProperName = require 'jass.common'.GetHeroProperName
+        instance.proper_name_ = ProperName(hero)
+        
         -- 施法序列
         instance.each_casting_ = {}
 

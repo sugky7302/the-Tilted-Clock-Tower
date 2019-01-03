@@ -31,7 +31,8 @@ local function Main()
     -- 替所有單位註冊事件，因此一定要放在最後
     require 'map'
 
-    require 'test.core'('player')
+    -- 呼叫測試碼
+    require 'test.core'('quest_progress')
 end
 
 Main()

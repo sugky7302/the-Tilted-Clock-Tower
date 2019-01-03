@@ -30,8 +30,8 @@ data
 - quests
     - v init
     - v 報到
-    - v 清掃
-    - v 領取物資-1
+    - v 入營試煉
+    - v 學習附魔
     - v 領取物資-2
     - v 領取物資-3
 - v attributes
@@ -64,10 +64,11 @@ lib
     - v small_secret_order
     - v secrets
     - v equipment
-- missile
+- mover
     - v core
     - v trace
     - v util
+    - v missile
 - texttag
     - v core
     - v arc
@@ -119,11 +120,8 @@ lib
     - v operator
     - v hero
     - v pet
-- intelligence
-    - x save
-    - x load
+- v intelligence
 - v multiboard
-- mover
 
 test
 - test
@@ -179,6 +177,7 @@ test
     - v talent
     - v buff
     - v quest
+    - v intelligence
 
 util
 - behavior_tree

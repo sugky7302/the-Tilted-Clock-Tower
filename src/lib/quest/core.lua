@@ -1,5 +1,6 @@
 -- 仿魔獸戰役格式的自定義任務
-
+-- HACK: 獲得/更新/完成任務會占滿畫面，想要一個一個出現
+-- 但是目前都是完成任務後直接進行下一個任務，這會讓玩家看不到完成任務的說明
 local setmetatable = setmetatable
 
 local Quest, mt = {}, require 'quest.util'
@@ -7,7 +8,7 @@ setmetatable(Quest, Quest)
 Quest.__index = mt
 
 -- constants
-mt.is_unique_ = false  -- 任務是否唯一
+mt.is_unique_ = true   -- 任務是否唯一
 mt.can_accept_ = true  -- 可否接取任務
 
 -- assert
@@ -74,20 +75,26 @@ end
 -- package
 local js = require 'jass_tool'
 
+-- assert
+local string_gsub = string.gsub
+
 FinishMessage = function(self)
-    js.ClearMessage(self.receiver_.owner_.object_)
     js.Sound("gg_snd_QuestCompleted")
 
     self:Announce "|cff00ff00v|r|cffffcc00完成任務"
-    self:Announce("|cff999999" .. self.name_)
-    self:Announce("   " .. self.talk_)
+    self:Announce{"<", self.name_, ">"}
+    self:Announce((string_gsub(self.talk_, "$NAME", self.receiver_.proper_name_)))
 
-    for _, required in ipairs(self.required_) do 
-        self:Announce("|cff999999- " .. required)
+    if self.required_ then
+        for _, required in ipairs(self.required_) do 
+            self:Announce{"|cff999999- ", required}
+        end
     end
 
-    for _, reward in ipairs(self.rewards_) do
-        self:Announce("|cffffcc00獎勵|r - " .. reward)
+    if self.rewards_ then
+        for _, reward in ipairs(self.rewards_) do
+            self:Announce{"|cffffcc00獎勵|r - ", reward}
+        end
     end
 end
 
@@ -96,33 +103,31 @@ CanRepeat = function(self)
 end
 
 UpdateMessage = function(self)
-    js.ClearMessage(self.receiver_.owner_.object_)
     js.Sound("gg_snd_QuestLog")
 
     self:Announce "|cffff6600!|r|cffffcc00更新任務"
-    self:Announce(self.name_)
+    self:Announce{"<", self.name_, ">"}
 
-    -- self是副本
+    -- self是副本，self.__index才是原本
     UpdateDemands(self, self.__index)
 end
 
--- assert
-local table_concat = table.concat 
-
 UpdateDemands = function(self, parent)
-    for i, cnd in ipairs(parent.demands_) do
-        if type(cnd) == 'table' then
-            if self.demands_[cnd[1]] == false then
-                self:Announce(table_concat({"|cff999999- ", parent.requried_[i], "(", cnd[2], "/", cnd[2], ")"}))
+    local key
+    for i = 1, #parent.required_ do
+        key = parent.demands_[2 * i - 1]
+        if type(parent.demands_[2 * i]) == 'number' then
+            if self.demands_[key] == false then
+                self:Announce{"|cff999999- ", parent.required_[i]}
             else
-                self:Announce(table_concat({"- ", parent.required_[i], "(", (cnd[2] - self.demands_[cnd[1]]), 
-                                            "/", cnd[2], ")"}))
+                self:Announce{"- ", parent.required_[i], "(", (parent.demands_[2*i] - self.demands_[key]),
+                              "/", parent.demands_[2*i], ")"}
             end
         else
-            if self.demands_[cnd] == false then
-                self:Announce("|cff999999- " .. parent.required_[i])
+            if self.demands_[key] == false then
+                self:Announce{"|cff999999- ", parent.required_[i]}
             else
-                self:Announce("- " .. parent.required_[i])
+                self:Announce{"- ", parent.required_[i]}
             end
         end
     end

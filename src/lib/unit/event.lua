@@ -47,6 +47,10 @@ end)
 -- 註冊單位死亡要刷新的事件
 local trg = War3.CreateTrigger(function()
     local target = Unit(cj.GetTriggerUnit())
+
+    -- 放到最底下會導致EventDispatch獲取不到target，可能是因為Unit會刪除實例
+    target:EventDispatch("任務-更新")
+
     if target.type == "Unit" then
         target:EventDispatch("單位-掉落物品")
         target:EventDispatch("單位-刷新")
@@ -55,8 +59,6 @@ local trg = War3.CreateTrigger(function()
     elseif target.type == "Hero" then
         target:EventDispatch("英雄-復活")
     end
-
-    target:EventDispatch("任務-更新")
 
     return true
 end)
@@ -72,7 +74,7 @@ Unit:Event "單位-掉落物品" (function(_, unit)
 
     for i = 1, #DROP_LIB[unit.id_], 2 do
         if Rand(100) < DROP_LIB[unit.id_][i+1] then
-            local item = Item.Create(DROP_LIB[unit_id_][i], p)
+            local item = Item.Create(DROP_LIB[unit.id_][i], p)
 
             -- 掉落裝備
             if Item.IsEquipment(item) then
@@ -134,19 +136,29 @@ Unit:Event "寵物-清除" (function(_, self)
 end)
 
 -- assert
-local IsHero, LookupQuests
+local LookupQuests
 
 Unit:Event "任務-更新" (function(_, self)
-    if IsHero(self.attacker_) then
-        LookupQuests(self.attacker_.quests_, self.id_)
+    -- 防止召喚物死亡後執行
+    if not self.attacker_ then
+        return false
+    end
+
+    local attacker = self.attacker_
+    if attacker.type == "Pet" then
+        attacker = attacker.owner_
+    end
+
+    if attacker.type == 'Hero' then
+        LookupQuests(attacker.quests_, self.id_)
     end
 end)
 
-IsHero = function(unit)
-    return not (not unit.quests_)
-end
-
 LookupQuests = function(quests, id)
+    if not quests then 
+        return false
+    end
+
     for _, quest in ipairs(quests) do 
         if quest.demands_[id] then
             quest:Update(id)
@@ -226,12 +238,27 @@ local sell_itemT_trg = War3.CreateTrigger(function()
 end)
 
 local spell_effect_trg = War3.CreateTrigger(function()
-    Hero(cj.GetTriggerUnit()):EventDispatch("單位-發動技能效果", cj.GetSpellAbilityId(), Unit(cj.GetSpellTargetUnit()), cj.GetSpellTargetItem(), Point:GetLoc(cj.GetSpellTargetLoc()))
+    Hero(cj.GetTriggerUnit()):EventDispatch("單位-發動技能效果", cj.GetSpellAbilityId(), Unit(cj.GetSpellTargetUnit()), Item(cj.GetSpellTargetItem()), Point.GetLoc(cj.GetSpellTargetLoc()))
     return true
 end)
 
 Unit:Event "單位-發動技能效果" (function(_, target, id)
     target:LearnTalent(id)
+end)
+
+Unit:Event "單位-發動技能效果" (function(_, source, id, _, _, target_loc)
+    -- A00M = 偵查
+    if id == Base.String2Id('A00M') then
+        local Save = require 'intelligence'.Save
+        Save(source, target_loc)
+        target_loc:Remove()
+    end
+
+    -- A055 = 情報
+    if id == Base.String2Id('A055') then
+        local Load = require 'intelligence'.Load
+        Load(source)
+    end
 end)
 
 -- 添加事件

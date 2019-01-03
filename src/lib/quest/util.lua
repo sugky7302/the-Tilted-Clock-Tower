@@ -1,13 +1,17 @@
 -- 處理quest的工具
 
--- package
-local cj = require 'jass.common'
-
 local Util = {}
 
 function Util:Announce(msg)
+    local type = type
+    if type(msg) == 'table' then
+        local table_concat = table.concat
+        msg = table_concat(msg)
+    end
+
     local ANNOUNCE_DUR = 6
-    cj.DisplayTimedTextToPlayer(self.receiver_.owner_.object_, 0., 0., ANNOUNCE_DUR, msg)
+    local DisplayText = require 'jass.common'.DisplayTimedTextToPlayer
+    DisplayText(self.receiver_.owner_.object_, 0., 0., ANNOUNCE_DUR, msg)
 end
 
 -- package
@@ -17,15 +21,16 @@ function Util:GiveItem(trigger_item, count)
     local trigger_unit = self.receiver_.object_ -- 防止任務被刪除後，搜尋不到單位的問題
     local p = Point.GetUnitLoc(trigger_unit)
 
-    local timer = require 'timer.core'
-    local PERIOD = 0.1
-    Timer(PERIOD, false, function()
+    local Timer = require 'timer.core'
+    local Item_Create = require 'item.core'.Create
+    local cj_UnitAddItem = require 'jass.common'.UnitAddItem
+    Timer(0.1, false, function()
         -- 預設數量
         count = count or 1
 
         for i = 1, count do
-            local item = Item.Create(trigger_item, p)
-            cj.UnitAddItem(trigger_unit, item)
+            local item = Item_Create(trigger_item, p)
+            cj_UnitAddItem(trigger_unit, item)
         end
 
         p:Remove()

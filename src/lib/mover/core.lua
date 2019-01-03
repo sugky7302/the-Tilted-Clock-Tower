@@ -69,10 +69,12 @@ Move = function(self)
 
         if self.max_dist_ and self.current_dist_ >= self.max_dist_ then
             self:Remove()
+            return true
         end
 
         if self:End_Cnd() then
             self:Remove()
+            return true
         end
     end)
 end

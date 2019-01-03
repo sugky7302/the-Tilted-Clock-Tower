@@ -55,35 +55,35 @@ SetNewQuest = function(unit, quest)
 end
 
 Generate = function(unit, quest)
-    local quest_copy = {}
+    local quest_copy = {
+        receiver_ = unit,
+        demands_ = {},
+    }
     setmetatable(quest_copy, quest_copy)
-
     quest_copy.__index = quest
-    quest_copy.receiver_ = unit
-    quest_copy.demands_ = {}
 
     -- 添加任務
     for i = 1, #quest.demands_, 2 do
         quest_copy.demands_[quest.demands_[i]] = quest.demands_[i + 1]
     end
-    
+
     unit.quests_[#unit.quests_ + 1] = quest_copy
 
     return quest_copy
 end
 
 AccepteMessage = function(quest)
-    js.ClearMessage(quest.receiver_.owner_.object_)
-
     quest:Announce "|cffff0000?|r|cffffcc00獲得任務"
-    quest:Announce(quest.name_)
-    quest:Announce("   " .. quest.detail_)
+    quest:Announce{"<", quest.name_, ">"}
+
+    local string_gsub = string.gsub
+    quest:Announce((string_gsub(quest.detail_, "$NAME", quest.receiver_.proper_name_)))
 
     for _, required in ipairs(quest.required_) do 
-        quest:Announce("- " .. required)
+        quest:Announce{"- ", required}
     end
 end
 
 function Unit.__index:SyncQuest(syncer)
-    -- TODO:同步任務，用於可變身的單位。由於變身實際上是替換單位，數據會不同，因此要有這個動作
+    -- TODO: 同步任務，用於可變身的單位。由於變身實際上是替換單位，數據會不同，因此要有這個動作
 end

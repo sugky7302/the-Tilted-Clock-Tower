@@ -1,4 +1,9 @@
 local EQUIPMENT_TEMPLATE = {
+    ['ratf'] = {
+        level = 2,
+        ring_count = 1,
+        attribute = {["物理攻擊力"] = 1},
+    },
     ['rde4'] = {
         level = 1,
         attribute = {["物理護甲"] = 1}

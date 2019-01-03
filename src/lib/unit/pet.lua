@@ -26,6 +26,7 @@ function Pet:__call(pet, owner)
         -- 設定擁有者
         if owner then
             instance.owner_ = owner
+            instance.owner_.pet_ = instance
         end
         
         -- 寵物都不需要復活

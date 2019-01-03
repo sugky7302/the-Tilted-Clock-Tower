@@ -123,7 +123,6 @@ InitFuncs = function(instance)
     instance.End_Cnd = function(self)
         -- 擊中超過目標值就停止
         if type(self.hit_mode_) == 'number' and hit >= self.hit_mode_ then
-            print "1"
             return true
         end
     
@@ -136,10 +135,10 @@ InitFuncs = function(instance)
             local TaskTracker = require 'task_tracker'
             TaskTracker.finish(self.handle_)
         end
-    
+
         self.mover_:Remove()
         self.timer_:Break()
-    
+
         if self.starting_point_ then
             self.starting_point_:Remove()
         end

@@ -1,5 +1,21 @@
 # 更新日誌
-## 0.31.15 - 2018-12-31
+## 0.31.16 - 2019-01-03
+### Added:
+- 實裝情報系統，並添加測試碼。
+- 添加table copy函數。
+### Changed:
+- [unit.event] "單位-發動技能效果"事件將傳參item實例而不是we的物品。
+- [quest.core] 修改字串連接方式。
+- [quest] 獲得/更新/完成任務時，不會再把訊息全部清空。
+### Fixed:
+- [item.core] 修正附魔相同的秘物會無法恢復次數的問題。
+- [intelligence] 修正相同的情報會重複蒐集的問題。
+- [mover.missile] 修正有機率最大距離和自訂中止條件都觸發，導致較後的中止條件無法獲得self.mover_而報錯的問題。
+- [unit.event] 修正任務-更新無法獲取單位的問題。
+- [unit.event] 修正召喚物擊殺單位，英雄會無法更新任務的問題。
+- [unit.event] 修正沒有獲得過任務的英雄，執行任務-更新時會莫名報錯的問題。
+
+## [0.31.15] - 2018-12-31
 ### Added:
 - 新增情報系統，擴展遊戲的可玩性。
 - 新增mover，整合missile資料夾，變得更有可讀性。
@@ -591,6 +607,7 @@
 [actboy168-lua-debug]:https://tieba.baidu.com/p/5902146836
 [coordinate_error]:https://tieba.baidu.com/p/5773334779?pid=120570865697&cid=0&red_tag=1133617129#120570865697
 
+[0.31.15]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/623cb7adff08f756d6b95c6a264e25e57daf860e
 [0.31.14]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/d1616a91d2dac04ce9af4b95d3aa8dee8d7e9554
 [0.31.13]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/4f1a6319ff3ee002e2ebcc4b6a4765442beacfff
 [0.31.12]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/8f10ffdf193710480fe4464d94a51328de02495a

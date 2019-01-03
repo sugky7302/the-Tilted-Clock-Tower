@@ -1,0 +1,21 @@
+Date: 2019-01-01 10:06:10
+Version: 2.4.3
+Commit: 69266a77536af75701cfbadf607691faed162abd
+Stack:
+----------------------------------------
+D:\Tools\YDWE1.25.10\Creation\Mod\The_Tilted_Clock_Tower\tools\w3x2lni\bin\w3x2lni-lua.exe: .\core\init.lua:28: 
+ability:918: invalid escape sequence near '\C'
+stack traceback:
+	[C]: in function 'lni.classics'
+	.\core\init.lua:28: in method 'parse_lni'
+	.\core\slk/frontend_lni.lua:25: in method 'frontend_lni'
+	.\core\slk/frontend.lua:60: in upvalue 'load_lni'
+	.\core\slk/frontend.lua:206: in method 'frontend'
+	.\backend\convert.lua:135: in function 'backend.convert'
+	.\backend\cli\obj.lua:4: in function 'backend.cli.obj'
+	.\backend\init.lua:12: in main chunk
+	[C]: in function 'require'
+	...Mod\The_Tilted_Clock_Tower\tools\w3x2lni\script\main.lua:2: in main chunk
+	[C]: in ?
+
+----------------------------------------

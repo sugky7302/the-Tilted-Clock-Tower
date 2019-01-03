@@ -34,15 +34,15 @@ Unit:Event "單位-使用物品" (function(_, unit,          item)
     end
 end)
 
-Unit:Event "單位-使用物品" (function(_, unit, item)
-    local ExtendHole = require 'item.extend_hole'
-    ExtendHole(item)
-end)
+-- Unit:Event "單位-使用物品" (function(_, unit, item)
+--     local ExtendHole = require 'item.extend_hole'
+--     ExtendHole(item)
+-- end)
 
-Unit:Event "單位-使用物品" (function(_, unit, item)
-    local Intensify = require 'item.intensify'
-    Intensify(item)
-end)
+-- Unit:Event "單位-使用物品" (function(_, unit, item)
+--     local Intensify = require 'item.intensify'
+--     Intensify(item)
+-- end)
 
 Player:Event "玩家-對話框被點擊" (function(_, player, button)
     -- 查詢最後點擊的產品
