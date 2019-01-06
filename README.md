@@ -36,7 +36,7 @@
 - 如果push失敗，就直接到資料夾去pull跟push。
 ### Lua撰寫細則
 - function、table、userdata、thread是call by reference，其它類型是call by value。
-- local變量訪問速度比global變量快30%。
+- local變量訪問速度比global變量快30%。所以被多次訪問的global變量，都應該存進local變量中。
 - 給table添加元素時，tab[#tab + 1] = a比table.insert(tab, a)效率高，遠比table.insert(tab, 1, a)效率高。
 - 4種循環方式(正序數值for循環、反序數值for循環、ipairs泛型for循環、pairs泛型for循環)根據習慣選擇就好，效率差別不大。
 - 在循環內創建變數和循環外創建變數的效率取決於創建代價和跨域代價的對比，根據經驗選擇最合適的處理。

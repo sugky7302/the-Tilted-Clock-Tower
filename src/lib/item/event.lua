@@ -39,10 +39,13 @@ end)
 --     ExtendHole(item)
 -- end)
 
--- Unit:Event "單位-使用物品" (function(_, unit, item)
---     local Intensify = require 'item.intensify'
---     Intensify(item)
--- end)
+Unit:Event "單位-發動技能效果" (function(_, source,       id, _, target_item, _)
+    -- A056 = T精煉
+    if id == Base.String2Id('A056') then
+        local Intensify = require 'item.intensify'
+        Intensify(target_item)    
+    end
+end)
 
 Player:Event "玩家-對話框被點擊" (function(_, player, button)
     -- 查詢最後點擊的產品

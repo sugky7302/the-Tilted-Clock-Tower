@@ -37,6 +37,9 @@ function Player:__call(player)
             name_ = cj.GetPlayerName(player),
             index_ = cj.GetPlayerId(player),
             object_ = player,
+            dialog_ = nil,
+            multiboard_ = nil,
+            leaderboard_ = nil,
         }
 
         local Dialog = require 'dialog'
@@ -44,6 +47,9 @@ function Player:__call(player)
 
         local Multiboard = require 'multiboard'
         instance.multiboard_ = Multiboard(instance)
+
+        local Leaderboard = require 'leaderboard'
+        instance.leaderboard_ = Leaderboard(instance)
 
         self[cj.GetPlayerId(player) + 1] = instance
 

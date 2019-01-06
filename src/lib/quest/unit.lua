@@ -5,7 +5,7 @@ local Unit  = require 'unit.core'
 local Quest = require 'quest.core'
 
 -- assert
-local ipairs, setmetatable = ipairs, setmetatable
+local ipairs = ipairs
 
 function Unit.__index:AcceptQuest(quest_name)
     if not Quest[quest_name] then
@@ -44,6 +44,11 @@ SetNewQuest = function(unit, quest)
 
     AccepteMessage(quest_copy)
     js.Sound("gg_snd_QuestNew")
+
+    -- 前置函數
+    if quest_copy.on_prepare then
+        quest_copy:on_prepare()
+    end
 
     -- 執行週期監聽函數
     if quest_copy.on_timer then

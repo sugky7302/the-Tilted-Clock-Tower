@@ -120,11 +120,27 @@ Unit:Event "英雄-復活" (function(_, self)
     -- 解除js.RemoveUnit設置的水元素週期
     cj.UnitPauseTimedLife(self.object_, true)
 
-    Timer(10 + 5 * self:get "等級", false, function()
-        cj.ReviveHero(self.object_, self.revive_point_.x_, self.revive_point_.y_, true)
+    local revive_time = 10 + 5 * self:get "等級"
+    local table_concat = table.concat
+    local floor = math.floor
+    self.owner_.leaderboard_:SetTitle(table_concat({"英雄將於|cffffcc00",
+                                      floor(revive_time), "|r秒後復活"}))
+    self.owner_.leaderboard_:SetStyle(true, false, false, false)
+    self.owner_.leaderboard_:Show(true)
+    
+    Timer(1, 10 + 5 * self:get "等級", function(callback)
+        self.owner_.leaderboard_:SetTitle(table_concat({"英雄將於|cffffcc00",
+                                          floor(callback.is_period_), "|r秒後復活"}))
+        if callback.is_period_ == 0 then
+            cj.ReviveHero(self.object_, self.revive_point_.x_, self.revive_point_.y_, true)
 
-        -- 不然獲取到的生命值會跟死亡前的生命值相同，導致dealdamage會判定擊殺
-        self:set("生命", self:get "生命上限")
+            -- 清空排行榜
+            self.owner_.leaderboard_:Show(false)
+            self.owner_.leaderboard_:Clear()
+
+            -- 不然獲取到的生命值會跟死亡前的生命值相同，導致dealdamage會判定擊殺
+            self:set("生命", self:get "生命上限")
+        end
     end)
 end)
 

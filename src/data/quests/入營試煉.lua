@@ -6,12 +6,11 @@ local mt = require 'quest.core' "入營試煉"
     required_ = {"擊殺1隻豺狼人", "回報庫拉特"},
     demands_ = {'ngno', 1, 'n005', true},
     talk_ = "很開心你能通過這個試煉，相信你獲得了很大的收穫，但是這只是開始，在未來的日子裡，我會給你更大的壓力，因為我們已經快沒有時間了...",
-    rewards_ = {"攻擊之爪"}, 
+    rewards_ = {"100金幣"}, 
 }
 
 function mt:on_reward()
-    -- 攻擊之爪
-    self:GiveItem 'ratf'
+    self.receiver_.owner_:add("黃金", 100)
 
     -- 任務：學習附魔
     self:GiveItem 'tst2'

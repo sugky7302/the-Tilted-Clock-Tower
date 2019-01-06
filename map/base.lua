@@ -18,6 +18,9 @@ print = Console.write
 -- 將handle等級設為0(地圖中所有的handle均使用table封裝)
 Runtime.handle_level = 0
 
+-- 設定lua調試器
+Runtime.debugger = 4278
+
 -- 關閉等待
 Runtime.sleep = false
 
@@ -34,6 +37,7 @@ function Runtime.ErrorHandle(msg)
 end
 
 local abs_path = ';D:\\Tools\\YDWE1.25.10\\Creation\\Mod\\The_Tilted_Clock_Tower\\src\\'
+
 -- 一定要絕對路徑，不然lua會找不到
 package.path = package.path .. abs_path .. '?.lua'
 

@@ -1,15 +1,10 @@
 -- 仿魔獸戰役格式的自定義任務
--- HACK: 獲得/更新/完成任務會占滿畫面，想要一個一個出現
--- 但是目前都是完成任務後直接進行下一個任務，這會讓玩家看不到完成任務的說明
+
 local setmetatable = setmetatable
 
 local Quest, mt = {}, require 'quest.util'
 setmetatable(Quest, Quest)
 Quest.__index = mt
-
--- constants
-mt.is_unique_ = true   -- 任務是否唯一
-mt.can_accept_ = true  -- 可否接取任務
 
 -- assert
 local CheckQuest, IsFinished, FinishMessage, CanRepeat, UpdateMessage, UpdateDemands
@@ -79,6 +74,7 @@ local js = require 'jass_tool'
 local string_gsub = string.gsub
 
 FinishMessage = function(self)
+    js.ClearMessage(self.receiver_.owner_.object_)
     js.Sound("gg_snd_QuestCompleted")
 
     self:Announce "|cff00ff00v|r|cffffcc00完成任務"
@@ -103,6 +99,7 @@ CanRepeat = function(self)
 end
 
 UpdateMessage = function(self)
+    js.ClearMessage(self.receiver_.owner_.object_)
     js.Sound("gg_snd_QuestLog")
 
     self:Announce "|cffff6600!|r|cffffcc00更新任務"

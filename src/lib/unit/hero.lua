@@ -13,7 +13,7 @@ Hero.__index = Unit
 Hero.type = "Hero"
 
 -- assert
-local InitHeroState
+local InitHeroState, AbilityDisable
 Hero.hero_datas = {} -- 儲存所有英雄資料
 
 function Hero:__call(hero)
@@ -43,6 +43,9 @@ function Hero:__call(hero)
         Unit[H2I(hero) .. ""] = instance
         
         InitHeroState(self)
+
+        -- 關閉技能
+        AbilityDisable(instance)
     end
     return instance
 end
@@ -100,6 +103,14 @@ InitHeroState = function(self)
     for _, name in ipairs(Unit.ELEMENTS) do
         self[name .. '元素增傷'] = 0
     end
+end
+
+AbilityDisable = function(self)
+    -- 偵查
+    self:AbilityDisable 'A00M'
+
+    -- 情報
+    self:AbilityDisable 'A055'
 end
 
 function Hero.Create(name)

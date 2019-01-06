@@ -2,14 +2,12 @@
 
 local setmetatable = setmetatable
 
+-- package
 local cj = require 'jass.common'
 
-local Point, mt = {}, {}
+local Point, mt = {}, {type = "Point"}
 setmetatable(Point, Point)
 Point.__index = mt
-
--- constants
-mt.type = "Point"
 
 function Point:__call(x, y, z)
     local instance = {
@@ -29,6 +27,7 @@ function mt:Remove()
     self.z_ = nil
     self = nil
 end
+
 
 function Point:__tostring()
     return '(' .. self.x_ .. ', ' .. self.y_ .. ', ' .. self.z_ .. ')'
@@ -54,6 +53,7 @@ function Point:__div(scale)
     return new_point
 end
 
+
 function mt:UpdateZ()
     local loc = cj.Location(self.x_, self.y_)
     self.z_ = cj.GetLocationZ(loc)
@@ -68,6 +68,7 @@ function mt:Rotate(deg)
     local angle, length = rad(deg), sqrt(self.x_ ^ 2 + self.y_ ^ 2)
     self.x_, self.y_ = length * cos(angle), length * sin(angle)
 end
+
 
 -- 相關功能
 function Point.Deg(p1, p2)
@@ -94,7 +95,6 @@ function Point.SlopeInSpace(p1, p2)
 
     return z_difference / distance
 end
-
 
 function Point.Distance(p1, p2)
     local sqrt = math.sqrt

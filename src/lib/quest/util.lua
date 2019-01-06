@@ -1,6 +1,12 @@
 -- 處理quest的工具
 
-local Util = {}
+-- package
+local cj = require 'jass.common'
+
+local Util = {
+    is_unique_  = true,  -- 任務是否唯一
+    can_accept_ = true,  -- 可否接取任務
+}
 
 function Util:Announce(msg)
     local type = type
@@ -9,9 +15,7 @@ function Util:Announce(msg)
         msg = table_concat(msg)
     end
 
-    local ANNOUNCE_DUR = 6
-    local DisplayText = require 'jass.common'.DisplayTimedTextToPlayer
-    DisplayText(self.receiver_.owner_.object_, 0., 0., ANNOUNCE_DUR, msg)
+    cj.DisplayTimedTextToPlayer(self.receiver_.owner_.object_, 0., 0., 7, msg)
 end
 
 -- package
@@ -23,14 +27,13 @@ function Util:GiveItem(trigger_item, count)
 
     local Timer = require 'timer.core'
     local Item_Create = require 'item.core'.Create
-    local cj_UnitAddItem = require 'jass.common'.UnitAddItem
     Timer(0.1, false, function()
         -- 預設數量
         count = count or 1
 
         for i = 1, count do
             local item = Item_Create(trigger_item, p)
-            cj_UnitAddItem(trigger_unit, item)
+            cj.UnitAddItem(trigger_unit, item)
         end
 
         p:Remove()

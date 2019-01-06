@@ -53,17 +53,19 @@ end
 
 -- 讀取所有情報
 function mod.Load(finder)
-    local next = next
-    if next(finder.intelligence_) == 0 then
+    local DisplayText = require 'jass.common'.DisplayTimedTextToPlayer
+    DisplayText(finder.owner_.object_, 0, 0, 6, "|cffffcc00擁有的情報|r")
+    
+    if not finder.intelligence_ then
+        DisplayText(finder.owner_.object_, 0, 0, 6, "(空)")
         return false
     end
 
-    local return_list = {"|cffffcc00擁有的情報|r"}
+    local return_list = {}
     for i = 1, #finder.intelligence_ do 
             return_list[#return_list + 1] = finder.intelligence_[i]
     end
     
-    local DisplayText = require 'jass.common'.DisplayTimedTextToPlayer
     local table_concat = table.concat
     DisplayText(finder.owner_.object_, 0, 0, 6, table_concat(return_list, "\n- "))
 end

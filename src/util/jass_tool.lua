@@ -44,7 +44,7 @@ return {
         local gg = require 'jass.globals'
         cj.StartSound(gg[handle])
     end,
-    -- TODO:之後要移到Effect結構
+    -- TODO: 之後要移到Effect結構
     TimeEffect = function(effect, timeout)
         local Timer = require 'timer.core'
         Timer(timeout, false, function()
@@ -72,9 +72,9 @@ return {
     end,
     Tip = function(player, string_tb)
         local table_concat = table.concat
-        local Text = require 'jass.common'.DisplayTimedTextToPlayer
-    
-        Text(player, 0., 0., 6., table_concat(string_tb))
+        local type = type
+        string_tb = type(string_tb) == 'string' and string_tb or table_concat(string_tb)
+        cj.DisplayTimedTextToPlayer(player, 0., 0., 6., string_tb)
     end
 }
     
