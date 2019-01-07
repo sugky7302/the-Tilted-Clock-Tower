@@ -1,5 +1,5 @@
 # 更新日誌
-## 0.31.18 - 2019-01-07
+## [0.31.18] - 2019-01-07
 ### Added:
 - 加入行為樹模組。
 - 添加monsters資料夾，儲存菁英怪或頭目的資料、戰鬥行為以及常用節點。
@@ -634,6 +634,7 @@
 [actboy168-lua-debug]:https://tieba.baidu.com/p/5902146836
 [coordinate_error]:https://tieba.baidu.com/p/5773334779?pid=120570865697&cid=0&red_tag=1133617129#120570865697
 
+[0.31.18]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/1dd2f34bbac3db781d83d25ffffbfff835b89d60
 [0.31.17]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/d85bfa9cfc6be5a521b63cf4676bcc4b9bc5531e
 [0.31.16]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/ce13d7cc727173d0340c822b538779647ff6c2d6
 [0.31.15]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/623cb7adff08f756d6b95c6a264e25e57daf860e

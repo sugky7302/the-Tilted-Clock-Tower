@@ -93,7 +93,7 @@
 - [behaviourtree][ref_url4]
 
 ## 授權
-本專案屬於 MIT License，更多資訊請看 [LICENSE.md](LICENSE.md)
+本專案屬於 GPL License，更多資訊請看
 
 [ref_url1]:https://blog.csdn.net/u013119612/article/details/78758253
 [ref_url2]:https://blog.csdn.net/UWA4D/article/details/77988888
