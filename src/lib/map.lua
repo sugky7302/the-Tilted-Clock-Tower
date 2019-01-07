@@ -7,6 +7,9 @@ local function Map()
 	-- 英雄初始化
     require 'heros.init'
 
+    -- 怪物初始化
+    require 'monsters.init'
+
     -- 註冊單位
     RegUnits()
 end

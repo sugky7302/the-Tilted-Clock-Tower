@@ -1,10 +1,21 @@
 # 更新日誌
-## 0.31.17 - 2019-01-06
+## 0.31.18 - 2019-01-07
+### Added:
+- 加入行為樹模組。
+- 添加monsters資料夾，儲存菁英怪或頭目的資料、戰鬥行為以及常用節點。
+- 添加物品測試員的行為樹模組。
+### Changed:
+- [map] 會加載monsters模塊。
+- [skill.core] order_id_不再是必填。
+- [unit.event] 被攻擊事件會調用行為樹。
+
+## [0.31.17] - 2019-01-06
 ### Changed:
 - [item.event] 開放精煉。
 - [item.intensify] 設定精煉區域，限制英雄只能在固定區域才能精煉裝備。
 - [quest] 持續完善新手任務。
 - [unit.event] 顯示英雄復活時間。
+- [w3i.ini] 修改地圖簡介。
 ### fixed:
 - [item.intensify] 修正裝備精煉後，英雄屬性不會提高的問題。
 
@@ -623,6 +634,7 @@
 [actboy168-lua-debug]:https://tieba.baidu.com/p/5902146836
 [coordinate_error]:https://tieba.baidu.com/p/5773334779?pid=120570865697&cid=0&red_tag=1133617129#120570865697
 
+[0.31.17]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/d85bfa9cfc6be5a521b63cf4676bcc4b9bc5531e
 [0.31.16]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/ce13d7cc727173d0340c822b538779647ff6c2d6
 [0.31.15]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/623cb7adff08f756d6b95c6a264e25e57daf860e
 [0.31.14]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/d1616a91d2dac04ce9af4b95d3aa8dee8d7e9554

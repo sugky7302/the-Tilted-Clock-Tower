@@ -16,15 +16,18 @@ function Skill:__call(name)
     return function(instance)
         self[name] = instance
 
-        local slk_ability = require 'jass.slk'.ability
         instance.name_  = name
 
-        -- 獲取指令，如果是通魔技能就去獲取基礎id
-        instance.order_ = slk_ability[instance.order_id_].Order
-        instance.order_ = (instance.order_ == "channel") and slk_ability[instance.order_id_].DataF
+        if instance.order_id_ then
+            local slk_ability = require 'jass.slk'.ability
 
-        instance.cool_  = slk_ability[instance.order_id_].Cool
-        instance.blp_   = slk_ability[instance.order_id_].Art
+            -- 獲取指令，如果是通魔技能就去獲取基礎id
+            instance.order_ = slk_ability[instance.order_id_].Order
+            instance.order_ = (instance.order_ == "channel") and slk_ability[instance.order_id_].DataF
+
+            instance.cool_  = slk_ability[instance.order_id_].Cool
+            instance.blp_   = slk_ability[instance.order_id_].Art
+        end
 
         setmetatable(instance, self)
         instance.__index = instance

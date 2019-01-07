@@ -1,5 +1,4 @@
 # 傾斜的時鐘塔
-## 前言
 過去一直想要自己完成一張RPG地圖，但是每次都是半途而廢，為了提高自己的動力，特地在github上新建專案，強迫自己一定要更新，希冀能夠順利完成這個項目。
 
 ## 目標
@@ -91,7 +90,12 @@
 - [lua：部分常用操作的效率对比及代码优化建议（附测试代码）][ref_url1]
 - [Lua的CPU开销性能优化][ref_url2]
 - [Lua -- 重写pairs方法（让字典访问有序）][ref_url3]
+- [behaviourtree][ref_url4]
+
+## 授權
+本專案屬於 MIT License，更多資訊請看 [LICENSE.md](LICENSE.md)
 
 [ref_url1]:https://blog.csdn.net/u013119612/article/details/78758253
 [ref_url2]:https://blog.csdn.net/UWA4D/article/details/77988888
 [ref_url3]:https://blog.csdn.net/honey199396/article/details/78816793
+[ref_url4]:https://github.com/sugky7302/behaviourtree.lua

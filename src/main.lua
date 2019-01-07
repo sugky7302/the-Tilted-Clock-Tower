@@ -32,7 +32,7 @@ local function Main()
     require 'map'
 
     -- 呼叫測試碼
-    require 'test.core'('quest_progress')
+    require 'test.core'('regex')
 end
 
 Main()

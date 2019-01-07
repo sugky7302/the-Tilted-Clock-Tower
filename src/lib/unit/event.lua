@@ -1,6 +1,8 @@
 -- 處理單位事件
 -- 要注意某些事件參數可以傳instance，有些只能傳jass參數
 
+local require = require
+
 -- package
 local cj = require 'jass.common'
 local js = require 'jass_tool'
@@ -14,6 +16,7 @@ local Equipment = require 'item.equipment.core'
 local Secrets = require 'item.secrets'
 
 -- assert
+local table_concat = table.concat
 local ipairs = ipairs
 
 local unit_is_attacked = War3.CreateTrigger(function()
@@ -27,6 +30,16 @@ local unit_is_attacked = War3.CreateTrigger(function()
     if source.is_spell_damaged_ == false then
         source:EventDispatch("單位-造成傷害", target)
         source:EventDispatch("單位-傷害完成", target)
+
+        if target.type == "Unit" then
+            -- 執行行為樹
+            local ErrorHandle, name = Base.ErrorHandle, string.match(target.name_, 'n(.+)%s')
+
+            local status, behavior = xpcall(require, ErrorHandle, table_concat({'monsters.', name, ".behavior"}))
+            if status then
+                behavior(target)
+            end
+        end
     end
 
     return true
@@ -121,7 +134,6 @@ Unit:Event "英雄-復活" (function(_, self)
     cj.UnitPauseTimedLife(self.object_, true)
 
     local revive_time = 10 + 5 * self:get "等級"
-    local table_concat = table.concat
     local floor = math.floor
     self.owner_.leaderboard_:SetTitle(table_concat({"英雄將於|cffffcc00",
                                       floor(revive_time), "|r秒後復活"}))
@@ -194,6 +206,7 @@ local order_trg = War3.CreateTrigger(function()
     return true
 end)
 
+-- 滿格拾取
 -- Unit:Event "單位-發布命令" (function(_, hero, order, target)
 --     if order == Base.String2OrderId('smart') then
 --         StackItem(hero.object_, Item(target))
