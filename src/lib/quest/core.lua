@@ -31,10 +31,12 @@ function mt:Update(id)
     CheckQuest(self, id)
 
     if IsFinished(self) then
+        -- 先執行獎勵函數可以動態更動獎勵說明，如第一次試煉就會改動。
+        self:on_reward()
+        
         FinishMessage(self)
         CanRepeat(self)
         
-        self:on_reward()
         self:Remove()
     else
         UpdateMessage(self)

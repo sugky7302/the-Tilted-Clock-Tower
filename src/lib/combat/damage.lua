@@ -66,6 +66,12 @@ function Damage:__call(instance)
     -- 儲存攻擊者
     instance.target_.attacker_ = instance.source_
 
+    -- 命令生物主動攻擊傷害來源，不然有些技能施法距離太遠，會造成無消耗攻擊的局面
+    if instance.target_.owner_.index_ == 12 then
+        local IssueTargetOrder = require 'jass.common'.IssueTargetOrder
+        IssueTargetOrder(instance.target_.object_, "attack", instance.source_.object_)
+    end
+
     -- 關閉判定，以免傷害函數無法執行
     instance.target_.is_spell_damaged_ = false 
 

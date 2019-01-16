@@ -18,6 +18,7 @@ local Secrets = require 'item.secrets'
 -- assert
 local table_concat = table.concat
 local ipairs = ipairs
+local RunBehaviorTree
 
 local unit_is_attacked = War3.CreateTrigger(function()
     local source, target = Unit(cj.GetEventDamageSource()), Unit(cj.GetTriggerUnit())
@@ -31,19 +32,39 @@ local unit_is_attacked = War3.CreateTrigger(function()
         source:EventDispatch("單位-造成傷害", target)
         source:EventDispatch("單位-傷害完成", target)
 
+        -- 執行行為樹
         if target.type == "Unit" then
-            -- 執行行為樹
-            local ErrorHandle, name = Base.ErrorHandle, string.match(target.name_, 'n(.+)%s')
-
-            local status, behavior = xpcall(require, ErrorHandle, table_concat({'monsters.', name, ".behavior"}))
-            if status then
-                behavior(target)
-            end
+            RunBehaviorTree(target)
         end
     end
 
     return true
 end)
+
+-- 精英生物以上才會有行為樹
+-- 不管是xpcall或是pcall都無法在報錯的情況下正常運行，會出現連帶問題，比如水元素報錯
+-- 進而導致遊戲崩潰
+RunBehaviorTree = function(target)
+    if target["階級"] > 1 and (not target.behavior_running_) then
+        local name = string.match(target.name_, 'n(.+)%s')
+        local path = table_concat({'monsters.', name, ".behavior"})
+        local behavior
+
+        -- 如果找不到behavior找不到就根據debug模式和實際遊戲給予兩種不同保護機制
+        if Base.debug_mode then
+            behavior = select(2, xpcall(require, Base.ErrorHandle, path))
+        else
+            behavior = select(2, pcall(require, path))
+        end
+
+        if behavior then
+            -- 避免重複啟動行為樹
+            target.behavior_running_ = true
+
+            behavior(target)
+        end
+    end
+end
 
 Unit:Event "單位-造成傷害" (function(_, source, target)
     local Damage = require 'combat.damage'
@@ -71,6 +92,7 @@ local trg = War3.CreateTrigger(function()
         target:EventDispatch("寵物-清除")
     elseif target.type == "Hero" then
         target:EventDispatch("英雄-復活")
+        target:EventDispatch("英雄-死亡後終止所有技能")
     end
 
     return true
@@ -109,12 +131,11 @@ end)
 
 Unit:Event "單位-刷新" (function(_, unit)
     -- 移除單位前先存單位id才不會讀不到
-    local id = js.U2Id(unit.object_)
     Unit.RemoveUnit(unit.object_)
-    
+
     Timer(unit:get "刷新時間", false, function()
-        local new_unit = Unit.Create(cj.Player(cj.PLAYER_NEUTRAL_AGGRESSIVE), id, unit.revive_point_, cj.GetRandomReal(0, 180))
-        
+        local new_unit = Unit.Create(cj.Player(cj.PLAYER_NEUTRAL_AGGRESSIVE), unit.id_, unit.revive_point_, cj.GetRandomReal(0, 180))
+
         -- 新單位註冊實例
         Unit(new_unit)
 

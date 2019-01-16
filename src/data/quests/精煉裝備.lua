@@ -15,6 +15,9 @@ local mt = require 'quest.core' "精煉裝備"
 
 function mt:on_reward()
     self.receiver_.owner_:add("黃金", 233)
+
+    -- 下個任務：第一次試煉
+    self:GiveItem 'rman'
 end
 
 function mt:on_timer(callback)

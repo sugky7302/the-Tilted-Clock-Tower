@@ -11,6 +11,12 @@ local cj    = require 'jass.common'
 -- assert
 local ipairs = ipairs
 
+Unit:Event "英雄-死亡後終止所有技能" (function(_, unit)
+    for _, skill in ipairs(unit.each_casting_) do
+        skill:Break()
+    end
+end)
+
 Unit:Event "單位-發布命令" (function(_, unit, order, target)
     -- 中斷施法
     if (order == Base.String2OrderId('smart')) or

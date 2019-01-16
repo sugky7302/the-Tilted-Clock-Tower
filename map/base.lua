@@ -2,7 +2,6 @@
 
 local Runtime = require 'jass.runtime'
 local Console = require 'jass.console'
-local Debug = require 'jass.debug'
 
 Base = {}
 
@@ -27,7 +26,7 @@ Runtime.sleep = false
 function Base.ErrorHandle(msg)
     print("---------------------------------------")
     print(tostring(msg) .. "\n")
-    print(Debug.traceback())
+    print(debug.traceback())
     print("---------------------------------------")
 end
 

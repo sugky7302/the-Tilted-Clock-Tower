@@ -22,6 +22,9 @@ local function Behavior(unit)
         mt:run(unit)
 
         if not unit:IsAlive() then
+            -- 回傳中止狀態
+            unit.behavior_running_ = false
+
             callback:Break()
         end
     end)

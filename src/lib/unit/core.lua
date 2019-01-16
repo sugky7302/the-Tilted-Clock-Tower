@@ -79,7 +79,7 @@ InitUnitState = function(self)
     self['元素屬性'] = "無"
     self['體型'] = GetBodySize(data.collision)
 
-    if self.type_ == 'Unit' then
+    if self.type == 'Unit' then
         self['刷新時間'] = data.stockRegen
     end
 end 
@@ -167,7 +167,8 @@ function Unit.RemoveUnit(unit)
 end
 
 function Unit.Create(player, id, loc, facing)
-    return cj.CreateUnit(player, S2Id(id), loc.x_, loc.y_, facing)
+    id = (type(id) == 'number') and id or S2Id(id)
+    return cj.CreateUnit(player, id, loc.x_, loc.y_, facing)
 end
 
 -- assert

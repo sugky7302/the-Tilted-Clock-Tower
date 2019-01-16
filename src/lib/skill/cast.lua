@@ -12,6 +12,7 @@ local AddTask
 
 local function Cast(self)
     -- 記錄某階段需要完成的任務數量
+    -- 不用局域變量的原因是其他模塊也要用
     self.handle_ = Timer.frame()
     TaskTracker(self.handle_)
 

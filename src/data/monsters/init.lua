@@ -1,7 +1,8 @@
 -- 加載怪物數據
 
 local monster_list = {
-	"物品測試員",
+    "物品測試員",
+    "豺狼守望者",
 }
 
 local general_node_list = {
