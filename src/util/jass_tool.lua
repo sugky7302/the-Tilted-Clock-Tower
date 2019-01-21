@@ -62,11 +62,13 @@ return {
         end
     end,
     ClearMessage = function(player)
-        force = cj.CreateForce()
+        local force = cj.CreateForce()
         cj.ForceAddPlayer(force, player)
+        
         if cj.IsPlayerInForce(cj.GetLocalPlayer(), force) then
             cj.ClearTextMessages()
         end
+        
         cj.ForceClear(force)
         cj.DestroyForce(force)
     end,
@@ -75,6 +77,17 @@ return {
         local type = type
         string_tb = type(string_tb) == 'string' and string_tb or table_concat(string_tb)
         cj.DisplayTimedTextToPlayer(player, 0., 0., 6., string_tb)
-    end
+    end,
+    Ping = function(player, x, y, dur)
+        local force = cj.CreateForce()
+        cj.ForceAddPlayer(force, player)
+        
+        if cj.IsPlayerInForce(cj.GetLocalPlayer(), force) then
+            cj.PingMinimap(x, y, dur)
+        end
+
+        cj.ForceClear(force)
+        cj.DestroyForce(force)
+    end,
 }
     

@@ -7,7 +7,7 @@ local mt = require 'quest.core' "第一次試煉"
     required_ = {"擊敗豺狼守望者", "回報庫拉特"},
     demands_ = {'ngnw', 1, 'n005', true},
     talk_ = "不錯，你有成為戍時人的候選資格。但這不過只是開胃菜，訓練從現在起才是真正的開始。",
-    rewards_ = {"戍時人候選者勳章", "訓練衣", "200金幣"}, 
+    rewards_ = {"戍時人候選者徽章", "訓練衣", "200金幣"}, 
 }
 
 local dur = 0
@@ -18,25 +18,28 @@ function mt:on_reward()
     local reward
 
     if dur > punish_time then
-        -- self:GiveItem ''
-        -- self:GiveItem ''
+        self:GiveItem 'kymn'
+        self:GiveItem 'rej5'
+
         reward = max(200 - 2 * (dur - punish_time), 100)
     elseif dur > award_time then
-        -- self:GiveItem ''
-        -- self:GiveItem ''
+        self:GiveItem 'kymn'
+        self:GiveItem 'rej6'
+
         reward = 200
     else
-        -- self:GiveItem ''
-        -- self:GiveItem ''
+        self:GiveItem 'ofro'
+        self:GiveItem 'rej6'
+
         reward = 250 + 5 * (award_time - dur)
-        
     end
 
     self.receiver_.owner_:add("黃金", reward)
     
     -- 把副本跟正本分離，這樣改動敘述才不會動到正本
+    -- reward本身是實數，要x1才會變整數
     self.rewards_ = mt.rewards_
-    self.rewards_[3] = table_concat({reward, "金幣"})
+    self.rewards_[3] = table_concat({reward * 1, "金幣"})
 
     -- 下個任務：
     -- self:GiveItem ''
@@ -60,4 +63,9 @@ function mt:on_timer(callback)
         self:Update('n005')
         callback:Break()
     end
+end
+
+function mt:on_prepare()
+    local Ping = require 'jass_tool'.Ping
+    Ping(self.receiver_.owner_.object_, -2853.9, 5577.1, 5)
 end

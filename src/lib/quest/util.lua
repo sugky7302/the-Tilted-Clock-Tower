@@ -15,7 +15,7 @@ function Util:Announce(msg)
         msg = table_concat(msg)
     end
 
-    cj.DisplayTimedTextToPlayer(self.receiver_.owner_.object_, 0., 0., 7, msg)
+    cj.DisplayTimedTextToPlayer(self.receiver_.owner_.object_, 0., 0., 9, msg)
 end
 
 -- package

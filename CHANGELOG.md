@@ -1,5 +1,28 @@
 # 更新日誌
-## 0.31.19 - 2019-01-16
+## 0.31.20 - 2019-01-21 - 第一次測試
+### Added:
+- [jass_tool] 新增ping函數。
+- [monsters.豺狼守望者] 完成技能與行為樹。
+- [mover] 新增擊退系統。
+- [skill.util] 新增技能預警圈。
+### Changed:
+- [base] 控制台現在跟debug mode聯動。
+- [mover.core] 現在可以省略End_Cnd。
+- [mover.missile] 投射物的選取範圍變為可自訂。
+- [point] 修改rad函數，現在範圍為0-360度。
+- [quest_progress] 調整流程。
+- [quest.core] 更新任務、完成任務的顯示多了空格。
+- [quest.core] 調整顯示秒數。
+- [quest.unit] 獲得任務的顯示多了空格。
+- [quests.入營試煉] 添加ping燈，讓玩家知道生物的位置。
+- [quests.報到] 添加ping燈，讓玩家知道庫拉特的位置。
+- [quests.第一次試煉] 添加ping燈，讓玩家知道生物的位置。
+- [war3map.j] 關閉其他單位。
+- [war3map.j] 修改lua加載方式，改成直接在地圖的自定義腳本區加載，這樣就不會產生用YDWE修改後，vscode要固定的幾個步驟才能編輯的問題。
+### Fixed:
+- [buffs.暈眩] 修正暈眩特效在腳下的問題。
+
+## [0.31.19] - 2019-01-16
 ### Added:
 - [quests] 新增第一次試煉。
 - [skill.event] 新增英雄死亡後終止技能的事件。
@@ -88,7 +111,7 @@
 - [unit.pet] 修正冬之蕭瑟在創建投射物會因為owner_.owner_是單位而不是玩家而無法創建的問題。
 - [war3map.j] 修正gg_snd_jaina_ringoffrost_launch01沒有放入聲音，導致霜之環無法播放的問題。
 
-## 0.31.13 - 2018-12-23
+## [0.31.13] - 2018-12-23
 ### Added:
 - [intensify_attribute] 擴充可精鍊屬性。
 ### Changed:
@@ -648,6 +671,7 @@
 [actboy168-lua-debug]:https://tieba.baidu.com/p/5902146836
 [coordinate_error]:https://tieba.baidu.com/p/5773334779?pid=120570865697&cid=0&red_tag=1133617129#120570865697
 
+[0.31.19]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/49108e30e84d383e5317ec416259ffb7380e3e5d
 [0.31.18]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/1dd2f34bbac3db781d83d25ffffbfff835b89d60
 [0.31.17]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/d85bfa9cfc6be5a521b63cf4676bcc4b9bc5531e
 [0.31.16]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/ce13d7cc727173d0340c822b538779647ff6c2d6

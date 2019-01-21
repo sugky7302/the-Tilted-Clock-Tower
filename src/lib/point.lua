@@ -71,14 +71,22 @@ end
 
 
 -- 相關功能
+-- assert
+local math = math
+
 function Point.Deg(p1, p2)
-    local deg = math.deg
-    return deg(Point.Rad(p1, p2))
+    return math.deg(Point.Rad(p1, p2))
 end
 
+-- 範圍為[0, 2 * pi]
 function Point.Rad(p1, p2)
-    local atan = math.atan
-    return atan(p2.y_ - p1.y_, p2.x_ - p1.x_)
+    local rad = math.atan(p2.y_ - p1.y_, p2.x_ - p1.x_)
+
+    if rad < 0 then
+        rad = rad + 2 * math.pi
+    end
+
+    return rad
 end
 
 function Point.Slope(p1, p2)

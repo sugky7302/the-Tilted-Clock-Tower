@@ -36,6 +36,21 @@ function Test.EnumUnit()
     return enum_unit
 end
 
+-- 為了在測試時能夠直接獲取測試英雄，使測試簡化
+function Test.EnumQuestUnit()
+    -- 選取英雄
+    local Group = require 'group.core'
+    local group = Group()
+    group:EnumUnitsInRange(- 3267.3, - 3314.3, 1000, "IsHero")
+
+    -- 暫存
+    local enum_unit = group.units_[1]
+
+    group:Remove()
+
+    return enum_unit
+end
+
 -- 為了在測試時能夠直接獲取測試單位，使測試簡化
 function Test.EnumTestUnit()
     -- 選取英雄

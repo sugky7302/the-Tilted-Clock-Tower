@@ -12,13 +12,11 @@ function mod.Move(target, p, dist, angle)
     cj.SetUnitPosition(target.object_, x_new, y_new)
 end
 
+-- 拋體運動
 function mod.Projectile(self)
     local Point = require 'point'
 
     self.slope_ = self.slope_ or Point.SlopeInSpace(self.starting_point_, self.target_point_)
-
-    -- 添加烏鴉技能，使觸發可以更改投射物高度
-    mod.Fly(self.mover_)
     
     -- 獲取投射物高度
     local missile_point = Point.GetUnitLoc(self.mover_.object_)
@@ -30,8 +28,9 @@ function mod.Projectile(self)
                               + self.height_
 
     -- 實際高度 = 高度誤差值 + 預估高度 - 當前投射物所在地面高度
+    local ERROR_HEIGHT = 0.11
     local height = self.starting_height_ + self.current_dist_ * self.slope_
-                   + projectile_height - missile_point.z_
+                   + projectile_height - missile_point.z_ + ERROR_HEIGHT
 
     mod.SetHeight(self, self.mover_, height)
 

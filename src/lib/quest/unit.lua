@@ -87,6 +87,9 @@ AccepteMessage = function(quest)
     for _, required in ipairs(quest.required_) do 
         quest:Announce{"- ", required}
     end
+
+    -- 加個空格
+    quest:Announce " "
 end
 
 function Unit.__index:SyncQuest(syncer)

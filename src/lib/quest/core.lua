@@ -94,6 +94,9 @@ FinishMessage = function(self)
             self:Announce{"|cffffcc00獎勵|r - ", reward}
         end
     end
+
+    -- 加個空格
+    self:Announce " "
 end
 
 CanRepeat = function(self)
@@ -109,6 +112,9 @@ UpdateMessage = function(self)
 
     -- self是副本，self.__index才是原本
     UpdateDemands(self, self.__index)
+
+    -- 加個空格
+    self:Announce " "
 end
 
 UpdateDemands = function(self, parent)

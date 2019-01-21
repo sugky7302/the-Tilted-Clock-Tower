@@ -37,7 +37,23 @@ local EQUIPMENT_TEMPLATE = {
     ['pmna'] = {
         level = 2,
         ring_count = 2,
-    }
+    },
+    ['kymn'] = {
+        level = 2,
+        attribute = {["物理護甲"] = 1, ["法術護甲"] = 1},
+    },
+    ['ofro'] = {
+        level = 3,
+        attribute = {["物理護甲"] = 2, ["法術護甲"] = 1},
+    },
+    ['rej5'] = {
+        level = 1,
+        attribute = {["耐力"] = 1},
+    },
+    ['rej6'] = {
+        level = 2,
+        attribute = {["命中"] = 1, ["耐力"] = 1},
+    },
 }
 
 return EQUIPMENT_TEMPLATE

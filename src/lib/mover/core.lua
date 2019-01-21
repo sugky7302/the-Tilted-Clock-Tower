@@ -28,7 +28,7 @@ local Move
 --     velocity_:初速度，trace_mode_ ~= surround使用,
 --     velocity_max_:最高速度，trace_mode_ ~= surround使用,
 --     acceleration_:加速度,
---     theta_:拋體與直線彈道的夾角,
+--     height_:拋體運動最大高度,
 --     angle_:射角。trace_mode_ = surround使用,
 --     radius_:半徑。trace_mode_ = surround使用,
 --     starting_height_:初始高度。trace_mode_ = surround使用,
@@ -72,7 +72,7 @@ Move = function(self)
             return true
         end
 
-        if self:End_Cnd() then
+        if self.End_Cnd and self:End_Cnd() then
             self:Remove()
             return true
         end

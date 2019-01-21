@@ -20,7 +20,7 @@ local InitFuncs, InitParams
 --     velocity_(可選，trace_mode_ ~= surround使用)
 --     velocity_max_(可選，trace_mode_ ~= surround使用)
 --     acceleration_
---     theta_(拋體與直線彈道的夾角)
+--     height_(拋體運動最大高度)
 --     angle_(可選，trace_mode_ = surround使用)
 --     radius_(可選，trace_mode_ = surround使用)
 --     starting_height_(可選，trace_mode_ = surround使用)
@@ -47,6 +47,9 @@ InitParams = function(self)
     -- 設定位移量
     self.velocity_max_ = self.velocity_max_ or self.velocity_
     self.acceleration_ = self.acceleration_ or 0
+
+    -- 投射物的選取範圍
+    self.enum_range_ = self.enum_range_ or 50
 
     -- 設定拋體運動
     self.height_ = self.height_ or 0 -- 最高高度
@@ -83,11 +86,11 @@ end
 InitFuncs = function(instance)
     local cj = require 'jass.common'
     local hit = 0
-    local ENUM_RANGE = 50
+
     instance.Execute = function(self)
         -- Remove後計時器還會動作，但group裡的units_已經被清除了，因此要防止它調用units_
         if self.units_.units_ then
-            self.units_:EnumUnitsInRange(cj.GetUnitX(self.mover_.object_), cj.GetUnitY(self.mover_.object_), ENUM_RANGE, "IsEnemy")
+            self.units_:EnumUnitsInRange(cj.GetUnitX(self.mover_.object_), cj.GetUnitY(self.mover_.object_), self.enum_range_, "IsEnemy")
     
             -- 計算投射物在z軸會不會撞到單位
             self.units_:Loop(function(instance, i)
@@ -99,7 +102,7 @@ InitFuncs = function(instance)
                 
                 if p_missile.z_ + cj.GetUnitFlyHeight(self.mover_.object_)
                     - p_u.z_ - cj.GetUnitFlyHeight(instance.units_[i]) - STANDARD_HEIGHT
-                    > ENUM_RANGE then
+                    > self.enum_range_ then
                     instance:RemoveUnit(instance.units_[i])
                 end
 

@@ -9,7 +9,7 @@ Base = {}
 Base.debug_mode = true
 
 -- 打開控制台
-Console.enable = true
+Console.enable = Base.debug_mode and true or false
 
 -- 重載print，自動轉換編碼
 print = Console.write

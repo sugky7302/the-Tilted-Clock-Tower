@@ -24,3 +24,8 @@ function mt:on_timer(callback)
         callback:Break()
     end
 end
+
+function mt:on_prepare()
+    local Ping = require 'jass_tool'.Ping
+    Ping(self.receiver_.owner_.object_, -3155, 591, 5)
+end

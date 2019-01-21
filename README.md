@@ -55,9 +55,8 @@
 - 使用string.gsub時，如果$在模式串的結尾，會有特殊的正則式作用，因此不要在結尾加$。
 ### 修改地圖
 - 如果要修改地圖，請開啟TheTiltedClockTower.w3x，不要開啟.w3x。
-- 修改後，請先用vscode執行Lni一次。
-- 再使用vscode打開war3map.j，在InitGlobals輸入call Cheat("exec-lua: base")。
-- 最後用vscode執行obj一次。
+- 修改完後要按Lni一次，vscode才會更新數據。
+- 再按obj一次再執行會比較好。
 ### 新增/修改/移除物編數據
 - 打開table資料夾。
 - 根據類型開啟相應的ini檔。

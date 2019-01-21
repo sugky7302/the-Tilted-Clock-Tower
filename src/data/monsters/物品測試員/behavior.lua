@@ -31,37 +31,47 @@ local function Behavior(unit)
 end
 
 function Cleave:run(unit)
-    local Group = require 'group.core'
-    local Point = require 'point'
-    local Facing = require 'jass.common'.GetUnitFacing
-    local Damage = require 'combat.damage'
+    local cj = require 'jass.common'
     local Unit = require 'unit.core'
-    local abs = math.abs
+    local Point = require 'point'
+    local js = require 'jass_tool'
 
-    local g, p_unit = Group(unit.object_), Point.GetUnitLoc(unit.object_)
-    g:EnumUnitsInRange(p_unit.x_, p_unit.y_, 300, "IsEnemy")
-    g:Loop(function(group, i)
-        local p_enum = Point.GetUnitLoc(group.units_[i])
+    local RADIUS = 300
 
-        -- 只對面前半圓的單位造成傷害
-        if abs(Point.Deg(p_unit, p_enum) - Facing(unit.object_)) <= 90 then
-            Damage{
-                source_ = unit,
-                target_ = Unit(group.units_[i]),
+    -- 設定技能預警圈
+    local p_unit = Point.GetUnitLoc(unit.object_)
+    local PreWarn = require 'skill.util'.PreWarn
+    PreWarn(RADIUS, p_unit, 1)
 
-                name_ = "順劈斬",
-                type_ = "法術",
-                element_type_ = "無",
-            }
-        end
+    Timer(1, false, function()
+        local Damage = require 'combat.damage'
+        local Group = require 'group.core'
+        local abs = math.abs
 
-        p_enum:Remove()
+        local g = Group(unit.object_)
+        g:EnumUnitsInRange(p_unit.x_, p_unit.y_, RADIUS, "IsEnemy")
+        g:Loop(function(group, i)
+            local p_enum = Point.GetUnitLoc(group.units_[i])
+
+            -- 只對面前90度內的單位造成傷害
+            if abs(Point.Deg(p_unit, p_enum) - cj.GetUnitFacing(unit.object_)) <= 90 then
+                Damage{
+                    source_ = unit,
+                    target_ = Unit(group.units_[i]),
+                
+                    name_ = "順劈斬",
+                    type_ = "法術",
+                    element_type_ = "無",
+                }
+            end
+
+            p_enum:Remove()
+        end)
+
+        p_unit:Remove()
+
+        self:success()
     end)
-
-    g:Remove()
-    p_unit:Remove()
-
-    self:success()
 end
 
 return Behavior

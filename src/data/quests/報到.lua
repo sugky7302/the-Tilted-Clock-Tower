@@ -1,7 +1,7 @@
 local table_concat = table.concat
 local mt = require 'quest.core' "報到"
 {
-    detail_ = "向訓練營教官|cffffcc00庫拉特|r報到。",
+    detail_ = "向訓練營教官|cffffcc00庫拉特|r報到。可從記錄(|cffffcc00F12|r)查看任務。",
     required_ = {"找到庫拉特"},
     demands_ = {'n005', true},
     talk_ = table_concat({"又是一個可憐的孤兒，赫斯米爾的殘酷可不是你們這些小傢伙能夠承受的，也不曉得是哪個天殺的把你們送來這裡。",
@@ -20,4 +20,9 @@ function mt:on_timer(callback)
         self:Update('n005')
         callback:Break()
     end
+end
+
+function mt:on_prepare()
+    local Ping = require 'jass_tool'.Ping
+    Ping(self.receiver_.owner_.object_, -1793, -2991, 5)
 end

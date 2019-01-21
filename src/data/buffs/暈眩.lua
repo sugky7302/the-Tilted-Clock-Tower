@@ -5,6 +5,7 @@ local mt = Buff "暈眩"
 
 -- constants
 mt.model_ = [[Abilities\Spells\Human\Thunderclap\ThunderclapTarget.mdl]]
+mt.model_point_ = "overhead"
 
 function mt:on_add()
     SkillUtil.ChangeTurnRate(self.target_, 0x01, 0)

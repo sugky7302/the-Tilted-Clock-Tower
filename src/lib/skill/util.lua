@@ -82,4 +82,15 @@ AutoCast = function(source, order, target, target_loc)
     cj.IssueTargetOrder(source.object_, order, target.object_)
 end  
 
+function SkillUtil.PreWarn(radius, p, dur)
+    local Unit = require 'unit.core'
+    local SetTimedLife = require 'jass_tool'.SetTimedLife
+
+    local prewarn_unit = Unit.Create(cj.Player(12), 'u009', p, 0)
+    SetTimedLife(prewarn_unit, dur)
+
+    local scale = radius / 100 * 3
+    cj.SetUnitScale(prewarn_unit, scale, scale, 0)
+end
+
 return SkillUtil
