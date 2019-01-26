@@ -15,14 +15,21 @@ function mt:on_reward()
     self:GiveItem 'manh'
 end
 
+local Point = require 'point'
+
+-- assert
+local p = Point(-1793, -2991)
+
 function mt:on_timer(callback)
-    if self:Near(-1793, -2991) then
+    if self:Near(p) then
         self:Update('n005')
+        
+        p:Remove()
+        
         callback:Break()
     end
 end
 
 function mt:on_prepare()
-    local Ping = require 'jass_tool'.Ping
-    Ping(self.receiver_.owner_.object_, -1793, -2991, 5)
+    self:ActivePathIndicator(p)    
 end

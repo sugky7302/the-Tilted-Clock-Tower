@@ -1,33 +1,15 @@
 -- 此module取代we的point，減少ram的開銷
 
-local setmetatable = setmetatable
-
 -- package
 local cj = require 'jass.common'
 
-local Point, mt = {}, {type = "Point"}
-setmetatable(Point, Point)
-Point.__index = mt
+local Point = require 'class'("Point")
 
-function Point:__call(x, y, z)
-    local instance = {
-        x_ = x or 0,
-        y_ = y or 0,
-        z_ = z or 0
-    }
-
-    setmetatable(instance, self)
-
-    return instance 
+function Point:_new(x, y, z)
+    self.x_ = x or 0
+    self.y_ = y or 0
+    self.z_ = z or 0
 end
-
-function mt:Remove()
-    self.x_ = nil
-    self.y_ = nil
-    self.z_ = nil
-    self = nil
-end
-
 
 function Point:__tostring()
     return '(' .. self.x_ .. ', ' .. self.y_ .. ', ' .. self.z_ .. ')'
@@ -54,26 +36,24 @@ function Point:__div(scale)
 end
 
 
-function mt:UpdateZ()
+function Point:UpdateZ()
     local loc = cj.Location(self.x_, self.y_)
     self.z_ = cj.GetLocationZ(loc)
 
     cj.RemoveLocation(loc)
 end
 
--- 假定極點為(0, 0)
-function mt:Rotate(deg)
-    local rad, sin, cos, sqrt = math.rad, math.sin, math.cos, math.sqrt
+-- assert
+local math = math
 
-    local angle, length = rad(deg), sqrt(self.x_ ^ 2 + self.y_ ^ 2)
-    self.x_, self.y_ = length * cos(angle), length * sin(angle)
+-- 假定極點為(0, 0)
+function Point:Rotate(deg)
+    local angle, length = math.rad(deg), math.sqrt(self.x_ ^ 2 + self.y_ ^ 2)
+    self.x_, self.y_ = length * math.cos(angle), length * math.sin(angle)
 end
 
 
 -- 相關功能
--- assert
-local math = math
-
 function Point.Deg(p1, p2)
     return math.deg(Point.Rad(p1, p2))
 end
@@ -105,13 +85,11 @@ function Point.SlopeInSpace(p1, p2)
 end
 
 function Point.Distance(p1, p2)
-    local sqrt = math.sqrt
-    return sqrt((p1.x_ - p2.x_) ^ 2 + (p1.y_ - p2.y_) ^ 2)
+    return math.sqrt((p1.x_ - p2.x_) ^ 2 + (p1.y_ - p2.y_) ^ 2)
 end
 
 function Point.DistanceInSpace(p1, p2)
-    local sqrt = math.sqrt
-    return sqrt((p1.x_ - p2.x_) ^ 2 + (p1.y_ - p2.y_) ^ 2 + (p1.z_ - p2.z_) ^ 2)
+    return math.sqrt((p1.x_ - p2.x_) ^ 2 + (p1.y_ - p2.y_) ^ 2 + (p1.z_ - p2.z_) ^ 2)
 end
 
 -- 注意是 . 不是 :

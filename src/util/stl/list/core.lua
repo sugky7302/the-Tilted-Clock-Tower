@@ -1,44 +1,37 @@
--- 本module是在lua上建構c++的泛型list，提供插入/移除任意類型元素
+-- 在lua上建構c++的泛型list，提供插入/移除任意類型元素
 
-local setmetatable = setmetatable
+-- package
+local require = require
 
-local Node = require 'stl.node'
-local mt = require 'stl.list.iterator'
+local Iterator = require 'stl.list.iterator'
 
-local List = {}
-setmetatable(List, List)
-List.__index = mt
+local List = require 'class'("List")
+
+-- default
+List._begin_ = nil
+List._end_   = nil
+List._size_  = 0
 
 -- assert
-local _EraseNode
-
--- 建構函式
-function List:__call()
-    local instance = {
-        _begin_ = nil,
-        _end_ = nil,
-        _size_ = 0
-    }
-
-    setmetatable(instance, self)
-
-    return instance
-end
+local EraseNode
 
 -- O(self._size_)的方法
-function mt:Remove()
+function List:_delete()
     -- 從末端刪除比較簡單
-    for node in self:rTraverseIterator() do
+    for node in Iterator.rTraverseIterator(self) do
         self:Delete(node)
     end
-
-    self._begin_ = nil
-    self._end_ = nil
-    self._size_ = nil
-    self = nil
 end
 
-function mt:Delete(node)
+function List:PopFront()
+    self:Delete(self._begin_)
+end
+
+function List:PopBack()
+    self:Delete(self._end_)
+end
+
+function List:Delete(node)
     if not node then 
         return false
     end
@@ -48,7 +41,7 @@ function mt:Delete(node)
     end
 
     if self._size_ == 1 then
-        _EraseNode(self, node)
+        EraseNode(self, node)
 
         -- list沒節點了，重置成員變數
         self._begin_ = nil
@@ -62,7 +55,7 @@ function mt:Delete(node)
         node.next_.prev_ = nil
         self._begin_ = node.next_
         
-        _EraseNode(self, node)
+        EraseNode(self, node)
 
         return true
     end
@@ -82,36 +75,38 @@ function mt:Delete(node)
     node.prev_.next_ = node.next_
     node.next_.prev_ = node.prev_
     
-    _EraseNode(self, node)
+    EraseNode(self, node)
 
     return true
 end
 
-function mt:IsEmpty()
+function List:IsEmpty()
     return self._size_ == 0
 end
 
-_EraseNode = function(self, node)
+EraseNode = function(self, node)
     node:Remove()
     self._size_ = self._size_ - 1
 end
 
-function mt:PopFront()
-    self:Delete(self._begin_)
+function List:PushFront(data)
+    self:Insert(self._begin_, data)
 end
 
-function mt:PopBack()
-    self:Delete(self._end_)
+function List:PushBack(data)
+    self:Insert(nil, data)
 end
 
 -- data 會插在 node 的前面
 -- node 等於 nil，視作插在 list 的最末端
-function mt:Insert(node, data)
+function List:Insert(node, data)
     if not data then 
         return false
     end
 
+    local Node = require 'stl.list.node'
     local node_new = Node(data)
+    
     if self:IsEmpty() then
 
         -- 新node是第一個node，也是最後一個node
@@ -163,17 +158,9 @@ function mt:Insert(node, data)
     return true
 end
 
-function mt:PushFront(data)
-    self:Insert(self._begin_, data)
-end
-
-function mt:PushBack(data)
-    self:Insert(nil, data)
-end
-
 -- 只找第一筆資料
-function mt:Find(data)
-    for node in self:TraverseIterator() do
+function List:Find(data)
+    for node in Iterator.TraverseIterator(self) do
         if node:getData() == data then 
             return node
         end
@@ -182,16 +169,16 @@ function mt:Find(data)
     return false
 end
 
--- 獲取成員變量
-function mt:getSize()
+-- 獲取私有成員變量
+function List:getSize()
     return self._size_
 end
 
-function mt:getBegin()
+function List:getBegin()
     return self._begin_
 end
 
-function mt:getEnd()
+function List:getEnd()
     return self._end_
 end
 

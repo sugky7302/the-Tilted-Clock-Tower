@@ -4,6 +4,8 @@ local Comparator = {}
 
 -- 來源 honey199396, Lua -- 重写pairs方法（让字典访问有序）
 function Comparator.Default(op1, op2)
+    local type, tonumber, tostring = type, tonumber, tostring 
+
     local type1, type2 = type(op1), type(op2)
     local num1,  num2  = tonumber(op1), tonumber(op2)
 

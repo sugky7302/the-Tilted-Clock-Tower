@@ -9,11 +9,9 @@ MathLib.e = math.exp(1)
 
 function MathLib.Round(num)
     if num >= 0 then
-        local floor = math.floor
-        return floor(num + 0.5) 
+        return math.floor(num + 0.5) 
     else
-        local ceil = math.ceil
-        return ceil(num - 0.5)
+        return math.ceil(num - 0.5)
     end
 end
 
@@ -23,43 +21,40 @@ end
 -- n, m 非整數會報錯
 math.randomseed(tonumber(tostring(os.time()):reverse():sub(1,6)))
 function MathLib.Random(n, m)
-    local random, modf = math.random, math.modf
+    local modf = math.modf
     if not n then
-        return random()
+        return math.random()
     end
     
     if not m then
         n = modf(n)
-        return random(n)
+        return math.random(n)
     end
 
     n = modf(n)
     m = modf(m)
-    return random(n, m)
+    return math.random(n, m)
 end
 
 function MathLib.Difference(value, compareValue)
-    local abs = math.abs
-    return abs(value - compareValue)
+    return math.abs(value - compareValue)
 end
 
 function MathLib.BoundValue(value_min, value, value_max)
-    local max, min = math.max, math.min
-
     -- 沒有上下限，直接回傳值
     if not(value_min or value_max) then
         return value
     end
 
     if not value_min then
-        return min(value_max, value)
+        return math.min(value_max, value)
     end
 
     if not value_max then
-        return max(value_min, value)
+        return math.max(value_min, value)
     end
 
-    return min(value_max, max(value_min, value))
+    return math.min(value_max, math.max(value_min, value))
 end
 
 return MathLib

@@ -41,15 +41,70 @@ function Util:GiveItem(trigger_item, count)
 end
 
 function Util:Near(x, y)
+    local target_point = type(x) == 'table' and x or Point(x, y)
     local source_point = Point.GetUnitLoc(self.receiver_.object_)
-    local target_point = Point(x, y)
 
     local is_near = Point.Distance(source_point, target_point) < 200
 
     source_point:Remove()
-    target_point:Remove()
+    
+    if type(x) ~= 'table' then
+        target_point:Remove()
+    end
 
     return is_near
+end
+
+-- TODO: 用mover重寫
+-- assert
+local UpdateRecevierPoint
+
+function Util:ActivePathIndicator(x, y)
+    local Point = require 'point'
+    local type = type
+
+    local receiver_point, target_point = Point.GetUnitLoc(self.receiver_.object_), type(x) == 'table' and x or Point(x,y)
+    local angle = Point.Deg(receiver_point, target_point)
+
+    UpdateRecevierPoint(receiver_point, angle)
+
+    local indicator = require('unit.core').Create(self.receiver_.owner_.object_, 'u008', receiver_point, angle)
+
+    receiver_point:Remove()
+
+    -- 讓指示器平穩地移動，如果用on_timer會卡卡地，因為它是1秒執行一次
+    local Timer = require 'timer.core'
+    Timer(0.03125, true, function(this)
+        local receiver_point = Point.GetUnitLoc(self.receiver_.object_)
+        local angle = Point.Deg(receiver_point, target_point)
+
+        UpdateRecevierPoint(receiver_point, angle)
+
+        cj.SetUnitPosition(indicator, receiver_point.x_, receiver_point.y_)
+        cj.SetUnitFacing(indicator, angle)
+
+        receiver_point:Remove()
+
+        -- 如果玩家死亡或是抵達目的地就終止計時器
+        if (not self.receiver_:IsAlive()) or self:Near(target_point) then
+            this:Break()
+            require 'jass_tool'.RemoveUnit(indicator)
+
+            -- 只刪除此函式創建的target_point，如果是引用的話，在這刪除外面也會刪除
+            if type(x) ~= 'table' then
+                target_point:Remove()
+            end
+        end
+    end)
+end
+
+UpdateRecevierPoint = function(p, angle)
+    local math = math
+    local offset = 150
+
+    -- 位置要在英雄前面才看的到
+    p.x_ = p.x_ + offset * math.cos(math.rad(angle))
+    p.y_ = p.y_ + offset * math.sin(math.rad(angle))
 end
 
 return Util

@@ -1,5 +1,16 @@
 # 更新日誌
-## 0.31.20 - 2019-01-21 - 第一次測試
+## 0.32.1 - 2019-01-26 - 用class重構
+### Added:
+- [quest.util] 新增路徑指示器，會為玩家指向完成任務的地點。
+- 新增class函數，能夠創建可獲得實例、多重原型繼承、且多態的行為委託機制。
+### Changed:
+- [point] 用新的class重寫功能。
+- [quest.util] Near函數的參數類型可以為點。
+- [test.core] 根據新的point參數格式做修正
+### Fixed:
+- [unit.core] 修正Create函數不會返回創建的單位的問題。
+
+## [0.32.0] - 2019-01-21 - 第一次測試
 ### Added:
 - [jass_tool] 新增ping函數。
 - [monsters.豺狼守望者] 完成技能與行為樹。
@@ -671,6 +682,7 @@
 [actboy168-lua-debug]:https://tieba.baidu.com/p/5902146836
 [coordinate_error]:https://tieba.baidu.com/p/5773334779?pid=120570865697&cid=0&red_tag=1133617129#120570865697
 
+[0.32.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/7226965592638659b456e1ccde18da28788b6d1c
 [0.31.19]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/49108e30e84d383e5317ec416259ffb7380e3e5d
 [0.31.18]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/1dd2f34bbac3db781d83d25ffffbfff835b89d60
 [0.31.17]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/d85bfa9cfc6be5a521b63cf4676bcc4b9bc5531e

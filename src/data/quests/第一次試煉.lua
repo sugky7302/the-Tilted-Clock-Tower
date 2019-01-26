@@ -66,6 +66,5 @@ function mt:on_timer(callback)
 end
 
 function mt:on_prepare()
-    local Ping = require 'jass_tool'.Ping
-    Ping(self.receiver_.owner_.object_, -2853.9, 5577.1, 5)
+    self:ActivePathIndicator(-2853.9, 5577.1)
 end

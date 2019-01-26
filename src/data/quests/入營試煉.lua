@@ -21,11 +21,11 @@ function mt:on_timer(callback)
     -- 不這麼寫的話，可能會產生「回去找庫拉特」先解完的情況
     if self.demands_['ngno'] == false and self:Near(-1793, -2991) then
         self:Update('n005')
+        
         callback:Break()
     end
 end
 
 function mt:on_prepare()
-    local Ping = require 'jass_tool'.Ping
-    Ping(self.receiver_.owner_.object_, -3155, 591, 5)
+    self:ActivePathIndicator(-3155, 591)  
 end

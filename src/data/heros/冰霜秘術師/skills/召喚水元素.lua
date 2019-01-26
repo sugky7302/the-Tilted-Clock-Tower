@@ -25,7 +25,7 @@ function mt:on_cast_shot()
 
     js.TimeEffect(AddEffect("war3mapImported\\186.mdx", self.target_loc_.x_, self.target_loc_.y_), 0.5)
 
-    -- TODO:記得要註冊被傷害事件
+    -- NOTE: 記得要註冊被傷害事件
     local dummy = Pet.Create('hwat', self.owner_, self.target_loc_, self.dur_)
     self.owner_.pet_ = dummy
     dummy:set("最大物理攻擊力", self.owner_:get "最大物理攻擊力" * 0.5)

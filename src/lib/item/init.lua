@@ -16,10 +16,8 @@ local function Combine()
     end
 end
 
--- TODO: 合成物品的生命值為材料等級
+-- NOTE: 合成物品的生命值為材料等級
 GetCombineCost = function(lv)
-    local math = math
-
     return 50 * math.exp(lv - 1)
 end
 

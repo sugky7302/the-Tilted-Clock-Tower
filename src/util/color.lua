@@ -1,7 +1,5 @@
 -- 此module提供we的字串顏色符
 
-local setmetatable = setmetatable
-
 local Color = {}
 setmetatable(Color, Color)
 
@@ -34,8 +32,7 @@ function Color:__call(...)
         return Color[r]
     end
 
-    local string_format = string.format
-    local color_nums = string_format("%03d-%03d-%03d", r, g, b)
+    local color_nums = string.format("%03d-%03d-%03d", r, g, b)
 
     -- 儲存下來，下次調用就不用再計算
     if not self[color_nums] then

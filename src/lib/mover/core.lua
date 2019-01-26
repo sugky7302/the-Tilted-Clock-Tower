@@ -1,13 +1,9 @@
 -- 可以操作任意單位進行固定軌跡的移動器
 
-local setmetatable = setmetatable
-
-local mod, mt = {}, {}
-setmetatable(mod, mod)
-mod.__index = mt
+local class = require 'class'("Mover")
 
 -- constant
-mt.PERIOD = 0.03125
+class.PERIOD = 0.03125
 
 -- assert
 local Move

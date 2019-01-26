@@ -1,33 +1,14 @@
--- 此module會生成一個連續但移除中間元素後，順序會開始混亂的類vector結構
+-- 生成一個連續但移除中間元素後，順序會開始混亂的類vector結構
 
-local setmetatable = setmetatable
+local Array = require 'class'("Array")
 
-local Array, mt = {}, {}
-setmetatable(Array, Array)
-Array.__index = mt
-
--- assert
-mt.type = "Array"
-
-function Array:__call()
-    local instance = {
-        _begin_ = 1,
-        _end_ = 1, -- ex: for i = _begin_, _end_ - 1(要記得扣，不然空array也會執行一次迴圈) do
-        _length_ = 0
-    }
-    setmetatable(instance, self)
-    return instance
-end
-
-function mt:Remove()
-    self._begin_ = nil
-    self._end_ = nil
-    self._length_ = nil
-    self = nil
-end
+-- default
+Array._begin_  = 1
+Array._end_    = 1 -- ex: for i = _begin_, _end_ - 1(要記得扣，不然空array也會執行一次迴圈) do
+Array._length_ = 0
 
 -- 操作元素
-function mt:PushBack(data)
+function Array:PushBack(data)
     if not data then
         return false
     end
@@ -40,7 +21,7 @@ function mt:PushBack(data)
 end
 
 -- 刪除所有"資料 = data"的空間
-function mt:Delete(data)
+function Array:Delete(data)
     if not data then 
         return false
     end
@@ -59,7 +40,7 @@ function mt:Delete(data)
     end
 end
 
-function mt:Clear()
+function Array:Clear()
     for i = self._begin_, self._end_ - 1 do 
         self[i] = nil
     end
@@ -71,7 +52,7 @@ end
 
 -- 存在的話會回傳索引
 -- 只找第一筆資料
-function mt:Exist(data)
+function Array:Exist(data)
     if not data then 
         return false
     end
@@ -85,12 +66,12 @@ function mt:Exist(data)
     return false
 end
 
--- 工具
-function mt:IsEmpty()
+-- 獲取私有成員變量
+function Array:IsEmpty()
     return self._length_ == 0
 end
 
-function mt:getLength()
+function Array:getLength()
     return self._length_
 end
 

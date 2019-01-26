@@ -1,6 +1,6 @@
 -- 解決pairs無序的問題
 -- O(#tb)的方法
-function pairsByKey(tb)
+local function pairsByKey(tb)
     local pairs = pairs
     local tb_key, size = {}, 0
     for n in pairs(tb) do 
@@ -8,9 +8,8 @@ function pairsByKey(tb)
         tb_key[size] = n 
     end
     
-    local table_sort = table.sort
     local Comparator = require 'comparator'.Default
-    table_sort(tb_key, Comparator)
+    table.sort(tb_key, Comparator)
     
     local i = 0
     return function()

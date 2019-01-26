@@ -1,13 +1,8 @@
--- 此module為地圖創建多邊形區域，取代we編輯器的region功能
+-- 為地圖創建多邊形區域，取代we編輯器的region功能
 
-local setmetatble = setmetatble
+local require = require
 
-local Region, mt = {}, {}
-setmetatable(Region, Region)
-Region.__index = mt
-
--- constants
-mt.type = "Region"
+local Region = require 'class'("Region")
 
 function Region.Init()
     local pairs = pairs
@@ -21,14 +16,14 @@ function Region.Init()
     local Game = require 'game'
     local cj = require 'jass.common'
     local Timer = require 'timer.core'
-    local Unit = require 'unit'
+    local Unit = require 'unit.core'
 
-    local _period = 1
+    local period = 1
 
     Game:Event "單位-創建" (function(_, hero)
         if cj.IsUnitType(hero, cj.UNIT_TYPE_HERO) then
             -- 偵測玩家位置
-            Timer(_period, true, function(_)
+            Timer(period, true, function(_)
                 for name, region in pairs(REGIONS) do 
                     if region:In(hero) then
                         Unit(hero)["所在區域"] = name
@@ -39,25 +34,18 @@ function Region.Init()
     end)
 end
 
-function Region:__call(name, points)
+function Region:_new(name, points)
     local Polygon = require 'polygon'
-
-    local instance = {
-        name_ = name,
-        object_ = Polygon(points),
-    }
-
-    self[name] = instance
-
-    setmetatable(instance, self)
-
-    return instance
+    self.name_   = name
+    self.object_ = Polygon(points)
+    
+    Region:setInstance(name, self)
 end
 
-function mt:HasUnit(unit)
+function Region:HasUnit(unit)
     local Point = require 'point'
 
-    local p_unit = Point:GetUnitLoc(unit)
+    local p_unit = Point.GetUnitLoc(unit)
     local in_region = self.object_:In(p_unit)
 
     p_unit:Remove()
@@ -65,7 +53,7 @@ function mt:HasUnit(unit)
     return in_region
 end
 
-function mt:In(p)
+function Region:In(p)
     local in_region = self.object_:In(p)
     return in_region
 end

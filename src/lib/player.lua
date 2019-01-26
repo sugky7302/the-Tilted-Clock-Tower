@@ -1,15 +1,12 @@
--- 此module擴展we的player的功能
+-- 擴展we的player的功能
 
-local setmetatable = setmetatable
+-- package
+local require = require 
 local cj = require 'jass.common'
 
-local Player, mt = {}, {}
-setmetatable(Player, Player)
-Player.__index = mt
+local Player = require 'class'("Player")
 
 -- assert
-mt.type = "Player"
-
 local set, get = {}, {}
 
 function Player.Init()
@@ -17,56 +14,46 @@ function Player.Init()
     local War3 = require 'api'
 
     local click_trg = War3.CreateTrigger(function()
-        Player(cj.GetTriggerPlayer()):EventDispatch("玩家-對話框被點擊", cj.GetClickedButton())
+        local player = Player:getInstance(cj.GetPlayerId(cj.GetTriggerPlayer()))
+        player:EventDispatch("玩家-對話框被點擊", cj.GetClickedButton())
+
         return true
     end)
 
     -- 設定玩家
     for i = 0, 15 do 
         if cj.GetPlayerController(cj.Player(i)) == cj.MAP_CONTROL_USER then
-            cj.TriggerRegisterDialogEvent(click_trg, Player(cj.Player(i)).dialog_.object_)
+            cj.TriggerRegisterDialogEvent(click_trg, Player:getInstance(i).dialog_.object_)
         end
     end
     
 end
 
-function Player:__call(player)
-    local instance = self[cj.GetPlayerId(player) + 1]
-    if not instance then
-        instance = {
-            name_ = cj.GetPlayerName(player),
-            index_ = cj.GetPlayerId(player),
-            object_ = player,
-            dialog_ = nil,
-            multiboard_ = nil,
-            leaderboard_ = nil,
-        }
+function Player:_new(player)
+    self.object_ = player
+    self.name_ = cj.GetPlayerName(player)
+    self.index_ = cj.GetPlayerId(player)
 
-        local Dialog = require 'dialog'
-        instance.dialog_ = Dialog(instance)
+    local Dialog = require 'dialog'
+    self.dialog_ = Dialog(self)
 
-        local Multiboard = require 'multiboard'
-        instance.multiboard_ = Multiboard(instance)
+    local Multiboard = require 'multiboard'
+    self.multiboard_ = Multiboard(self)
 
-        local Leaderboard = require 'leaderboard'
-        instance.leaderboard_ = Leaderboard(instance)
+    local Leaderboard = require 'leaderboard'
+    self.leaderboard_ = Leaderboard(self)
 
-        self[cj.GetPlayerId(player) + 1] = instance
-
-        setmetatable(instance, self)
-    end
-
-    return instance
+    Player:setInstance(self.index_, this)
 end
 
 -- assert
 local Event = require 'event'
 
-function mt:Event(event_name)
+function Player:Event(event_name)
     return Event(self, event_name)
 end
 
-function mt:EventDispatch(event_name, ...)
+function Player:EventDispatch(event_name, ...)
 	local res = Event.Dispatch(Player, event_name, self, ...)
 	if res ~= nil then
 		return res
@@ -82,25 +69,25 @@ function mt:EventDispatch(event_name, ...)
 	return nil
 end
 
-function mt:add(name, val)
+function Player:add(name, val)
     if not set[name] then
-        return 
+        return false
     end
 
     set[name](self, get[name](self) + val)
 end
 
-function mt:get(name)
+function Player:get(name)
     if not get[name] then
-        return
+        return false
     end
 
     return get[name](self)
 end
 
-function mt:set(name, val)
+function Player:set(name, val)
     if not set[name] then
-        return 
+        return false
     end
 
     set[name](self, val)

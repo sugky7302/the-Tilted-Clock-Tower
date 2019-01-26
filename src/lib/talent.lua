@@ -1,60 +1,55 @@
 -- 創建天賦、玩家學習天賦、調用天賦效果
 
-local setmetatable = setmetatable
-
 -- package
+local require = require
 local Skill = require 'skill.core'
 local Unit = require 'unit.core'
 
-local Talent, mt = {}, {}
-setmetatable(Talent, Talent)
-Talent.__index = mt
+local Talent = require 'class'("Talent")
 
 -- assert
 -- 事件預設值
-mt.on_init   = nil
-mt.on_add    = nil
-mt.on_call   = nil
-mt.on_remove = nil
-mt.on_cast   = nil
+Talent.on_init   = nil
+Talent.on_add    = nil
+Talent.on_call   = nil
+Talent.on_remove = nil
+Talent.on_cast   = nil
 
+-- assert
 local GetTalentList, HasTalent, CallEvent
 
-function Talent:__call(name)
-    return function(instance)
-        self[name] = instance
-        instance.name_ = name
+function Talent:_new(config)
+    -- 把模板設定給實例
+    self:_copy(config)
 
-        setmetatable(instance, self)
-        return instance
-    end
+    Talent:setInstance(self.name_, self)
 end
 
 -- id是jass裡的技能id
-function Unit.__index:LearnTalent(id)
-    local GetObjectName, string_sub = require 'jass.common'.GetObjectName, string.sub
+function Unit:LearnTalent(id)
+    local GetObjectName = require 'jass.common'.GetObjectName
 
-    local name = string_sub(GetObjectName(id), 10) -- 把技能前綴 "[天賦] "去掉(中文=3個字符)
+    -- 把技能前綴 "[天賦] "去掉(中文=3個字符)
+    local name = string.sub(GetObjectName(id), 10) 
 
-    if not Talent[name] then
+    if not Talent:getInstance(name) then
         return false
     end
 
     -- 刪除學過的天賦
     self:RemoveAbility(id)
 
-    local talent = Talent[name]
+    local talent = Talent:getInstance(name)
     local talents = GetTalentList(self, talent.skill_)
     talents[#talents + 1] = talent
 
     -- 根據天賦點花費來排序
-    local table_sort = table.sort
-    table_sort(talents, function(a, b)
+    table.sort(talents, function(a, b)
         return a.cost_ < b.cost_
     end)
 
     -- 調用初始化函數
-    CallEvent(Talent[name], "on_init", self)
+    CallEvent(talent, "on_init", self)
 
     -- 將天賦描述顯示在技能說明
     -- 設置擁有者是因為UpdateTip會呼叫
@@ -63,10 +58,13 @@ function Unit.__index:LearnTalent(id)
     skill:UpdateTip()
 end
 
-function Unit.__index:TalentDispatch(name, event, ...)
-    if not Talent[name] then
+
+function Unit:TalentDispatch(name, event, ...)
+    if not Talent:getInstance(name) then
         return false
     end
+
+    local talent = Talent:getInstance(name)
 
     local EVENT_NAME = {
         ['初始化'] = 'on_init',
@@ -76,15 +74,14 @@ function Unit.__index:TalentDispatch(name, event, ...)
         ['施法'] = 'on_cast',
     }
     
-    if HasTalent(self, Talent[name]) then
-        return CallEvent(Talent[name], EVENT_NAME[event], self, ...)
+    if HasTalent(self, talent) then
+        return CallEvent(talent, EVENT_NAME[event], self, ...)
     end
 
     return false
 end
 
 HasTalent = function(self, talent)
-    local ipairs = ipairs
     for _, tl in ipairs(GetTalentList(self, talent.skill_)) do 
         if tl == talent then 
             return true 

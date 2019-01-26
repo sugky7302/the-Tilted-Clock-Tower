@@ -1,19 +1,19 @@
 -- 此module提供測試工具
 
-local setmetatable = setmetatable
+local require = require
 
 local Test = {}
 setmetatable(Test, Test)
 
 function Test:__call(file_name)
     local format = string.format
-    local require = require
+    local clock = os.clock
     
-    local start_time = os.clock()
+    local start_time = clock()
         
     require("test." .. file_name)(self)
     
-    local end_time = os.clock()
+    local end_time = clock()
     print("--------")
     print(format("start time : %.4f", start_time))
     print(format("end time   : %.4f", end_time))
@@ -102,7 +102,7 @@ function Test.CreateItem(test_id)
     local Item = require 'item.core'
     local Point = require 'point'
 
-    return Item.Create(test_id, Point(15009, 9869))
+    return Item.Create(test_id, Point{x_ = 15009, y_ = 9869})
 end
 
 function Test.AddRecipe(recipe)

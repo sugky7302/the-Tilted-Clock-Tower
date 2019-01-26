@@ -1,30 +1,17 @@
--- 此module創建多邊形區域，並可偵測有沒有點在多邊形內
+-- 創建多邊形區域，並可偵測有沒有點在多邊形內
 
-local setmetatable = setmetatable
-
-local Polygon, mt = {}, {}
-setmetatable(Polygon, Polygon)
-Polygon.__index = mt
-
--- constants
-mt.type = 'Polygon'
+local Polygon = require 'class'("Polygon")
 
 -- assert
-local _GeneratePoints
+local GeneratePoints
 
 -- points.shape = (2n, 1)
-function Polygon:__call(points)
-    local instance = {
-        point_num_ = #points / 2,
-        points_ = _GeneratePoints(points),
-    }
-
-    setmetatable(instance, self)
-
-    return instance
+function Polygon:_new(points)
+    self.point_num_ = #points / 2
+    self.points_ = GeneratePoints(points)
 end
 
-_GeneratePoints = function(points)
+GeneratePoints = function(points)
     local Point = require 'point'
 
     -- 奇數索引是X座標，偶數索引是Y座標
@@ -53,26 +40,25 @@ function Polygon:__tostring()
         print_str_tb[#print_str_tb + 1] = ") "
     end
 
-    local table_concat = table.concat
-    return table_concat(print_str_tb)
+    return table.concat(print_str_tb)
 end
 
 -- 以p為起點，向右作一條射線，看射線跟邊相交的點的數量是奇還偶
-function mt:In(p)
-    local max, min, floor = math.max, math.min, math.floor
+function Polygon:In(p)
+    local math = math
     local cross_num = 0
 
     for i = 1, self.point_num_ do 
         local p1 = self.points_[i]
 
-        local next_index = (i + 1) - floor(i / self.point_num_) * self.point_num_ -- 最後一個點與第一個點的連接
+        local next_index = (i + 1) - math.floor(i / self.point_num_) * self.point_num_ -- 最後一個點與第一個點的連接
         local p2 = self.points_[next_index]
 
         -- 點經過水平的邊不算
         -- 點的y座標比兩端點都低或都高，都代表碰不到邊
         if (p1.y_ ~= p2.y_) and
-           (p.y_  >= min(p1.y_, p2.y_)) and
-           (p.y_  <  max(p1.y_, p2.y_)) then
+           (p.y_  >= math.min(p1.y_, p2.y_)) and
+           (p.y_  <  math.max(p1.y_, p2.y_)) then
             -- 計算斜率，再用比例求x
             local x = (p.y_ - p1.y_) * (p2.x_ - p1.x_) / (p2.y_ - p1.y_) + p1.x_
 

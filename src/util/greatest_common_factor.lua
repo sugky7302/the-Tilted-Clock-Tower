@@ -1,6 +1,6 @@
 -- 此函數計算最大公因數
 -- 遞歸比起for會慢很多，這裡把較大的數當作迴圈次數，才不會出現迴圈結束卻還沒得到結果的問題
-function GreatestCommonFactor(num1, num2)
+local function GreatestCommonFactor(num1, num2)
     local big_num, small_num
     if num1 > num2 then
         big_num = num1

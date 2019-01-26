@@ -1,8 +1,8 @@
 local function PointTest()
     local Point = require 'point'
 
-    local p1 = Point(123, 456)
-    local p2 = Point(28, -137, 948)
+    local p1 = Point{x_ = 123, y_ = 456}
+    local p2 = Point{x_ = 28, y_ = -137, z_ = 948}
     print(p1 + p2)
     print(p1 - p2)
     print(p1 * 13)
@@ -15,7 +15,7 @@ local function PointTest()
     local Rand = require 'math_lib'.Random 
     local p
     for i = 1, 3000000 do 
-        p = Point(Rand(-10000, 10000), Rand(-10000, 10000))
+        p = Point{x_ = Rand(-10000, 10000), y_ = Rand(-10000, 10000)}
         p:Remove()
     end
 end

@@ -166,9 +166,11 @@ function Unit.RemoveUnit(unit)
     RemoveUnit(unit)
 end
 
+-- 直接寫return cj.CreateUnit會沒有返回單位
 function Unit.Create(player, id, loc, facing)
     id = (type(id) == 'number') and id or S2Id(id)
-    return cj.CreateUnit(player, id, loc.x_, loc.y_, facing)
+    local unit = cj.CreateUnit(player, id, loc.x_, loc.y_, facing)
+    return unit
 end
 
 -- assert

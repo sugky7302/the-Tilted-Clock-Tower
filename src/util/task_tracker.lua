@@ -2,8 +2,6 @@
 -- 目前texttag、missile內建回報任務完成機制
 -- 可以到skill.cast和寒冰箭看看實際案例
 
-local setmetatable = setmetatable
-
 local TaskTracker = {}
 setmetatable(TaskTracker, TaskTracker)
 

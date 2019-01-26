@@ -1,4 +1,6 @@
-function TableTest()
+-- 數組段的創建速度比哈希段快5倍
+
+local function TableTest()
     local format = string.format
     local times = 2000000
 
@@ -58,9 +60,9 @@ function TableTest()
     for i = 1, times do
         local label = i .. ""
         if i > times / 2 then
-            tb3[label] = i    
+            tb5[label] = i    
         else
-            tb2[label] = i
+            tb6[label] = i
         end
     end
     local end_time = os.clock()

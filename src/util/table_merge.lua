@@ -1,7 +1,8 @@
 -- 將兩個table合併，但不合併內部的table元素
 
 local function TableMerge(tb1, tb2)
-    local pairs = pairs
+    local type = type
+    
     for k, v in pairs(tb2) do 
         if type(k) == 'number' then
             tb1[#tb1 + 1] = v

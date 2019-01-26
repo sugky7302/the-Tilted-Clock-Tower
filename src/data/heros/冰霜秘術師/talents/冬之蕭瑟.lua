@@ -1,8 +1,9 @@
 -- package
 local Damage = require 'combat.damage'
 
-local mt = require 'talent' "冬之蕭瑟"
+local mt = require 'talent'
 {
+    name_ = "冬之蕭瑟",
     cost_ = 5,
     tip_ = "水元素現在會模仿英雄施放寒冰箭、暴風雪。",
     skill_ = "召喚水元素",
