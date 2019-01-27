@@ -3,6 +3,7 @@
 local Checker = {}
 
 -- assert
+local require = require
 local IsDodge, IsCri, IsPnt, CheckBoundary
 
 function Checker.Damage(self, atk, def)

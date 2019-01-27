@@ -11,7 +11,7 @@ local function Class(name, ...)
     local setmetatable, pairs, table_concat = setmetatable, pairs, table.concat
 
 	local object = {
-		_prototype_ = {...}, -- 原型，也就是關聯的對象，可視為父類。排在最前面的原型為該類別的最高優先度
+		_prototype_ = {...}, -- 原型，也就是委託的對象，只要該對象有你需要的東西，都可以填進去。排在最前面的原型為第一委託者。
 		
 		type = name,
 
@@ -34,6 +34,7 @@ local function Class(name, ...)
 			return instance
 		end,
 
+		-- 在self[key]找不到值時調用，如果沒有設定的話，self[key]是直接回傳nil。
 		-- 搜索原型鏈，將對象委託給原型處理(function)或是返回原型的值(table、string、number、boolean)
 		-- 根據原型鏈的排列順序決定優先度
         -- 不使用rawget的原因是需要搜索整個原型鏈，而不是只有當前原型鏈
@@ -67,10 +68,10 @@ local function Class(name, ...)
 			return nil
 		end,
 
-		-- 以下為lua預設的賦值格式，可以更改，最好使用rawset賦值。
-		-- 如果內部又用self[key] = xxx，它會因為找不到key而一直調用__newindex而導致無限循環因而報錯
+		-- __newindex是在對不存在的索引賦值時調用，我們不會拿來賦值，因為self[key] = value就會直接賦值了，
+		-- __newindex存在則編譯器會調用它，而不會調用賦值。如果__newindex是一個table，則會賦值在table裡。
+		-- 如果內部用self[key] = value，它又會因為對不存在的索引賦值而調用__newindex，導致無限循環因而報錯。
 		-- __newindex = function(table, key, value)
-		-- 	   rawset(table, key, value)
 		-- end,
 
 		Remove = function(self)
@@ -94,8 +95,10 @@ local function Class(name, ...)
         
         -- 因應第三種建構方式，instance會把data複製一份給自己
         _copy = function(self, data)
-            for key, value in pairs(data) do 
-                self[key] = value
+            if data and type(data) == 'table' then
+                for key, value in pairs(data) do 
+                    self[key] = value
+                end
             end
         end,
 

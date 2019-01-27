@@ -1,11 +1,12 @@
 -- 此module會在英雄身上創建狀態條
+-- 要給unit、value、timeout、color、is_reverse、initialize、update
 
-local setmetatable = setmetatable
+-- package
+local require = require
 local Point = require 'point'
+local Texttag = require 'texttag.core'
 
-local Bar, mt = {}, {}
-setmetatable(Bar, Bar)
-Bar.__index = mt 
+local Bar = require 'class'("Bar", Texttag)
 
 -- assert
 local motivation = Point(-40, 0)
@@ -13,29 +14,27 @@ local motivation = Point(-40, 0)
 local Initialize, Update
 
 -- unit是Unit實例，不是單位
-function Bar:__call(unit, value, timeout, color, is_reverse, initialize, update)
+function Bar:_new(data)
     local SIZE = 0.015
 
-    local unit_loc = Point.GetUnitLoc(unit.object_)
-    local instance = {
-        _msg_ = mt.GetBarModel(0, value or timeout, color, is_reverse),
-        _loc_ = unit_loc + motivation,
-        _timeout_ = timeout,
-        _value_ = 0, -- 記錄當前值，計算條的變色比例
-        _max_value_ = value or timeout, -- 記錄最大值，計算條的變色比例
-        _size_ = SIZE,
-        _is_reverse_ = is_reverse,
-        _color_ = color,
-        _owner_ = unit,
+    local unit_loc = Point.GetUnitLoc(data.unit.object_)
+    
+    self._msg_ = mt.GetBarModel(0, data.value or data.timeout, data.color, data.is_reverse)
+    self._loc_ = unit_loc + motivation
+    self._timeout_ = data.timeout
+    self._value_ = 0 -- 記錄當前值，計算條的變色比例
+    self._max_value_ = data.value or data.timeout -- 記錄最大值，計算條的變色比例
+    self._size_ = SIZE
+    self._is_reverse_ = data.is_reverse
+    self._color_ = data.color
+    self._owner_ = data.unit
 
-        Initialize = initialize or Initialize,
-        Update = update or Update,
-    }
+    self.Initialize = data.initialize or Initialize
+    self.Update = data.update or Update
 
     unit_loc:Remove()
 
-    local Texttag = require 'texttag.core'
-    return Texttag(instance)
+    Texttag._new(self)
 end
 
 -- assert
@@ -60,11 +59,12 @@ Update = function(self)
     cj.SetTextTagPos(self._texttag_, self._loc_.x_, self._loc_.y_, Z_OFFSET)
 
     self._value_ = self._timeout_
-    local bar_model = mt.GetBarModel(self._max_value_ - self._value_, self._max_value_, self._color_, self._is_reverse_)
+    local bar_model = Bar.GetBarModel(self._max_value_ - self._value_, self._max_value_,
+                                      self._color_, self._is_reverse_)
     cj.SetTextTagText(self._texttag_, bar_model, self._size_)
 end
 
-function mt.GetBarModel(current, total, color, is_reverse)
+function Bar.GetBarModel(current, total, color, is_reverse)
     -- 設定條是向右充能，或是向左
     current = is_reverse and (total - current) or current
     
@@ -75,11 +75,11 @@ function mt.GetBarModel(current, total, color, is_reverse)
 
     -- 以漂浮文字輸出條的視覺效果
     local Color = require 'color'
-    local string_rep, table_concat = string.rep, table.concat
+    local string_rep = string.rep
     local BAR_MODEL = "l"
     local string_concat = {Color(color), string_rep(BAR_MODEL, coloring_rate),
                            "|r|cffc0c0c0", string_rep(BAR_MODEL, BAR_SIZE - coloring_rate)}
-    return table_concat(string_concat)
+    return table.concat(string_concat)
 end
 
 return Bar

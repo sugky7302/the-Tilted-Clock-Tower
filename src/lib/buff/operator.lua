@@ -1,8 +1,12 @@
 -- 提供添加、刪除buff的功能
 
+-- package
+local cj = require 'jass.common'
+
 local Operator = {}
 
 -- assert
+local table = table
 local GetBuffList, CheckDisable, AddEffect, RemoveEffect
 
 function Operator.Obtain(self)
@@ -25,13 +29,11 @@ function Operator.Obtain(self)
             self.target_.buffs[self.name_] = self
         end
     elseif self.cover_type_ == 1 then -- 共存模式
-        local table_insert = table.insert
-
         local list = GetBuffList(self)
         for i = 1, #list + 1 do 
             local this = list[i]
             if not this then
-                table_insert(list, i, self)
+                table.insert(list, i, self)
 
                 -- 如果buff不在有效區內，則禁用
                 CheckDisable(self, i)
@@ -41,7 +43,7 @@ function Operator.Obtain(self)
 
             -- true表示插入到當前位置，否則繼續查詢
             if this:EventDispatch("狀態-覆蓋", false, self) then
-                table_insert(list, i, self)
+                table.insert(list, i, self)
 
                 -- 如果剛好把原來的buff擠出有效區，則禁用它
                 if this.cover_max_ == i then
@@ -88,8 +90,7 @@ end
 
 AddEffect = function(self)
     if self.model_ then
-        local AddEffectTarget = require 'jass.common'.AddSpecialEffectTarget
-        self.effect_ = AddEffectTarget(self.model_, self.target_.object_, self.model_point_)
+        self.effect_ = cj.AddSpecialEffectTarget(self.model_, self.target_.object_, self.model_point_)
     end
     
     if self.tip_skill_ then
@@ -110,12 +111,11 @@ function Operator.Delete(self)
     if self.cover_type_ == 1 then
         -- 清空
         if self.target_.buffs_ and self.target_.buffs_[self.name_] then
-            local table_remove = table.remove
             local list = self.target_.buffs_[self.name_]
 
             for i = 1, #list do 
                 if self == list[i] then
-                    table_remove(list, i)
+                    table.remove(list, i)
 
                     -- 如果在有效區內，則生效
                     if self.cover_max_ >= i then
@@ -142,8 +142,7 @@ end
 
 RemoveEffect = function(self)
     if self.effect_ then
-        local DestroyEffect = require 'jass.common'.DestroyEffect
-        DestroyEffect(self.effect_)
+        cj.DestroyEffect(self.effect_)
     end
 
     -- 刪除buff圖標技能

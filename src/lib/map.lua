@@ -1,5 +1,7 @@
 -- 初始化地圖數據
 
+local require = require
+
 -- assert
 local RegUnits
 

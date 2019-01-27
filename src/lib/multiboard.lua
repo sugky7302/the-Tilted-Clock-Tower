@@ -14,8 +14,8 @@ function Mb:_new(player, row, column)
         self._column_ = column or 0
         self._row_    = row or 0
 
-        self.object_ = cj.CreateMultiboard()
-        self.owner_ = player
+        self.object_  = cj.CreateMultiboard()
+        self.owner_   = player
 
     -- 設定框體大小
     -- 不使用參數是因為怕參數 = nil

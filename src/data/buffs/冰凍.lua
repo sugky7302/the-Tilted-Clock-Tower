@@ -1,7 +1,7 @@
 local Buff = require 'buff.core'
 local SkillUtil = require 'skill.util'
 
-local mt = Buff "冰凍"
+local mt = require 'class'("Buff.冰凍", Buff)
 
 -- constants
 mt.model_ = [[Abilities\Spells\Undead\FreezingBreath\FreezingBreathTargetArt.mdl]]
@@ -17,3 +17,5 @@ function mt:on_remove()
     Buff["沉默"].on_remove(self)
     Buff['繳械'].on_remove(self)
 end
+
+return mt

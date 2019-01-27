@@ -1,4 +1,4 @@
--- 此module創建護盾條
+-- 創建護盾條
 
 local Bar = require 'bar.core'
 
@@ -6,7 +6,7 @@ local Bar = require 'bar.core'
 local Initialize, Update
 
 -- unit是Unit實例，不是單位
-function Shield(unit, value, timeout)
+local function Shield(unit, value, timeout)
     -- 單位要設定護盾值，damage要用
     -- unit:set("護盾", value)
     
@@ -29,7 +29,7 @@ Update = function(self)
     -- 如果護盾歸零就自動移除，不用再手動移除
     if self._owner_:get "護盾" < 1 then
         self:Break()
-        return 
+        return false
     end
 
     local Point = require 'point'

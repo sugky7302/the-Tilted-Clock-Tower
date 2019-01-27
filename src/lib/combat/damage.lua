@@ -6,6 +6,7 @@ local Damage = {}
 setmetatable(Damage, Damage)
 
 -- assert
+local require = require
 local SetDamageRatio, ObtainSkillData
 local ComputeAttack, ComputeDefense
 

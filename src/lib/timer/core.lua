@@ -1,10 +1,8 @@
 -- 此module為註冊計時器動作
 
-local setmetatable = setmetatable
+local require = require
 
-local Timer, mt = {}, require 'timer.init'
-setmetatable(Timer, Timer)
-Timer.__index = mt
+local Timer = require 'class'("Timer", require 'timer.init')
 
 -- assert
 -- 創建計時器動作
@@ -16,22 +14,16 @@ local getFrame
 -- 獲取剩餘幀數
 local GetRemainingFrame
 
-function Timer:__call(timeout, is_period, execution)
-    local instance = {
-        timeout_ = getFrame(timeout),
-        is_period_ = is_period,
+function Timer:_new(timeout, is_period, execution)
+    self.timeout_ = getFrame(timeout)
+    self.is_period_ = is_period
         
-        invalid_ = false,
-        pause_remaining_ = false,
+    self.invalid_ = false
+    self.pause_remaining_ = false
         
-        Execute = execution,
-    }
+    self.Execute = execution
 
-    setmetatable(instance, self)
-
-    RegisterTimerAction(instance)
-
-    return instance
+    RegisterTimerAction(self)
 end
 
 RegisterTimerAction = function(self)
@@ -40,7 +32,6 @@ RegisterTimerAction = function(self)
         return true
     end
     
-    local type = type
     if (type(self.is_period_) == "number") and (self.is_period_ > 0) then
         Count(self)
         return true
@@ -55,7 +46,7 @@ end
 Wait = function(self)
     local timeout = self.timeout_
     self.timeout_ = nil
-    mt.SetTimeout(self, timeout)
+    self:SetTimeout(timeout)
 end
 
 Count = function(self)
@@ -67,60 +58,54 @@ Count = function(self)
         execute(self)
 
         if self.is_period_ < 1 then
-            self:Remove()
+            self:Break()
         end
     end
 
-    mt.SetTimeout(self, self.timeout_)
+    self:SetTimeout(self.timeout_)
 end
 
 Loop = function(self)
-    mt.SetTimeout(self, self.timeout_)
+    self:SetTimeout(self.timeout_)
 end
 
-function mt:Remove()
+function Timer:_delete()
     self:Pause()
-    self.timeout_ = nil
-    self.is_period_ = nil
-    self.Execute = nil
-    self.invalid_ = nil
-    self.pause_remaining_ = nil
-    self = nil
 end
 
-function mt:SetRemaining(timeout)
+function Timer:SetRemaining(timeout)
     if self.invalid_ == false then
         self:Pause()
     end
 
     local frame = getFrame(timeout)
-    mt.SetTimeout(self, frame)
+    self:SetTimeout(frame)
 end
 
 -- 把時間(秒)轉成時間(幀)
 getFrame = function(timeout)
-    local max, floor = math.max, math.floor
+    local math = math
     
-    local frame = max(floor(timeout / mt.PERIOD) or 1, 1)
+    local frame = math.max(math.floor(timeout / Timer.PERIOD) or 1, 1)
     return frame
 end
 
-function mt:Pause()
+function Timer:Pause()
     self.pause_remaining_ = GetRemainingFrame(self)
 
-    local queue = mt[self.end_frame_]
+    local queue = Timer[self.end_frame_]
     if queue then
         for i = #queue, 1, -1 do
             if queue[i] == self then -- 清除回調
                 queue[i] = nil
-                return 
+                return true
             end
         end
     end
 end
 
-function mt:GetRemaining()
-    local secs = GetRemainingFrame(self) * mt.PERIOD
+function Timer:GetRemaining()
+    local secs = GetRemainingFrame(self) * Timer.PERIOD
     return secs
 end
 
@@ -135,22 +120,22 @@ GetRemainingFrame = function(self)
     end
     
     -- 如果正在執行動作，考慮是不是循環，給出時間
-    if self.end_frame_ == mt.frame() then
+    if self.end_frame_ == Timer.frame() then
         return self.timeout_ or 0
     end
 
-    return self.end_frame_ - mt.frame()
+    return self.end_frame_ - Timer.frame()
 end
 
-function mt:Resume()
+function Timer:Resume()
     if self.pause_remaining_ then
-        mt.SetTimeout(self, self.pause_remaining_)
+        self:SetTimeout(self.pause_remaining_)
         
         self.pause_remaining_ = false
     end
 end
 
-function mt:Break()
+function Timer:Break()
     self.invalid_ = true
 end
 

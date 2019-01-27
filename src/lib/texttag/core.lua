@@ -1,14 +1,11 @@
--- 此module擴展we的texttag的功能，提供最基本的漂浮文字功能，並建立回收機制
+-- 擴展we的texttag的功能，提供最基本的漂浮文字功能，並建立回收機制
 -- texttag最大只能到100個
 
-local setmetatable = setmetatable
-
+-- package
 local cj = require 'jass.common'
 local Array = require 'stl.array'
 
-local Texttag, mt = {}, {}
-setmetatable(Texttag, Texttag)
-Texttag.__index = mt
+local Texttag = require 'class'("Texttag")
 
 -- assert
 local executing_order = Array()
@@ -18,34 +15,34 @@ local GetEmptyTexttag, RecycleTexttag
 
 -- 創建固定的漂浮文字
 -- 不要重複使用漂浮文字，因為只要設定成不永久顯示，系統會自動刪除
-function Texttag:__call(str, loc, dur, is_permanant)
-    str = (type(str) == 'table') and str or New(self, str, loc, dur, is_permanant)
-    str._invalid_ = false
-    str._texttag_ = cj.CreateTextTag()
+function Texttag:_new(str, loc, dur, is_permanant)
+    -- 子類不需要複製或創建，要做忽略判定
+    if str then
+        if type(str) == 'table' then
+            self:_copy(str) 
+        else
+            New(self, str, loc, dur, is_permanant)
+        end
+    end
 
-    setmetatable(str, self)
-    str.__index = str
+    self._invalid_ = false
+    self._texttag_ = cj.CreateTextTag()
 
-    str:Initialize()
+    self:Initialize()
     
-    executing_order:PushBack(str)
+    executing_order:PushBack(self)
 
     RunTimer(self)
-    return str
 end
 
 New = function(self, str, loc, dur, is_permanant)
-    local instance = {
-        _msg_ = str,
-        _loc_ = loc,
-        _timeout_ = dur,
-        _is_permanant_ = is_permanant and true or false,
+    self._msg_ = str
+    self._loc_ = loc
+    self._timeout_ = dur
+    self._is_permanant_ = is_permanant and true or false
         
-        Initialize = Initialize,
-        Update = nil
-    }
-
-    return instance
+    self.Initialize = Initialize
+    self.Update = nil
 end
 
 Initialize = function(self)
@@ -106,7 +103,7 @@ PauseTimer = function(self)
     end 
 end
 
-function mt:Remove()
+function Texttag:_delete()
     -- 回傳任務完成
     if self.handle_ then
         local TaskTracker = require 'task_tracker'
@@ -115,16 +112,9 @@ function mt:Remove()
 
     cj.DestroyTextTag(self._texttag_)
     self._loc_:Remove()
-
-    local pairs = pairs
-    for _, var in pairs(self) do
-        var = nil
-    end
-
-    self = nil
 end
 
-function mt:Invalid()
+function Texttag:Invalid()
     self._invalid_ = true
 end
 

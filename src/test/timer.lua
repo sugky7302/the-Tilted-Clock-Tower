@@ -5,7 +5,7 @@ local Timer = require 'timer.core'
 
 _Init()
 
-function TimerTest()
+local function TimerTest()
     local start_time = os.clock()
     local timer = Timer(5, false, function(callback)
         print "Hello world."

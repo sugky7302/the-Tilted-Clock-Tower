@@ -8,7 +8,7 @@ local CenterTimer = {}
 CenterTimer.PERIOD = 0.001
 
 -- assert
-local current_frame, _max_frame, _back_frame = 0, 0, 0
+local current_frame, max_frame, back_frame = 0, 0, 0
 
 --- 中心計時器動作
 local ExecuteFrameAction, Wakeup
@@ -23,13 +23,13 @@ function CenterTimer.Init()
         local loop_count = 10
 
         -- 補幀
-        if _back_frame > 0 then
+        if back_frame > 0 then
             current_frame = current_frame - 1
         end
 
         -- 一次處理10幀動作
-        _max_frame = _max_frame + loop_count
-        for i = current_frame, _max_frame do
+        max_frame = max_frame + loop_count
+        for i = current_frame, max_frame do
             current_frame = current_frame + 1
             ExecuteFrameAction()
         end
@@ -40,14 +40,14 @@ end
 ExecuteFrameAction = function()
     local frame_queue = CenterTimer[current_frame]
     if not frame_queue then
-		_back_frame = 0 -- 不需要補幀
-		return
+		back_frame = 0 -- 不需要補幀
+		return true
     end
 
     local callback
-	for i = _back_frame + 1, #frame_queue do
+	for i = back_frame + 1, #frame_queue do
         -- 記錄當前幀數，怕循環突然停止，當前動作無法執行
-        _back_frame = i
+        back_frame = i
 
         callback = frame_queue[i]
 		if callback then
@@ -58,7 +58,7 @@ ExecuteFrameAction = function()
     end
     
     -- 執行到這一步，表示Loop結束了，所以重置補幀幀數
-    _back_frame = 0
+    back_frame = 0
     
     CenterTimer[current_frame] = nil -- 移除佇列
 	frame_queue = nil
@@ -68,7 +68,7 @@ end
 Wakeup = function(callback)
     if callback.invalid_ then
         callback:Remove()
-        return 
+        return false
     end
 
     callback:Execute() -- 執行函數

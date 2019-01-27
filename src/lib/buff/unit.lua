@@ -1,21 +1,25 @@
 -- 提供unit操作buff的功能
 
 -- package
+local require = require
 local Unit = require 'unit.core'
 local Buff = require 'buff.core'
-local Operator = require 'buff.operator'
 
 -- instance內部的name可以填寫自己想要的名稱
-function Unit.__index:AddBuff(name, delay)
-    return function(instance)
-        local data = Buff[name]
-        if not data then
+function Unit:AddBuff(name, delay)
+    return function(data)
+        local class = pcall(require, table.concat({"buffs.", name})
+        if not class then
             return false
         end
 
         if not self.buffs_ then
             self.buffs_ = {}
         end
+
+        -- 這邊把資料複製給實例就不用在各種buff模板裡面各寫一個_new函數，又容易維護
+        local instance = class()
+        instance:_copy(data)
 
         -- 初始化數據
         instance.name_ = instance.name_ or name
@@ -25,15 +29,12 @@ function Unit.__index:AddBuff(name, delay)
             instance.source_ = self
         end
 
-        -- instance可以視為副本
-        setmetatable(instance, data)
-
         if delay then
             Delay(instance, delay)
             return instance
         end
         
-        return Operator.Obtain(instance)
+        return instance:Obtain()
     end
 end
 
@@ -44,13 +45,13 @@ Delay = function(self, delay)
             return false
         end
 
-        Operator.Obtain(self)
+        self:Obtain()
     end)
 end
 
 local pairs = pairs
 
-function Unit.__index:FindBuff(name)
+function Unit:FindBuff(name)
     if not self.buffs_ then
         return nil
     end
@@ -64,7 +65,7 @@ function Unit.__index:FindBuff(name)
     return nil
 end
 
-function Unit.__index.RemoveBuff(self, name)
+function Unit:RemoveBuff(name)
 	if not self.buffs_ then
 		return false
     end

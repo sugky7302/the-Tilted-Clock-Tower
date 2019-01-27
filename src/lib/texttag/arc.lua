@@ -1,5 +1,8 @@
--- 此module讓漂浮文字能夠跟隨單位移動
+-- 讓漂浮文字能夠跟隨單位移動
 
+-- package
+local math = math
+local require = require
 local cj = require 'jass.common'
 
 -- constants
@@ -20,7 +23,8 @@ local function ArcText(str, loc, scale)
     scale = scale or 1
 
     local Point = require 'point'
-    local instance = {
+    local Texttag = require 'texttag.core'
+    local texttag = Texttag{
         _msg_ = str,
         _loc_ = loc,
         _timeout_ = TIME_LIFE,
@@ -31,8 +35,7 @@ local function ArcText(str, loc, scale)
         Update = Update,
     }
 
-    local Texttag = require 'texttag.core'
-    return Texttag(instance)
+    return texttag
 end
 
 -- assert
@@ -51,7 +54,7 @@ end
 
 -- assert
 local SIZE_BONUS = 0.012
-local Z_OFFSET_BONUS = 120 -- 55
+local Z_OFFSET_BONUS = 120
 
 Update = function(self)
     -- 設定運動軌跡

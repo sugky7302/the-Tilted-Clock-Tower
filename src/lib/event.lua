@@ -1,28 +1,29 @@
--- 此module會創建一個事件列表，使事件觸發時，會調用同一事件名的所有觸發器
+-- 創建一個事件列表。在事件觸發時，會調用同一事件名的所有觸發器
 
-local setmetatable = setmetatable
-
+-- package
+local require = require
 local Array = require 'stl.array'
 
 local Event = {}
 setmetatable(Event, Event)
 
 -- assert
-local _GetEvents, _GetEvent
+local GetEvents, GetEvent
 
--- 使用 .__call 會無法讀取eventName
+-- NOTE: 使用 .__call 會無法讀取eventName
 -- callback第一個參數是trigger的實例，後面的參數才是自己加的
 function Event:__call(class, event_name) 
     local Trigger = require 'trigger'
     
-    local events = _GetEvents(class)
-    local event = _GetEvent(events, event_name)
+    local events = GetEvents(class)
+    local event = GetEvent(events, event_name)
+
     return function(callback)
         return Trigger(event, callback)
     end
 end
 
-_GetEvents = function(class)
+GetEvents = function(class)
     local events = class.events
     if not events then
         events = Array()
@@ -32,7 +33,7 @@ _GetEvents = function(class)
     return events
 end
 
-_GetEvent = function(events, event_name)
+GetEvent = function(events, event_name)
     local event = events[event_name]
     if not event then
         event = Array()
@@ -68,7 +69,7 @@ function Event.Dispatch(class, event_name, ...)
     end
 end
 
--- TODO: 預留不用
+-- NOTE: 預留不用
 -- 沒有回傳值
 function Event.Notify(class, event_name, ...)
     local events = class.events

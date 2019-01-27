@@ -1,46 +1,21 @@
 -- 可以設置多樣化的buff
-
-local setmetatable = setmetatable
-
--- package
-local cj = require 'jass.common'
-
-local Buff, mt = {}, require 'buff.init'
-setmetatable(Buff, Buff)
-Buff.__index = mt 
-
--- assert
-local InitValue, CallSetFn
-local set, get = {}, {}
-
 -- on_cover根據buff的cover type做不同處理
 -- 如果要做多層數的buff，可以在on_cover內，將新buff的數據複製給舊buff，並要不要更新時間，最後回傳false即可
 -- cover type = 0 -> (true, false) = (當前狀態被移除，新的狀態被添加)
 -- cover type = 1 -> (true, false) = (新的狀態排序到當前狀態之前，新的狀態排序到當前狀態之後)
-function Buff:__call(name)
-    local instance = self[name]
-    if not instance then
-        instance = {}
-        
-        instance.name_ = name
 
-        self[name] = instance
-        setmetatable(instance, self)
-        instance.__index = instance
-    end
+-- package
+local require = require
+local cj = require 'jass.common'
 
-    return instance
-end
+local Buff = require 'class'("Buff", require 'buff.operator')
 
-local Operator = require 'buff.operator'
+-- default
+require 'buff.init'(Buff)
 
-function mt:Obtain()
-    return Operator.Obtain(self)
-end
-
-function mt:Delete()
-    Operator.Delete(self)
-end
+-- assert
+local InitValue, CallSetFn
+local set, get = {}, {}
 
 function Buff.Register(name, reg_fn)
     set[name] = reg_fn.set or nil
@@ -49,7 +24,7 @@ function Buff.Register(name, reg_fn)
     reg_fn = nil
 end
 
-function mt:add(name, val)
+function Buff:add(name, val)
     InitValue(self, name)
     
     self[name] = self[name] + val
@@ -57,7 +32,7 @@ function mt:add(name, val)
     CallSetFn(self, name)
 end
 
-function mt:set(name, val)
+function Buff:set(name, val)
     InitValue(self, name)
     
     self[name] = val
@@ -71,7 +46,7 @@ CallSetFn = function(self, name)
     end
 end
 
-function mt:get(name)
+function Buff:get(name)
     InitValue(self, name)
 
     if get[name] then
@@ -87,7 +62,7 @@ InitValue = function(self, name)
     end
 end
 
-function mt:Pause()
+function Buff:Pause()
     -- 暫停功能被禁用
     if self.is_force_ then
         return false
@@ -104,7 +79,7 @@ function mt:Pause()
     end
 end
 
-function mt:Resume()
+function Buff:Resume()
     if self.is_pause_ then
         self.is_pause_ = false
 
@@ -114,7 +89,7 @@ function mt:Resume()
     end
 end
 
-function mt:EventDispatch(name, default, ...)
+function Buff:EventDispatch(name, default, ...)
     default = default or false
 
     if self.invalid_ then

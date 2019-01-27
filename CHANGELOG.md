@@ -1,13 +1,14 @@
 # 更新日誌
-## 0.32.1 - 2019-01-26 - 用class重構
+## 0.32.1 - 2019-01-27 - 用class重構
 ### Added:
 - [quest.util] 新增路徑指示器，會為玩家指向完成任務的地點。
 - 新增class函數，能夠創建可獲得實例、多重原型繼承、且多態的行為委託機制。
 ### Changed:
 - [point] 用新的class重寫功能。
 - [quest.util] Near函數的參數類型可以為點。
-- [test.core] 根據新的point參數格式做修正
+- [test.core] 根據新的point參數格式做修正。
 ### Fixed:
+- [timer.core] 修正count到期時，終止條件設定Remove使得中心計時器不曉得timer失效，還執行一次SetTimeout，導致無法獲取end_frame_而報錯的問題。
 - [unit.core] 修正Create函數不會返回創建的單位的問題。
 
 ## [0.32.0] - 2019-01-21 - 第一次測試
