@@ -1,13 +1,16 @@
 # 更新日誌
-## 0.32.1 - 2019-01-27 - 用class重構
+## 0.33.0 - 2019-01-30 - 用class重構
 ### Added:
-- [quest.util] 新增路徑指示器，會為玩家指向完成任務的地點。
+- 添加is_nil函數，可判斷string、number、boolean、table是否為空。
 - 新增class函數，能夠創建可獲得實例、多重原型繼承、且多態的行為委託機制。
+- 對所有模塊、類別都添加_VERSION成員，儲存遵循語意化版本控制規範的版本號，日後可作為hotfix的判斷依據。
+- [quest.util] 新增路徑指示器，會為玩家指向完成任務的地點。
 ### Changed:
 - [point] 用新的class重寫功能。
 - [quest.util] Near函數的參數類型可以為點。
 - [test.core] 根據新的point參數格式做修正。
 ### Fixed:
+- [leaderboard] 修正創建排行榜會顯示排行榜的問題。
 - [timer.core] 修正count到期時，終止條件設定Remove使得中心計時器不曉得timer失效，還執行一次SetTimeout，導致無法獲取end_frame_而報錯的問題。
 - [unit.core] 修正Create函數不會返回創建的單位的問題。
 

@@ -1,6 +1,6 @@
-local RNG = require 'random_number_generator'
-
-function RNG_Test()
+local function RNG_Test()
+    local RNG = require 'random_number_generator'
+    
     local deck = RNG("test", 25)
     local valid_count = 0
     for i = 1, 96 do 

@@ -1,10 +1,10 @@
-local gcf = require 'greatest_common_factor'
-
 -- assert
 local _TestInTime
 local _Recursive
 
-function GCF_Test()
+local function GCF_Test()
+    local gcf = require 'greatest_common_factor'
+
     _TestInTime(gcf, 10, 20)
     _TestInTime(_Recursive, 10, 20)
     _TestInTime(gcf, 77, 99)

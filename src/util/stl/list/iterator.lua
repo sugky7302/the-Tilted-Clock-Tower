@@ -1,26 +1,35 @@
-local mod = {}
+local mod = {_VERSION = "1.0.0"}
 
 -- assert
-local getNextNode, getPrevNode
+local IsNil = require 'is_nil'
 
 -- O(self._size_)的迭代器方法
 function mod.TraverseIterator(self)
-    return getNextNode --[[ (self, nil) ]], self, nil
-end
+    local node = self._begin_
+    return function()
+        if IsNil(node) then
+            return nil 
+        end
 
-getNextNode = function(list, node)
-    local node_next = (not node) and list._begin_ or node.next_
-    return node_next
+        local prev = node
+        node = node.next_ or nil
+        return prev
+    end
 end
 
 -- O(self._size_)的迭代器方法
 function mod.rTraverseIterator(self)
-    return getPrevNode --[[ (self, nil) ]], self, nil
+    local node = self._end_
+    return function()
+        if IsNil(node) then
+            return nil 
+        end
+
+        local prev = node
+        node = node.prev_ or nil
+        return prev
+    end
 end
 
-getPrevNode = function(list, node)
-    local node_prev = (not node) and list._end_ or node.prev_
-    return node_prev
-end
 
 return mod

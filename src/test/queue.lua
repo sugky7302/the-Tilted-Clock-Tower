@@ -1,6 +1,6 @@
-local Queue = require 'stl.queue'
+local function QueueTest()
+    local Queue = require 'stl.queue'
 
-function QueueTest()
     local queue = Queue()
 
     for i = 1, 10 do 
@@ -8,8 +8,7 @@ function QueueTest()
     end
 
     print(queue:getLength())
-    print(queue:getBegin())
-    print(queue:getEnd())
+    print(queue:front())
     queue:PopFront()
     queue:PopFront()
     print(queue)

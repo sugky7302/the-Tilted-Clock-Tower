@@ -1,6 +1,6 @@
-local Array = require 'stl.array'
-
-function ArrayTest()
+local function ArrayTest()
+    local Array = require 'stl.array'
+    
     local array = Array()
     print(array.type)
     array:PushBack(1)

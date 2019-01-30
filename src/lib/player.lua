@@ -5,6 +5,7 @@ local require = require
 local cj = require 'jass.common'
 
 local Player = require 'class'("Player")
+Player._VERSION = "1.0.0"
 
 -- assert
 local set, get = {}, {}

@@ -1,11 +1,11 @@
 -- 要進到遊戲內，計時器才會啟動
 
-local _Init = require 'timer.init'.Init
-local Timer = require 'timer.core'
-
-_Init()
-
 local function TimerTest()
+    local _Init = require 'timer.init'.Init
+    local Timer = require 'timer.core'
+
+    _Init()
+
     local start_time = os.clock()
     local timer = Timer(5, false, function(callback)
         print "Hello world."

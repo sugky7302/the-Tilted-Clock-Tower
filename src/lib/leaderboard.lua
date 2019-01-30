@@ -4,6 +4,7 @@
 local cj = require 'jass.common'
 
 local Lb = require 'class'("Leaderboard")
+Lb._VERSION = "1.0.0"
 
 function Lb:_new(player)
        self._count_ = 0
@@ -12,6 +13,7 @@ function Lb:_new(player)
     self.owner_ = player
 
     cj.PlayerSetLeaderboard(player.object_, self.object_)
+    self:Show(false)
 end
 
 function Lb:_delete()

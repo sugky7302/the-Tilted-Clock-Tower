@@ -1,16 +1,16 @@
-local List = require 'stl.list.core'
-
 -- assert
 local _print
 
-function ListTest()
+local function ListTest()
+    local List = require 'stl.list.core'
+
     local list = List()
     
     list:PushBack(0)
-    _print(list)
+    print(list)
 
     list:PushBack(1)
-    _print(list)
+    print(list)
 
     for i = 2, 11 do
         if i < 7 then
@@ -19,25 +19,20 @@ function ListTest()
             list:PushBack(i)
         end
     end
-    _print(list)
+    print(list)
+
+    print(list:Find(5):getData())
 
     list:PopFront()
-    _print(list)
+    print(list)
 
     list:PopBack()
-    _print(list)
-    
-    list:Remove()
-end
+    print(list)
 
-_print = function(list)
-    local print_str = "[ "
-    print "1"
-    for node in list:TraverseIterator() do
-        print_str = print_str .. node:getData() .. " "
-    end
-    print_str = print_str .. "]"
-    print(print_str)
+    list:Clear()
+    print(list)
+
+    list:Remove()
 end
 
 return ListTest

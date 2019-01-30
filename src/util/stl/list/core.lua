@@ -2,12 +2,10 @@
 
 -- package
 local require = require
-
-local Iterator = require 'stl.list.iterator'
-
-local List = require 'class'("List")
+local List = require 'class'("List", require 'stl.list.iterator')
 
 -- default
+List._VERSION = "1.0.0"
 List._begin_ = nil
 List._end_   = nil
 List._size_  = 0
@@ -15,10 +13,34 @@ List._size_  = 0
 -- assert
 local EraseNode
 
+function List:__tostring()
+    local print_str = {"["}
+
+    for node in self:TraverseIterator() do
+        print_str[#print_str + 1] = node:getData()
+        print_str[#print_str + 1] = " "
+    end
+
+    if print_str[#print_str] == " " then
+        print_str[#print_str] = "]"
+    else
+        print_str[#print_str + 1] = "]" -- 代表list是空的，因此不要用覆蓋，不然會回傳 ] 而不是 []
+    end
+
+    return table.concat(print_str)
+end
+
+function List:Clear()
+    self:_delete()
+
+    self._begin_ = List._begin_
+    self._end_ = List._end_
+    self._size_ = List._size_
+end
+
 -- O(self._size_)的方法
 function List:_delete()
-    -- 從末端刪除比較簡單
-    for node in Iterator.rTraverseIterator(self) do
+    for node in self:rTraverseIterator() do
         self:Delete(node)
     end
 end
@@ -64,8 +86,8 @@ function List:Delete(node)
         -- 把node的prev_指標設定成新的last節點
         node.prev_.next_ = nil
         self._end_ = node.prev_
-        
-        _EraseNode(self, node)
+
+        EraseNode(self, node)
 
         return true
     end
@@ -160,7 +182,7 @@ end
 
 -- 只找第一筆資料
 function List:Find(data)
-    for node in Iterator.TraverseIterator(self) do
+    for node in self:TraverseIterator() do
         if node:getData() == data then 
             return node
         end

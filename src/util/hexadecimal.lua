@@ -9,7 +9,7 @@ local HEXADECIMAL_SIGN = {'a', 'b', 'c', 'd', 'e', 'f'}
 local FindLetter
 
 function Hexadecimal.I2S(num_hex)
-    local modf = modf
+    local modf = math.modf
 
     local first_sign
     local hex_first = num_hex / 16

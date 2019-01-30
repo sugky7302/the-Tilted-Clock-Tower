@@ -1,4 +1,4 @@
-function EventTest()
+local function EventTest()
     local Event = require 'event'
 
     local tb = {}

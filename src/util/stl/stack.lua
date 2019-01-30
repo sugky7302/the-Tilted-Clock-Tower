@@ -7,13 +7,16 @@ Stack._top_   = nil
 Stack._depth_ = 0 
 
 function Stack:__tostring()
-    local print_str = {"[bot-> "}
+    local print_str = {"[bot->"}
 
     for i = self._depth_, 1, -1 do 
-        print_str[#print_str] = self[i]
+        print_str[#print_str + 1] = self[i]
+        print_str[#print_str + 1] = " "
     end
 
+    -- 把最後一個空格換掉
     print_str[#print_str] = "<-top]"
+
     return table.concat(print_str)
 end
 

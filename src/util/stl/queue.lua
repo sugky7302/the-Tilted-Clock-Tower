@@ -11,7 +11,8 @@ function Queue:__tostring()
     local print_str = {"["}
 
     for i = self._begin_, self._end_ do 
-        print_str[#print_str] = self[i]
+        print_str[#print_str + 1] = self[i]
+        print_str[#print_str + 1] = " "
     end
 
     print_str[#print_str] = "]"

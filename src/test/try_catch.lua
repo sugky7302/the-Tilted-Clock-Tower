@@ -1,9 +1,10 @@
-function TryCatchTest()
+local function TryCatchTest()
     local try_catch = require 'try_catch'
     
     try_catch{
         function(i)
-            error("error message")
+            -- error("error message")
+            print "gogo"
         end,
         
         function(error)

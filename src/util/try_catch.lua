@@ -10,9 +10,8 @@ local function try_catch(what)
     assert(what[1])
 
     -- 正常是ok有值，異常是error有值
-    local xpcall = xpcall
     local status, error_info = xpcall(what[1], Trackback)
-
+    
     -- catch函數存在才會執行
     if (status == false) and what[2] then
         what[2](error_info)

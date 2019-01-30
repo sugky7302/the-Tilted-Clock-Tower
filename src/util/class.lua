@@ -11,8 +11,9 @@ local function Class(name, ...)
     local setmetatable, pairs, table_concat = setmetatable, pairs, table.concat
 
 	local object = {
-		_prototype_ = {...}, -- 原型，也就是委託的對象，只要該對象有你需要的東西，都可以填進去。排在最前面的原型為第一委託者。
-		
+		_prototype = {...}, -- 原型，也就是委託的對象，只要該對象有你需要的東西，都可以填進去。排在最前面的原型為第一委託者。
+        _VERSION = "1.0.0",
+        
 		type = name,
 
         -- TODO: 考慮怎麼解決不要容量重設且_new函數不要有創建實例的動作的問題
@@ -56,9 +57,9 @@ local function Class(name, ...)
                 return value
             end
 
-            for i = 1, #class._prototype_ do
+            for i = 1, #class._prototype do
                 -- 這也會執行__index，只是table不同，直到原型鏈的頂端
-				value = class._prototype_[i][key]
+				value = class._prototype[i][key]
 
 				if value ~= nil then
 					return value

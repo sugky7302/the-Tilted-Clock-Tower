@@ -5,6 +5,7 @@ local require = require
 local cj = require 'jass.common'
 
 local Dialog = require 'class'("Dialog")
+Dialog._VERSION = "1.0.0"
 
 function Dialog:_new(player)
     self.object_ = cj.DialogCreate()

@@ -1,4 +1,4 @@
-function GameTest()
+local function GameTest()
     local Game = require 'game'
     Game:Event "測試" (function()
         print "1"
