@@ -1,14 +1,13 @@
 -- 創建unit結構，擴展we的單位的功能
 -- 依賴
 --   jass.common
+--   jass.slk
 --   player
 --   jass_tool
 --   point
---   jass.slk
 --   unit.operator
 --   event
 --   game
--- API
 
 -- package
 local require = require
@@ -143,9 +142,9 @@ local S2Id = Base.String2Id
 local type = type
 
 -- 直接寫return cj.CreateUnit會沒有返回單位
-function Unit.Create(player, id, loc, facing)
-    id = (type(id) == 'number') and id or S2Id(id)
-    local unit = cj.CreateUnit(player, id, loc.x_, loc.y_, facing)
+function Unit.Create(player, unit_type, loc, facing)
+    unit_type = (type(unit_type) == 'number') and unit_type or S2Id(unit_type)
+    local unit = cj.CreateUnit(player, unit_type, loc.x_, loc.y_, facing)
     return unit
 end
 
