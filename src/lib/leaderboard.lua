@@ -1,4 +1,15 @@
 -- 擴展we的排行榜功能
+-- 依賴
+--   jass.common
+-- API
+--   Clear : 清空排行榜的內容
+--   add(player, name, point) : 添加玩家數據到排行榜
+--   Delete(player) : 刪除玩家數據
+--   SetPlayerValue(player, point) : 設定玩家數據
+--   SetPlayerName(player, name) : 設定玩家名字
+--   Show(is_show) : 是否顯示排行榜
+--   SetTitle(str) : 設定標題
+--   SetStyle(is_view_title, is_view_text, is_view_point, is_view_icon) : 設定顯示風格
 
 -- package
 local cj = require 'jass.common'

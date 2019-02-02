@@ -4,6 +4,7 @@ local mod = {_VERSION = "1.0.0"}
 local IsNil = require 'is_nil'
 
 -- O(self._size_)的迭代器方法
+-- HACK: 使用閉包的寫法會比無狀態的迭代器多開銷
 function mod.TraverseIterator(self)
     local node = self._begin_
     return function()

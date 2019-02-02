@@ -112,6 +112,10 @@ local function Class(name, ...)
             local instance = self[table_concat({"instance_", key})]
             return instance
         end,
+
+        deleteInstance = function(self, key)
+            self[table_concat({"instance_", key})] = nil
+        end,
 	}
 
 	setmetatable(object, object)

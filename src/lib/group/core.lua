@@ -1,20 +1,38 @@
 -- we單位組的擴展，開放許多自定義功能
+-- 依賴
+--   jass.common
+--   queue
+--   array
+--   jass_tool
+--   group.condition
+-- API
+--   Clear : 清空單位組
+--   Loop(action, ...) : 對單位組所有單位做動作
+--   In(unit) : 確認單位有沒有在單位組裡，返回值為bool
+--   getNum : 獲取單位組內的單位總數
+--   IsEmpty : 回報單位組是否為空
+--   Ignore(unit) : 使單位組不會對該單位執行動作
+--   EnumUnitsInRange(x, y, r, cnd) : 選取範圍內的單位
+--   AddUnit(unit) : 添加單位給單位組
+--   RemoveUnit(unit) : 刪除單位組中的某單位
 
 -- package
 local require = require
 local Queue = require 'stl.queue'
 local cj = require 'jass.common'
 
+
 local Group = require 'class'("Group")
+Group._VERION = "1.0.0"
 
 -- constants
 local QUANTITY = 128
 
 -- assert
--- 使用queue是因為要重複利用we的單位組，盡量減少ram的開銷
+-- 使用queue是因為要重複利用we的單位組，減少ram的開銷
 local recycle_group = Queue()
 
-local GetEmptyGroup
+local GetEmptyGroup, RecycleGroup
 
 -- 建構函式
 function Group:_new(filter)
@@ -24,34 +42,13 @@ function Group:_new(filter)
 
     self.object_ = GetEmptyGroup()
     self.units_  = Array()
-    self.filter_ = filter or 0 -- 用於條件判定，如果filter沒有傳參，要設定成0才不會出問題
-end
 
-GetEmptyGroup = function()
-    -- 超過上限報錯
-    -- 用 ">" 是因為這個函式會減少recycle_group的數量
-    if recycle_group:getLength() > QUANTITY then
-        local ErrorHandle = Base.ErrorHandle
-        ErrorHandle("單位組超過上限。")
-        return false
-    end
-
-    if recycle_group:IsEmpty() then
-        return cj.CreateGroup()
-    end
-    
-    local empty_group = recycle_group:front()
-    recycle_group:PopFront()
-    return empty_group
+    -- 如果filter沒有傳參，要設定成0才不會出問題
+    self.filter_ = filter or 0 
 end
 
 function Group:_delete()
-    -- 用 ">=" 是因為這個函式會增加recycle_group的數量
-    if recycle_group:getLength() >= QUANTITY then
-        cj.DestroyGroup(self.object_)
-    else
-        recycle_group:PushBack(self.object_)
-    end
+    RecycleGroup(self.object_)
 
     self:Clear()
 
@@ -105,7 +102,7 @@ end
 function Group:EnumUnitsInRange(x, y, r, cnd_name)
     local GroupCnd = require 'group.condition'
 
-    local enum_range_units = cj.CreateGroup()
+    local enum_range_units = GetEmptyGroup()
 
     -- 選取比原先範圍大一些的區域，好讓有些處在範圍邊緣的單位能夠被正確選取
     cj.GroupEnumUnitsInRange(enum_range_units, x, y, r + 10, nil)
@@ -123,7 +120,35 @@ function Group:EnumUnitsInRange(x, y, r, cnd_name)
         enum_unit = cj.FirstOfGroup(enum_range_units)
     end
 
-    cj.DestroyGroup(enum_range_units)
+    RecycleGroup(enum_range_units)
+end
+
+GetEmptyGroup = function()
+    -- 超過上限報錯
+    -- 用 ">" 是因為這個函式會減少recycle_group的數量
+    if recycle_group:getLength() > QUANTITY then
+        local ErrorHandle = Base.ErrorHandle
+        ErrorHandle("單位組超過上限。")
+        return false
+    end
+
+    if recycle_group:IsEmpty() then
+        return cj.CreateGroup()
+    end
+    
+    local empty_group = recycle_group:front()
+    recycle_group:PopFront()
+    
+    return empty_group
+end
+
+RecycleGroup = function(group)
+    -- 用 ">=" 是因為這個函式會增加recycle_group的數量
+    if recycle_group:getLength() >= QUANTITY then
+        cj.DestroyGroup(group)
+    else
+        recycle_group:PushBack(group)
+    end
 end
 
 function Group:AddUnit(unit)

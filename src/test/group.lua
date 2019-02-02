@@ -1,6 +1,6 @@
-local Group = require 'group.core'
-
-function GroupTest()
+local function GroupTest()
+    local Group = require 'group.core'
+    
     local group = Group()
     group:EnumUnitsInRange(15009, 9869, 500, "Nil")
     print(group:getNum())
