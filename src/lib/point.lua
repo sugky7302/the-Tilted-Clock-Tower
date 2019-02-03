@@ -1,6 +1,9 @@
 -- 此module取代we的point，減少ram的開銷
+-- 依賴
+--   jass.common
 
 -- package
+local require = require
 local cj = require 'jass.common'
 
 local Point = require 'class'("Point")

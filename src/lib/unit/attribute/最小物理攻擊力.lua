@@ -2,6 +2,8 @@
 -- 0x11:骰子面數
 -- 0x12:基礎傷害
 
+
+local require = require
 local cj, japi = require 'jass.common', require 'jass.japi'
 
 require 'unit.operator'.Register("最小物理攻擊力", {

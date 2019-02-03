@@ -13,7 +13,8 @@ function CastbarTest()
     end
 
     local Castbar = require 'bar.castbar'
-    local bar = Castbar(group.units_[1], 10)
+    local Unit = require 'unit.core'
+    local bar = Castbar(Unit(group.units_[1]), 10)
 end
 
 return CastbarTest

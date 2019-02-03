@@ -1,4 +1,9 @@
 -- 創建天賦、玩家學習天賦、調用天賦效果
+-- 依賴
+--   skill.core
+--   unit.core
+--   jass.common
+
 
 -- package
 local require = require
@@ -59,7 +64,7 @@ function Unit:LearnTalent(id)
 end
 
 
-function Unit:TalentDispatch(name, event, ...)
+function Unit:TalentDispatch(name, event_name, ...)
     if not Talent:getInstance(name) then
         return false
     end
@@ -75,7 +80,7 @@ function Unit:TalentDispatch(name, event, ...)
     }
     
     if HasTalent(self, talent) then
-        return CallEvent(talent, EVENT_NAME[event], self, ...)
+        return CallEvent(talent, EVENT_NAME[event_name], self, ...)
     end
 
     return false

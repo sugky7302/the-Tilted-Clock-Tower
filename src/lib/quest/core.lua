@@ -1,33 +1,41 @@
 -- 仿魔獸戰役格式的自定義任務
+-- 依賴
+--   quest.util
+--   jass_tool
 
-local setmetatable = setmetatable
 
-local Quest, mt = {}, require 'quest.util'
-setmetatable(Quest, Quest)
-Quest.__index = mt
+-- package
+local require = require 
+local Class = require 'class'
+
+local Quest = Class("Quest", require 'quest.util')
 
 -- assert
 local CheckQuest, IsFinished, FinishMessage, CanRepeat, UpdateMessage, UpdateDemands
 
 -- 單一任務的子任務不能出現相同的任務怪，創建會出問題
-function Quest:__call(quest_name) 
-    return function(quest)
-        self[quest_name] = quest
+function Quest:_new(data)
+    self = Class(data.name_, Quest)
+    
+    self:_copy(data)
+    data = nil
 
-        quest.name_ = quest_name
+    Quest:setSubclass(self.name_, self)
 
-        setmetatable(quest, self)
-        return quest
+    self._new = function(this, unit)
+        this.receiver_ = unit
+        this.demands_ = {}
+
+        -- 添加任務
+        for i = 1, #self.demands_, 2 do
+            this.demands_[self.demands_[i]] = self.demands_[i + 1]
+        end
+
+        unit.quests_[#unit.quests_ + 1] = this
     end
 end
 
-function mt:Remove()
-    self.receiver_ = nil
-    self.demands_ = nil
-    self = nil
-end
-
-function mt:Update(id)
+function Quest:Update(id)
     CheckQuest(self, id)
 
     if IsFinished(self) then

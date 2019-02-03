@@ -1,3 +1,4 @@
+local require = require
 local cj = require 'jass.common'
 
 require 'unit.operator'.Register("移動速度", {

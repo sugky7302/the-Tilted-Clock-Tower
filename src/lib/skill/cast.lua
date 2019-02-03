@@ -1,10 +1,18 @@
 -- 模塊化施法階段。每個施法階段所有動作都完成後，才進下一個階段
+-- 依賴
+--   bar.castbar
+--   timer.core
+--   skill.util
+--   task_tracker
+--   jass_tool
 
 -- package
+local require = require
 local Castbar = require 'bar.castbar'
 local Timer = require 'timer.core'
 local SkillUtil = require 'skill.util'
 local TaskTracker = require 'task_tracker'
+
 
 -- assert
 local CastStart, CastChannel, CastShot, CastFinish, SetProficiency

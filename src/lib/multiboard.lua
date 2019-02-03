@@ -2,24 +2,6 @@
 -- (0, 0)是多面板的第一格，在最左上角
 -- 依賴
 --   jass.common
--- API
---   Clear : 清空多面板
---   Show(is_show) : 是否顯示多面板
---   Minimize(is_minimize) : 是否最小化多面板
---   GetColumn : 獲取欄長度
---   SetColumn(new_column) : 設定欄長度
---   GetRow : 獲取列長度
---   SetRow(new_row) : 設定列長度
---   SetTitle(title) : 設定標題
---   SetTitleColor(r, g, b, alpha) : 設定標題顏色
---   SetStyle(show_text, show_icon) : 設定多面板要顯示的元素有哪些
---   SetWidth(ratio_for_screen) : 根據螢幕寬度設定多面板大小
---   SetIcon(icon_path) : 設定圖標
---   AddItem(row, column, text, scale_for_screen) : 設定多面板項目
---   RemoveItem(row, column) : 刪除第(row, column)格的多面板項目
---   SetItemText(row, column, text) : 設定第(row, column)格的多面板項目的文字
---   SetItemWidth(row, column, scale_for_screen) : 設定第(row, column)格的多面板項目的寬度
---   SetItemColor(row, column, r, g, b, alpha) : 設定第(row, column)格的多面板項目的顏色
 
 
 -- package

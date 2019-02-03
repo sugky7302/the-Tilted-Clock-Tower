@@ -1,4 +1,4 @@
-function UnitEventTest()
+local function UnitEventTest()
     require 'unit.event'
 end
 

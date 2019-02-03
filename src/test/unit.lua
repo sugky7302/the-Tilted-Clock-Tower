@@ -13,6 +13,8 @@ function UnitTest(self)
     test_unit:add("生命", 100)
     print(test_unit:get "生命")
 
+    print " "
+    
     print(test_unit:get "生命上限")
     print(test_unit:get "魔力上限")
     print(test_unit:get "最大物理攻擊力")

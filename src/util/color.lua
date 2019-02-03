@@ -22,6 +22,7 @@ Color.lightpurple  = "|cffcc99ff"
 Color.superpurple  = "|cff9393ff"
 Color.brown        = "|cff804000"
 Color.skin         = "|cffffd8ae"
+Color.grey         = "|cff999999"
 
 -- 參數可能會給"顏色的英文名字"或"RGB數字"
 function Color:__call(...) 

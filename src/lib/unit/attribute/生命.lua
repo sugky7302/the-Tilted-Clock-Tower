@@ -1,17 +1,18 @@
-local SetLife, GetLife = require 'jass.common'.SetWidgetLife, require 'jass.common'.GetWidgetLife
+local require = require
+local cj = require 'jass.common'
 
 require 'unit.operator'.Register("生命", {
     set = function(self, life)
         if life > 1 then
-            SetLife(self.object_, life)
+            cj.SetWidgetLife(self.object_, life)
         else
             -- 用觸發設定成0，會導致單位無法死亡
-            SetLife(self.object_, 1)
+            cj.SetWidgetLife(self.object_, 1)
         end
     end,
 
     get = function(self)
-        return GetLife(self.object_)
+        return cj.GetWidgetLife(self.object_)
     end, 
     
     on_get = function(self, life)

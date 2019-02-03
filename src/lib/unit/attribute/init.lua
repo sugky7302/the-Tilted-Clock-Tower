@@ -1,3 +1,5 @@
+local require = require
+
 require 'unit.attribute.生命'
 require 'unit.attribute.生命上限'
 require 'unit.attribute.魔力'

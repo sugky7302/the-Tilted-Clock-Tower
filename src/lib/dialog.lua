@@ -1,12 +1,7 @@
 -- 擴展並簡易化we的dialog功能
 -- 依賴
 --   jass.common
--- API
---   Clear : 清空對話框所有按鈕
---   AddButton(text, label, hotkey) : 添加按鈕到對話框
---   FindButton(key) : 搜尋按鈕並返回它
---   Show(is_show) : 是否顯示對話框
---   SetTitle(title) : 設定標題
+
 
 -- package
 local require = require

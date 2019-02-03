@@ -1,4 +1,9 @@
 -- 情報處理
+-- 依賴
+--   jass.common
+--   info_in_position
+--   point
+
 
 local require = require 
 

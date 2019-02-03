@@ -1,3 +1,4 @@
+local require = require
 local cj, japi = require 'jass.common', require 'jass.japi'
 
 require 'unit.operator'.Register("生命上限", {

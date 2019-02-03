@@ -13,7 +13,8 @@ function ShieldTest()
     end
 
     local Shield = require 'bar.shield'
-    local shield = Shield(group.units_[1], 500, 10)
+    local Unit = require 'unit.core'
+    local shield = Shield(Unit(group.units_[1]), 500, 10)
 end
 
 return ShieldTest

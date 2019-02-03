@@ -1,6 +1,16 @@
 -- 技能事件
+-- 依賴
+--   unit.core
+--   unit.hero
+--   point
+--   game
+--   api
+--   jass.common
+--   texttag.core
+
 
 -- package
+local require = require
 local Unit  = require 'unit.core'
 local Hero  = require 'unit.hero'
 local Point = require 'point'
@@ -29,7 +39,8 @@ Unit:Event "單位-發布命令" (function(_, unit, order, target)
 end)
 
 local unit_is_casted = War3.CreateTrigger(function()
-    Hero(cj.GetTriggerUnit()):EventDispatch("單位-準備施放技能", cj.GetSpellAbilityId(), Unit(cj.GetSpellTargetUnit()), Point.GetLoc(cj.GetSpellTargetLoc()))
+    Hero:getInstance(cj.GetTriggerUnit()):EventDispatch("單位-準備施放技能", cj.GetSpellAbilityId(),
+                     Unit:getInstance(cj.GetSpellTargetUnit()), Point.GetLoc(cj.GetSpellTargetLoc()))
     return true
 end)
 
@@ -60,13 +71,15 @@ Unit:Event '單位-準備施放技能' (function(_, hero, id, target_unit, targe
 end)
 
 CheckMultiCast = function(skill, hero)
+    local concat = table.concat
+
     if skill.is_multi_cast_ then
         skill.multi_cast_count_ = skill.multi_cast_count_ + 1
 
         local Texttag = require 'texttag.core'
         if IsShowMultiCast(skill) then
             skill.multi_cast_text_ = Texttag{
-                msg_ = "|cffff0000" .. skill.multi_cast_count_ .. "重施法|r",
+                msg_ = concat({"|cffff0000", skill.multi_cast_count_, "重施法|r"}),
                 loc_ = Point.GetUnitLoc(hero.object_),
                 timeout_ = 2,
                 skill_ = skill,
@@ -84,7 +97,7 @@ CheckMultiCast = function(skill, hero)
                 Update = function(obj)
                     if obj.multi_cast_count_ < obj.skill.multi_cast_count_ then
                         -- 更新文字
-                        obj.msg_ = "|cffff0000" .. obj.skill.multi_cast_count_ .. "重施法|r"
+                        obj.msg_ = concat({"|cffff0000", skill.multi_cast_count_, "重施法|r"})
 
                         -- 重新調整漂浮文字的位置
                         cj.SetTextTagText(obj.texttag_, obj.msg_, 0.03)
@@ -100,7 +113,6 @@ CheckMultiCast = function(skill, hero)
         skill.multi_cast_count_ = 0
     end
 
-    -- 結束判斷，
     skill.is_multi_cast_ = false
 end
 
@@ -117,9 +129,9 @@ IsShowMultiCast = function(skill)
 end
 
 GenerateSkillObject = function(skill, hero, target_unit, target_loc)
-    local skill_copy = skill:New(hero, target_unit, target_loc)
-    hero.each_casting_[#hero.each_casting_ + 1] = skill_copy
-    skill_copy:Cast()
+    local skill_instance = skill(hero, target_unit, target_loc)
+    hero.each_casting_[#hero.each_casting_ + 1] = skill_instance
+    skill_instance:Cast()
 end
 
 -- 添加事件

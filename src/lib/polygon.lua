@@ -1,4 +1,9 @@
 -- 創建多邊形區域，並可偵測有沒有點在多邊形內
+-- 依賴
+--   point
+
+
+local require = require
 
 local Polygon = require 'class'("Polygon")
 

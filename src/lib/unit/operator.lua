@@ -1,32 +1,32 @@
--- 此module提供單位屬性操作
+-- 提供單位屬性操作
 -- 大多數的單位屬性實際是由四個個數值合併而成
 -- 實際值 = min(最大值, max(最小值, 基礎值 * (1 + 百分比 / 100)))
+
 
 local Operator = {}
 
 -- assert
-local IsCallMax, IsCallMin, IsCallPercent, InitAttribute, GetRealValue
-local string_sub, type = string.sub, type
-local error, tostring = error, tostring
+local IsCallMax, IsCallMin, IsCallPercent, InitAttribute, GetRealValue, Error
+local string_sub, type, concat = string.sub, type, table.concat
 local set, get = {}, {} -- 無特殊條件
 local on_add, on_set, on_get = {}, {}, {} -- 有特殊條件
 
-function Operator.Register(name, reg_fn)
-    set[name] = reg_fn.set or nil
-    get[name] = reg_fn.get or nil
-    on_add[name] = reg_fn.on_add or nil
-    on_set[name] = reg_fn.on_set or nil
-    on_get[name] = reg_fn.on_get or nil
+function Operator.Register(name, reg_tb)
+    set[name] = reg_tb.set or nil
+    get[name] = reg_tb.get or nil
+    on_add[name] = reg_tb.on_add or nil
+    on_set[name] = reg_tb.on_set or nil
+    on_get[name] = reg_tb.on_get or nil
     
-    reg_fn = nil
+    reg_tb = nil
 end
 
 -- 可修改基礎值、百分比
--- 不修改最大值、最小值
+-- 無法修改最大值、最小值
 function Operator.add(self, name, value)
     -- 不可修改最大值或最小值
     if IsCallMax(name) or IsCallMin(name) then
-        error('錯誤的屬性名:' .. tostring(name))
+        Error(name)
         return false
     end
 
@@ -67,7 +67,7 @@ function Operator.add(self, name, value)
 
     -- 加百分比
 	if v2 then
-		self[name .. "%"] = self[name .. "%"] + v2
+		self[concat({name, "%"})] = self[concat({name, "%"})] + v2
     end
     
     if set[name] then
@@ -81,12 +81,12 @@ end
 
 -- 可修改基礎值
 -- 百分比歸零
--- 不修改最大值、最小值
+-- 無法修改最大值、最小值
 function Operator.set(self, name, value)
     -- 不可修改最大值或最小值
     -- 不可修改百分比
     if IsCallMin(name) or IsCallMax(name) or IsCallPercent(name) then
-        error('錯誤的屬性名:' .. tostring(name))
+        Error(name)
         return false
     end
 
@@ -101,7 +101,7 @@ function Operator.set(self, name, value)
     
 	-- 只加基礎值，不加百分比
     self[name] = value
-    self[name .. "%"] = 0
+    self[concat({name, "%"})] = 0
 
 	if set[name] then
 		set[name](self, GetRealValue(self, name))
@@ -114,19 +114,19 @@ end
 
 function Operator.setMax(self, name, value)
     if IsCallMax(name) then
-        self[name .. "_max"] = value
+        self[concat({name, "_max"})] = value
     end
 
-    error('錯誤的屬性名:' .. tostring(name))
+    Error(name)
     return false
 end
 
 function Operator.setMin(self, name, value)
     if IsCallMin(name) then
-        self[name .. "_min"] = value
+        self[concat({name, "_min"})] = value
     end
 
-    error('錯誤的屬性名:' .. tostring(name))
+    Error(name)
     return false
 end
 
@@ -134,7 +134,7 @@ end
 function Operator.get(self, name)
     -- 不可獲取最大值或最小值
     if IsCallMax(name) or IsCallMin(name) then
-        error('錯誤的屬性名:' .. tostring(name))
+        Error(name)
         return false
     end
 
@@ -155,7 +155,7 @@ function Operator.get(self, name)
     end
 
 	if type1 == 1 then
-		return self[name .. '%']
+		return self[concat({name, '%'})]
     end
 
 	if on_get[name] then
@@ -189,14 +189,18 @@ IsCallPercent = function(name)
     return false
 end
 
+Error = function(name)
+    error(concat({'錯誤的屬性名:', tostring(name)}))
+end
+
 -- assert
 local MAX_VALUE, MIN_VALUE, PERCENT = 1000000, -1000000, 0
 
 InitAttribute = function(self, name)
-    local key1 = name           -- 數值
-    local key2 = name .. '%'    -- 百分比
-    local key3 = name .. '_max' -- 最大值
-    local key4 = name .. '_min' -- 最小值
+    local key1 = name                   -- 數值
+    local key2 = concat({name, '%'})    -- 百分比
+    local key3 = concat({name, '_max'}) -- 最大值
+    local key4 = concat({name, '_min'}) -- 最小值
 
 	self[key1] = get[name] and get[name](self) or 0
     self[key2] = PERCENT
@@ -205,13 +209,13 @@ InitAttribute = function(self, name)
 end
 
 GetRealValue = function(self, name)
-    local key1 = name           -- 數值
-    local key2 = name .. '%'    -- 百分比
-    local key3 = name .. '_max' -- 最大值
-    local key4 = name .. '_min' -- 最小值
+    local key1 = name                   -- 數值
+    local key2 = concat({name, '%'})    -- 百分比
+    local key3 = concat({name, '_max'}) -- 最大值
+    local key4 = concat({name, '_min'}) -- 最小值
 
-    local min, max = math.min, math.max
-    return min(self[key3] or MAX_VALUE, max(self[key4] or MIN_VALUE, self[key1] * (1 + (self[key2] or PERCENT) / 100)))
+    local Bound = require 'math_lib'.BoundValue
+    return Bound(self[key4] or MIN_VALUE, self[key1] * (1 + (self[key2] or PERCENT) / 100), self[key3] or MAX_VALUE)
 end
 
 return Operator

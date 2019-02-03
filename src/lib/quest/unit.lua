@@ -1,14 +1,23 @@
 -- 單位的相關任務事件
+-- 依賴
+--   unit.core
+--   quest.core
+--   jass_tool
+--   timer.core
+
 
 -- package
+local require = require
 local Unit  = require 'unit.core'
 local Quest = require 'quest.core'
 
+
 -- assert
 local ipairs = ipairs
+local CreateQuestList, SetNewQuest, AccepteMessage
 
 function Unit.__index:AcceptQuest(quest_name)
-    if not Quest[quest_name] then
+    if not Quest:getSubclass(quest_name) then
         return false
     end
 
@@ -21,7 +30,7 @@ function Unit.__index:AcceptQuest(quest_name)
 
     -- 確認此任務是否為接過的唯一任務
     if not self.quests_[quest_name] then
-        SetNewQuest(self, Quest[quest_name])
+        SetNewQuest(self, Quest:getSubclass(quest_name))
         return true
     end
 
@@ -40,7 +49,7 @@ end
 local js = require 'jass_tool'
 
 SetNewQuest = function(unit, quest)
-    local quest_copy = Generate(unit, quest)
+    local quest_copy = quest(unit)
 
     AccepteMessage(quest_copy)
     js.Sound("gg_snd_QuestNew")
@@ -59,24 +68,6 @@ SetNewQuest = function(unit, quest)
     end
 end
 
-Generate = function(unit, quest)
-    local quest_copy = {
-        receiver_ = unit,
-        demands_ = {},
-    }
-    setmetatable(quest_copy, quest_copy)
-    quest_copy.__index = quest
-
-    -- 添加任務
-    for i = 1, #quest.demands_, 2 do
-        quest_copy.demands_[quest.demands_[i]] = quest.demands_[i + 1]
-    end
-
-    unit.quests_[#unit.quests_ + 1] = quest_copy
-
-    return quest_copy
-end
-
 AccepteMessage = function(quest)
     quest:Announce "|cffff0000?|r|cffffcc00獲得任務"
     quest:Announce{"<", quest.name_, ">"}
@@ -92,6 +83,6 @@ AccepteMessage = function(quest)
     quest:Announce " "
 end
 
-function Unit.__index:SyncQuest(syncer)
-    -- TODO: 同步任務，用於可變身的單位。由於變身實際上是替換單位，數據會不同，因此要有這個動作
-end
+-- TODO: 同步任務，用於可變身的單位。由於變身實際上是替換單位，數據會不同，因此要有這個動作
+-- function Unit.__index:SyncQuest(syncer)
+-- end

@@ -1,6 +1,7 @@
 # 更新日誌
-## 0.33.0 - 2019-01-30 - 用class重構
+## 0.33.0 - 2019-02-03 - 用class重構
 ### Added:
+- 添加api.md，將所有模塊的API都填入其中，之後搜尋會比較快速，不用一個一個檔案找。
 - 添加is_nil函數，可判斷string、number、boolean、table是否為空。
 - 新增class函數，能夠創建可獲得實例、多重原型繼承、且多態的行為委託機制。
 - 對所有模塊、類別都添加_VERSION成員，儲存遵循語意化版本控制規範的版本號，日後可作為hotfix的判斷依據。
@@ -8,8 +9,11 @@
 ### Changed:
 - [point] 用新的class重寫功能。
 - [quest.util] Near函數的參數類型可以為點。
+- [quest.core] 現在把技能拆成三個層次，任務類別-任務模板-任務實例。
+- [skill.core] 現在把技能拆成三個層次，技能類別-技能模板-技能實例。
 - [test.core] 根據新的point參數格式做修正。
 ### Fixed:
+- [bar.shield] 修正護盾值歸零時，護盾條不會消失的問題。
 - [leaderboard] 修正創建排行榜會顯示排行榜的問題。
 - [timer.core] 修正count到期時，終止條件設定Remove使得中心計時器不曉得timer失效，還執行一次SetTimeout，導致無法獲取end_frame_而報錯的問題。
 - [unit.core] 修正Create函數不會返回創建的單位的問題。

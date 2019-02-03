@@ -1,58 +1,49 @@
 -- 技能的基本功能
+-- 依賴
+--   jass.slk
+--   skill.init
+--   skill.cast
+--   jass.japi
 
-local setmetatable = setmetatable
 
-local Skill, mt = {}, require 'skill.init'
-setmetatable(Skill, Skill)
-Skill.__index = mt
+-- package
+local require = require
+local Class = require 'class'
 
--- constants
-mt.type_ = 'Skill'
+local Skill = Class("Skill", require 'skill.init')
 
--- assert
-local _ChangeTurnRate, _CreateDummy, _ReductTurnRate, _ZoomDummy, _ResetAbility, _CheckSkillOrder, _SetProficiency
+-- 實際技能為Skill的子類別
+function Skill:_new(data)
+    self = Class(data.name_, Skill)
+    
+    self:_copy(data)
+    data = nil
 
-function Skill:__call(name)
-    return function(instance)
-        self[name] = instance
+    if self.order_id_ then
+        local slk_ability = require 'jass.slk'.ability
 
-        instance.name_  = name
+        -- 獲取指令，如果是通魔技能就去獲取基礎id
+        self.order_ = slk_ability[self.order_id_].Order
+        self.order_ = (self.order_ == "channel") and slk_ability[self.order_id_].DataF
 
-        if instance.order_id_ then
-            local slk_ability = require 'jass.slk'.ability
+        self.cool_  = slk_ability[self.order_id_].Cool
+        self.blp_   = slk_ability[self.order_id_].Art
+    end
 
-            -- 獲取指令，如果是通魔技能就去獲取基礎id
-            instance.order_ = slk_ability[instance.order_id_].Order
-            instance.order_ = (instance.order_ == "channel") and slk_ability[instance.order_id_].DataF
+    Skill:setSubclass(self.name_, self)
 
-            instance.cool_  = slk_ability[instance.order_id_].Cool
-            instance.blp_   = slk_ability[instance.order_id_].Art
-        end
+    self._new = function(self, hero, target_unit, target_loc)
+        self.owner_ = hero
+        self.target_unit_ = target_unit
+        self.target_loc_ = target_loc
+    end
 
-        setmetatable(instance, self)
-        instance.__index = instance
-
-        return self[name]
+    self._delete = function(self)
+        Skill._delete(self)
     end
 end
 
--- 複製一個skill副本，使連續施放技能互相獨立，這樣才不會報錯
-function mt:New(hero, target_unit, target_loc)
-    local instance = {
-        owner_ = hero,
-        target_unit_ = target_unit,
-        target_loc_ = target_loc,
-    }
-
-    -- 寫入、讀取都操作在原skill上
-    setmetatable(instance, instance)
-    instance.__index = self
-    instance.__newindex = self
-
-    return instance
-end
-
-function mt:Remove()
+function Skill:_delete()
     -- 從玩家施法隊列中清除當前技能副本
     local table_remove = table.remove
     for i, skill in pairs(self.owner_.each_casting_) do 
@@ -61,23 +52,17 @@ function mt:Remove()
             break
         end
     end
-
-    -- 副本只需要刪除這四個值(可以看mt:New)
-    self.owner_       = nil
-    self.target_unit_ = nil
-    self.target_loc_  = nil
-    self = nil
 end
 
 -- 調用施法動作
-function mt:Cast()
+function Skill:Cast()
     local Cast = require 'skill.cast'
     Cast(self)
 end
 
 -- 不打斷直接施放的階段，只打斷需要時間的階段
 -- castbar是把動作從計時器break掉，讓計時器自動刪除漂浮文字
-function mt:Break()
+function Skill:Break()
     -- "開始" 階段可以被打斷才打斷
     if (self.break_cast_start_ == 1) and self.cast_start_timer_ then
         self.castbar_:Break()
@@ -101,7 +86,7 @@ function mt:Break()
 end
 
 -- 沒有返回值用notify，有返回值才用dispatch
-function mt:EventDispatch(name, force, ...)
+function Skill:EventDispatch(name, force, ...)
     force = force or false
 
     -- force是檢測要不要強制執行
@@ -132,10 +117,9 @@ end
 
 local S2Id = Base.String2Id
 local table_concat = table.concat
-local SetAbilityDataString = require 'jass.japi'.EXSetAbilityDataString
-local GetUnitAbility       = require 'jass.japi'.EXGetUnitAbility
+local japi = require 'jass.japi'
 
-function mt:UpdateName()
+function Skill:UpdateName()
     local print_tb = {self.name_, "(|cffffcc00", self.hotkey_, "|r) - [等級 |cffffcc00", self.level_, "|r"}
 
     -- 達最大等級就不顯示熟練度
@@ -150,10 +134,11 @@ function mt:UpdateName()
     end
 
     -- 更新技能名稱
-    SetAbilityDataString(GetUnitAbility(self.owner_.object_, S2Id(self.order_id_)), 1, 215, table_concat(print_tb))
+    japi.EXSetAbilityDataString(japi.EXGetUnitAbility(self.owner_.object_, S2Id(self.order_id_)), 1, 215,
+                                table_concat(print_tb))
 end
 
-function mt:UpdateTip()
+function Skill:UpdateTip()
     local string_gsub = string.gsub
     local print_tb = {}
 
@@ -187,7 +172,8 @@ function mt:UpdateTip()
     end
 
     -- 更新技能說明
-    SetAbilityDataString(GetUnitAbility(self.owner_.object_, S2Id(self.order_id_)), 1, 218, table_concat(print_tb))
+    japi.EXSetAbilityDataString(japi.EXGetUnitAbility(self.owner_.object_, S2Id(self.order_id_)), 1, 218,
+                                table_concat(print_tb))
 end
 
 return Skill

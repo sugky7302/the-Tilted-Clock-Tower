@@ -9,17 +9,19 @@
 --   event
 --   game
 
+
 -- package
 local require = require
 local cj = require 'jass.common'
 local js = require 'jass_tool'
 local Player = require 'player'
-local Event = require 'event'
 
-local Unit = require 'class'("Unit", require 'unit.operator', Event)
+
+local Unit = require 'class'("Unit", require 'unit.operator')
 Unit._VERSION = "1.0.0"
 
 -- constants
+-- 這樣寫是因為局部變量讀取比較快
 local RACE     = {'龍族', '元素', '靈魂', '動物', '人形', '人造', '惡魔'}
 local ELEMENTS = {"無", "地", "水", "火", "風"}
 local LEVEL    = {"普通", "菁英", "稀有菁英", "頭目"}
@@ -27,8 +29,9 @@ Unit.RACE = RACE
 Unit.ELEMENTS = ELEMENTS
 Unit.LEVEL = LEVEL
 
+
 -- assert
-local Id2S = Base.Id2String
+local Id2S, concat = Base.Id2String, table.concat
 local GetBodySize, InitUnitState
 
 function Unit:_new(unit)
@@ -43,10 +46,10 @@ function Unit:_new(unit)
     self.handle_           = js.H2I(unit)
     self.name_             = cj.GetUnitName(unit)
     self.owner_            = Player(cj.GetOwningPlayer(unit))
-    self.revive_point_     = Point.GetUnitLoc(unit)
+    self.revive_point_     = GetUnitLoc(unit)
     self.is_spell_damaged_ = false
     
-    Unit:setInstance(table.concat({js.H2I(unit), ""}), self)
+    Unit:setInstance(concat({js.H2I(unit), ""}), self)
 
     -- 初始化單位狀態
     InitUnitState(self)
@@ -99,12 +102,24 @@ GetBodySize = function(collision)
 end
 
 function Unit:_delete()
-    self.RemoveUnit(self.object_)
+    js.RemoveUnit(self.object_)
 
     Unit:deleteInstance(self.handle_)
 end 
 
--- 事件
+function Unit:getInstance(unit)
+    local instance = self[concat({"instance_", js.H2I(unit)})]
+    return instance
+end
+
+
+-- package
+local Event = require 'event'
+
+function Unit:Event(event_name)
+    return Event(Unit, event_name)
+end
+
 function Unit:EventDispatch(event_name, ...)
 	local res = Event.Dispatch(Unit, event_name, self, ...)
 	if res ~= nil then
@@ -127,6 +142,7 @@ function Unit:EventDispatch(event_name, ...)
     
 	return nil
 end
+
 
 -- 功能
 function Unit:IsAlive()

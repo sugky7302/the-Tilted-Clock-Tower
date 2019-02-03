@@ -5,16 +5,7 @@
 --   array
 --   jass_tool
 --   group.condition
--- API
---   Clear : 清空單位組
---   Loop(action, ...) : 對單位組所有單位做動作
---   In(unit) : 確認單位有沒有在單位組裡，返回值為bool
---   getNum : 獲取單位組內的單位總數
---   IsEmpty : 回報單位組是否為空
---   Ignore(unit) : 使單位組不會對該單位執行動作
---   EnumUnitsInRange(x, y, r, cnd) : 選取範圍內的單位
---   AddUnit(unit) : 添加單位給單位組
---   RemoveUnit(unit) : 刪除單位組中的某單位
+
 
 -- package
 local require = require

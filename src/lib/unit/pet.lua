@@ -1,45 +1,43 @@
--- 此module專門處理寵物、隨從、召喚物，為單位的子集
+-- 專門處理寵物、隨從、召喚物，為單位的subclass
+-- 依賴
+--   unit.core
+--   jass_tool
+--   jass.common
 
-local setmetatable = setmetatable
 
-local Pet, Unit = {}, require 'unit.core'
-setmetatable(Pet, Pet)
-Pet.__index = Unit
+-- package
+local require = require 
+local Unit = require 'unit.core'
 
--- constants
-Pet.type = "Pet"
+
+local Pet = require 'class'("Pet", Unit)
 
 -- assert
 local SetPetLifePeriod
 
-function Pet:__call(pet, owner)
+function Pet:_new(pet, owner)
     local H2I = require 'jass_tool'.H2I
 
     if H2I(pet) == 0 then
         return false
     end
 
-    local instance = Unit[H2I(pet) .. ""]
-    if not instance then
-        instance = Unit(pet)
+    Unit._new(self, pet)
 
-        -- 設定擁有者
-        if owner then
-            instance.owner_ = owner
-            instance.owner_.pet_ = instance
-        end
-        
-        -- 寵物都不需要復活
-        instance.revive_point_:Remove()
-        instance.revive_point_ = nil
-
-        setmetatable(instance, instance)
-        instance.__index = self
-    
-        Unit[H2I(pet) .. ""] = instance
+    -- 設定擁有者
+    if owner then
+        self.owner_ = owner
+        self.owner_.pet_ = self
     end
+        
+    -- 寵物都不需要復活
+    self.revive_point_:Remove()
+    self.revive_point_ = nil
+end
 
-    return instance
+function Pet:_delete()
+    self.owner_.pet_ = nil
+    Unit._delete(self)
 end
 
 -- package

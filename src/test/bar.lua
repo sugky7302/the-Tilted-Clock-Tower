@@ -13,7 +13,8 @@ function BarTest()
     end
 
     local Bar = require 'bar.core'
-    local bar = Bar(group.units_[1], nil, 10, "red", true)
+    local Unit = require 'unit.core'
+    local bar = Bar(Unit(group.units_[1]), nil, 10, "red", true)
 end
 
 return BarTest

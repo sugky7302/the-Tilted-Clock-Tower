@@ -1,5 +1,12 @@
 -- 創建護盾條
+-- 依賴
+--   bar.core
+--   jass.common
+--   point
 
+
+-- package
+local require = require
 local Bar = require 'bar.core'
 
 -- assert
@@ -8,7 +15,7 @@ local Initialize, Update
 -- unit是Unit實例，不是單位
 local function Shield(unit, value, timeout)
     -- 單位要設定護盾值，damage要用
-    -- unit:set("護盾", value)
+    unit:set("護盾", value)
     
     return Bar(unit, value, timeout, "white", false, Initialize, Update)
 end
@@ -40,7 +47,7 @@ Update = function(self)
 
     cj.SetTextTagPos(self._texttag_, self._loc_.x_, self._loc_.y_, Z_OFFSET)
 
-    local bar_model = Bar.GetBarModel(self._max_value_ - self._owner_:get "護盾", self._max_value_, self._color_)
+    local bar_model = Bar.GetBarModel(self._owner_:get "護盾", self._max_value_, self._color_)
     cj.SetTextTagText(self._texttag_, bar_model, self._size_)
 end
 

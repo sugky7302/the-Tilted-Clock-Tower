@@ -1,7 +1,19 @@
 -- 提供技能可能會用到的工具
+-- 依賴
+--   jass.common
+--   jass.slk
+--   timer.core
+--   task_tracker
+--   jass.japi
+--   math_lib
+--   unit.core
+--   jass_tool
+
 
 -- package
+local require = require
 local cj = require 'jass.common'
+
 
 local SkillUtil = {}
 

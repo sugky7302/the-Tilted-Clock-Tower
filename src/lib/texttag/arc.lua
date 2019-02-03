@@ -1,4 +1,9 @@
 -- 讓漂浮文字能夠跟隨單位移動
+-- 依賴
+--   jass.common
+--   point
+--   texttag.core
+
 
 -- package
 local math = math
@@ -6,18 +11,16 @@ local require = require
 local cj = require 'jass.common'
 
 -- constants
-local PI = math.pi
-local DEFAULT_ANGLE, IS_ANGLE_RANDOM = PI / 2, true
+local DEFAULT_ANGLE, IS_ANGLE_RANDOM = math.pi / 2, true
 local TIME_LIFE = 0.7
 local VELOCITY = 5
 local SIZE = 0.9
 
 -- assert
-local sin, cos = math.sin, math.cos
 local Initialize, Update
 
 local function ArcText(str, loc, scale)
-    local angle = IS_ANGLE_RANDOM and cj.GetRandomReal(0, 2 * PI) or DEFAULT_ANGLE
+    local angle = IS_ANGLE_RANDOM and cj.GetRandomReal(0, 2 * math.pi) or DEFAULT_ANGLE
 
     -- 設定漂浮文字比例，初始值=1
     scale = scale or 1
@@ -28,7 +31,7 @@ local function ArcText(str, loc, scale)
         _msg_ = str,
         _loc_ = loc,
         _timeout_ = TIME_LIFE,
-        _offset_ = Point(cos(angle) * VELOCITY, sin(angle) * VELOCITY), 
+        _offset_ = Point(math.cos(angle) * VELOCITY, math.sin(angle) * VELOCITY), 
         _size_ = SIZE * scale,
         
         Initialize = Initialize,
@@ -58,10 +61,12 @@ local Z_OFFSET_BONUS = 120
 
 Update = function(self)
     -- 設定運動軌跡
-    local trace = sin(PI * self._timeout_)
+    local trace = math.sin(math.pi * self._timeout_)
 
     -- 更新漂浮文字的位置
+    local old_loc = self._loc_
     self._loc_ = self._loc_ + self._offset_
+    old_loc :Remove()
 
     local z_offset = self._size_ * (Z_OFFSET + Z_OFFSET_BONUS * trace)
     local size = self._size_ * (SIZE_MIN + SIZE_BONUS * trace)

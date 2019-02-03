@@ -1,15 +1,27 @@
 -- 處理quest的工具
+-- 依賴
+--   jass.common
+--   point
+--   timer.core
+--   item.core
+--   unit.core
+--   jass_tool
+
 
 -- package
+local require = require
 local cj = require 'jass.common'
+
 
 local Util = {
     is_unique_  = true,  -- 任務是否唯一
     can_accept_ = true,  -- 可否接取任務
 }
 
+-- assert
+local type = type
+
 function Util:Announce(msg)
-    local type = type
     if type(msg) == 'table' then
         local table_concat = table.concat
         msg = table_concat(msg)
@@ -20,12 +32,12 @@ end
 
 -- package
 local Point = require 'point'
+local Timer = require 'timer.core'
 
 function Util:GiveItem(trigger_item, count)
     local trigger_unit = self.receiver_.object_ -- 防止任務被刪除後，搜尋不到單位的問題
     local p = Point.GetUnitLoc(trigger_unit)
 
-    local Timer = require 'timer.core'
     local Item_Create = require 'item.core'.Create
     Timer(0.1, false, function()
         -- 預設數量
@@ -60,9 +72,6 @@ end
 local UpdateRecevierPoint
 
 function Util:ActivePathIndicator(x, y)
-    local Point = require 'point'
-    local type = type
-
     local receiver_point, target_point = Point.GetUnitLoc(self.receiver_.object_), type(x) == 'table' and x or Point(x,y)
     local angle = Point.Deg(receiver_point, target_point)
 
@@ -73,7 +82,6 @@ function Util:ActivePathIndicator(x, y)
     receiver_point:Remove()
 
     -- 讓指示器平穩地移動，如果用on_timer會卡卡地，因為它是1秒執行一次
-    local Timer = require 'timer.core'
     Timer(0.03125, true, function(this)
         local receiver_point = Point.GetUnitLoc(self.receiver_.object_)
         local angle = Point.Deg(receiver_point, target_point)

@@ -1,3 +1,4 @@
+local require = require
 local japi = require 'jass.japi'
 
 require 'unit.operator'.Register("攻擊間隔", {

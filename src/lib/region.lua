@@ -1,4 +1,12 @@
 -- 為地圖創建多邊形區域，取代we編輯器的region功能
+-- 依賴
+--   regions
+--   game
+--   jass.common
+--   timer.core
+--   unit.core
+--   polygon
+
 
 local require = require
 

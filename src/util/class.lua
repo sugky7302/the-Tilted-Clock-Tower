@@ -1,3 +1,4 @@
+-- Version : 1.1.0
 -- 自定義類型 類別，使用javascript的方式--對象關聯或稱委託。
 -- 新的類別能夠很好區分類別和實例的差別，不會像以往子類實際上也只是父類的一個實例。
 
@@ -115,6 +116,19 @@ local function Class(name, ...)
 
         deleteInstance = function(self, key)
             self[table_concat({"instance_", key})] = nil
+        end,
+
+        setSubclass = function(self, key, subclass)
+            self[table_concat({"subclass_", key})] = subclass
+        end,
+
+        getSubclass = function(self, key)
+            local subclass = self[table_concat({"subclass_", key})]
+            return subclass
+        end,
+
+        deleteSubclass = function(self, key)
+            self[table_concat({"subclass_", key})] = nil
         end,
 	}
 

@@ -1,54 +1,53 @@
--- 此module擴展英雄單位的功能，為單位的子集
+-- 擴展英雄單位的功能，為單位的subclass
+-- 依賴
+--   Unit 
+--   Skill 
+--   jass_tool
+--   jass.common
+--   jass.slk
 
-local setmetatable = setmetatable
 
 -- package
+local require = require
+local Unit = require 'unit.core'
 local Skill = require 'skill.core'
+local js = require 'jass_tool'
 
-local Hero, Unit = {}, require 'unit.core'
-setmetatable(Hero, Hero)
-Hero.__index = Unit
+
+local Hero = require 'class'("Hero", Unit)
 
 -- constants
-Hero.type = "Hero"
+local hero_datas = {} -- 儲存所有英雄資料
+Hero.hero_datas = hero_datas
 
 -- assert
 local InitHeroState, AbilityDisable
-Hero.hero_datas = {} -- 儲存所有英雄資料
 
-function Hero:__call(hero)
-    local H2I = require 'jass_tool'.H2I
-
-    if H2I(hero) == 0 then
+function Hero:_new(hero)
+    if js.H2I(hero) == 0 then
         return false
     end
 
-    local instance = Unit[H2I(hero) .. ""] -- Hero搜尋不到，會去搜尋Unit
-    if not instance then
-        instance = Unit(hero)
+    Unit._new(self, hero)
 
-        local ProperName = require 'jass.common'.GetHeroProperName
-        instance.proper_name_ = ProperName(hero)
+    local ProperName = require 'jass.common'.GetHeroProperName
+    self.proper_name_ = ProperName(hero)
         
-        -- 施法序列
-        instance.each_casting_ = {}
+    -- 施法序列
+    self.each_casting_ = {}
 
-        if self.hero_datas[instance.name_] and self.hero_datas[instance.name_].specialty_name then
-            instance["專長"] = Skill[self.hero_datas[instance.name_].specialty_name]
-        end
-        
-        setmetatable(instance, instance)
-        instance.__index = self
-        
-        Unit[H2I(hero) .. ""] = instance
-        
-        InitHeroState(self)
-
-        -- 關閉技能
-        AbilityDisable(instance)
+    if hero_datas[self.name_] and hero_datas[self.name_].specialty_name then
+        self["專長"] = Skill:getSubclass(hero_datas[self.name_].specialty_name)
     end
-    return instance
+        
+    InitHeroState(self)
+
+    -- 關閉技能
+    AbilityDisable(self)
 end
+
+-- assert
+local ipairs = ipairs
 
 InitHeroState = function(self)
     local slk_unit = require 'jass.slk'.unit
@@ -87,7 +86,6 @@ InitHeroState = function(self)
     self['遠程減傷'] = 0
     self['護盾'] = 0
 
-    local ipairs = ipairs
     for _, name in ipairs(Unit.RACE) do
         self[name .. '增傷'] = 0
         self[name .. '減傷'] = 0
@@ -113,15 +111,24 @@ AbilityDisable = function(self)
     self:AbilityDisable 'A055'
 end
 
-function Hero.Create(name)
+function Hero:_delete()
+    Unit._delete(self)
+end
+
+function Hero:getInstance(hero)
+    return Unit:getInstance(hero)
+end
+
+
+function Hero.Template(name)
     return function(obj)
-        Hero.hero_datas[name] = obj
+        hero_datas[name] = obj
 
         -- 註冊技能
         obj.skill_datas = {}
         
         for _, name in ipairs(obj.skill_names) do
-            obj.skill_datas[#obj.skill_datas + 1] = Skill[name]
+            obj.skill_datas[#obj.skill_datas + 1] = Skill:getSubclass(name)
         end
 
         return obj
@@ -129,9 +136,8 @@ function Hero.Create(name)
 end
 
 function Hero:UpdateAttributes(sign, equipment)
-    sign = (sign == "增加") and 1 or -1
+    sign = (sign == "+") and 1 or -1
 
-    local ipairs = ipairs
     for _, tb in ipairs(equipment.attribute_) do 
         self:add(tb[1], sign * tb[2])
     end

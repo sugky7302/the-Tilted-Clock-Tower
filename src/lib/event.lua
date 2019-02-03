@@ -1,4 +1,7 @@
 -- 創建一個事件列表。在事件觸發時，會調用同一事件名的所有觸發器
+-- 依賴
+--   stl.array
+--   trigger
 
 -- package
 local require = require

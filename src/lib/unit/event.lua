@@ -1,9 +1,26 @@
 -- 處理單位事件
 -- 要注意某些事件參數可以傳instance，有些只能傳jass參數
+-- 依賴
+--   jass.common
+--   jass.japi
+--   jass_tool
+--   api
+--   unit.core
+--   game
+--   point
+--   item.core
+--   timer.core
+--   item.equipment.core
+--   item.secrets
+--   combat.damage
+--   drop_lib
+--   math_lib
+--   unit.hero
+--   intelligenct
 
-local require = require
 
 -- package
+local require = require
 local cj = require 'jass.common'
 local js = require 'jass_tool'
 local War3 = require 'api'
@@ -21,7 +38,7 @@ local ipairs = ipairs
 local RunBehaviorTree
 
 local unit_is_attacked = War3.CreateTrigger(function()
-    local source, target = Unit(cj.GetEventDamageSource()), Unit(cj.GetTriggerUnit())
+    local source, target = Unit:getInstance(cj.GetEventDamageSource()), Unit:getInstance(cj.GetTriggerUnit())
 
     -- 先將當前傷害值歸零，以免實際扣血 ~= 預計扣血
     local SetEventDamage = require 'jass.japi'.EXSetEventDamage
@@ -41,16 +58,27 @@ local unit_is_attacked = War3.CreateTrigger(function()
     return true
 end)
 
+Unit:Event "單位-造成傷害" (function(_, source, target)
+    local Damage = require 'combat.damage'
+    Damage{
+        source_ = source,
+        target_ = target,
+        
+        name_ = "普通攻擊",
+        type_ = "物理",
+        element_type_ = "無",
+    }
+end)
+
 -- 精英生物以上才會有行為樹
--- 不管是xpcall或是pcall都無法在報錯的情況下正常運行，會出現連帶問題，比如水元素報錯
--- 進而導致遊戲崩潰
+-- 不管是xpcall或是pcall都無法在報錯的情況下正常運行，會出現連帶問題，比如水元素報錯，進而導致遊戲崩潰
 RunBehaviorTree = function(target)
     if target["階級"] > 1 and (not target.behavior_running_) then
         local name = string.match(target.name_, 'n(.+)%s')
         local path = table_concat({'monsters.', name, ".behavior"})
         local behavior
 
-        -- 如果找不到behavior找不到就根據debug模式和實際遊戲給予兩種不同保護機制
+        -- 如果找不到behavior找不到就根據debug模式或release模式給予兩種不同保護機制
         if Base.debug_mode then
             behavior = select(2, xpcall(require, Base.ErrorHandle, path))
         else
@@ -66,21 +94,9 @@ RunBehaviorTree = function(target)
     end
 end
 
-Unit:Event "單位-造成傷害" (function(_, source, target)
-    local Damage = require 'combat.damage'
-    Damage{
-        source_ = source,
-        target_ = target,
-        
-        name_ = "普通攻擊",
-        type_ = "物理",
-        element_type_ = "無",
-    }
-end)
-
 -- 註冊單位死亡要刷新的事件
 local trg = War3.CreateTrigger(function()
-    local target = Unit(cj.GetTriggerUnit())
+    local target = Unit:getInstance(cj.GetTriggerUnit())
 
     -- 放到最底下會導致EventDispatch獲取不到target，可能是因為Unit會刪除實例
     target:EventDispatch("任務-更新")
@@ -88,15 +104,57 @@ local trg = War3.CreateTrigger(function()
     if target.type == "Unit" then
         target:EventDispatch("單位-掉落物品")
         target:EventDispatch("單位-刷新")
-    elseif target.type == "Pet" then
+    
+        return true
+    end
+
+    if target.type == "Pet" then
         target:EventDispatch("寵物-清除")
-    elseif target.type == "Hero" then
+        
+        return true
+    end
+    
+    if target.type == "Hero" then
         target:EventDispatch("英雄-復活")
         target:EventDispatch("英雄-死亡後終止所有技能")
+
+        return true
     end
 
     return true
 end)
+
+-- assert
+local LookupQuests
+
+Unit:Event "任務-更新" (function(_, self)
+    -- 防止召喚物死亡後執行
+    if not self.attacker_ then
+        return false
+    end
+
+    -- NOTE: 如果不設定召喚物擊殺的單位的攻擊者為英雄，英雄會沒辦法更新任務
+    local attacker = self.attacker_
+    if attacker.type == "Pet" then
+        attacker = attacker.owner_
+    end
+
+    if attacker.type == 'Hero' then
+        LookupQuests(attacker.quests_, self.id_)
+    end
+end)
+
+LookupQuests = function(quests, id)
+    if not quests then 
+        return false
+    end
+
+    for _, quest in ipairs(quests) do 
+        if quest.demands_[id] then
+            quest:Update(id)
+        end
+    end
+end
 
 Unit:Event "單位-掉落物品" (function(_, unit)
     local DROP_LIB = require 'drop_lib'
@@ -131,10 +189,11 @@ end)
 
 Unit:Event "單位-刷新" (function(_, unit)
     -- 移除單位前先存單位id才不會讀不到
-    Unit.RemoveUnit(unit.object_)
+    js.RemoveUnit(unit.object_)
 
     Timer(unit:get "刷新時間", false, function()
-        local new_unit = Unit.Create(cj.Player(cj.PLAYER_NEUTRAL_AGGRESSIVE), unit.id_, unit.revive_point_, cj.GetRandomReal(0, 180))
+        local new_unit = Unit.Create(cj.Player(cj.PLAYER_NEUTRAL_AGGRESSIVE), unit.id_, unit.revive_point_,
+                                     cj.GetRandomReal(0, 180))
 
         -- 新單位註冊實例
         Unit(new_unit)
@@ -147,11 +206,12 @@ Unit:Event "單位-刷新" (function(_, unit)
 end)
 
 Unit:Event "英雄-復活" (function(_, self)
+    -- 清空施放技能隊列
     for _, skill in ipairs(self.each_casting_) do
         skill:Break()
     end
 
-    -- 解除js.RemoveUnit設置的水元素週期
+    -- 解除js.RemoveUnit設置的水元素週期，不然英雄復活會直接死亡
     cj.UnitPauseTimedLife(self.object_, true)
 
     local revive_time = 10 + 5 * self:get "等級"
@@ -184,46 +244,17 @@ Unit:Event "寵物-清除" (function(_, self)
     self:Remove()
 end)
 
--- assert
-local LookupQuests
-
-Unit:Event "任務-更新" (function(_, self)
-    -- 防止召喚物死亡後執行
-    if not self.attacker_ then
-        return false
-    end
-
-    local attacker = self.attacker_
-    if attacker.type == "Pet" then
-        attacker = attacker.owner_
-    end
-
-    if attacker.type == 'Hero' then
-        LookupQuests(attacker.quests_, self.id_)
-    end
-end)
-
-LookupQuests = function(quests, id)
-    if not quests then 
-        return false
-    end
-
-    for _, quest in ipairs(quests) do 
-        if quest.demands_[id] then
-            quest:Update(id)
-        end
-    end
-end
-
 Game:Event "單位-創建" (function(_, target)
     cj.TriggerRegisterUnitEvent(trg, target, cj.EVENT_UNIT_DEATH)
     cj.TriggerRegisterUnitEvent(unit_is_attacked, target, cj.EVENT_UNIT_DAMAGED)
 end)
 
+
+-- package
 local Hero = require 'unit.hero'
 
 local order_trg = War3.CreateTrigger(function()
-    Hero(cj.GetOrderedUnit()):EventDispatch("單位-發布命令", cj.GetIssuedOrderId(), cj.GetOrderTarget())
+    Hero:getInstance(cj.GetOrderedUnit()):EventDispatch("單位-發布命令", cj.GetIssuedOrderId(), cj.GetOrderTarget())
     return true
 end)
 
@@ -234,16 +265,18 @@ end)
 --     end
 -- end)
 
+
 -- 創建使用物品事件
 local use_item_trg = War3.CreateTrigger(function()
-    Hero(cj.GetTriggerUnit()):EventDispatch("單位-使用物品", Item(cj.GetManipulatedItem()))
+    Hero:getInstance(cj.GetTriggerUnit()):EventDispatch("單位-使用物品", Item:getInstance(cj.GetManipulatedItem()))
     return true
 end)
+
 
 -- 創建獲得物品事件
 local obtain_item_trg = War3.CreateTrigger(function()
     if cj.GetManipulatedItem() ~= nil then
-        Hero(cj.GetTriggerUnit()):EventDispatch("單位-獲得物品", cj.GetManipulatedItem())
+        Hero:getInstance(cj.GetTriggerUnit()):EventDispatch("單位-獲得物品", cj.GetManipulatedItem())
     end
 
     return true
@@ -260,7 +293,7 @@ Unit:Event "單位-獲得物品" (function(trigger, hero, item)
         Secrets(item).owner_ = hero
         Secrets(item).own_player_ = hero.owner_
     elseif hero:AcceptQuest(string_sub(cj.GetItemName(item), 10)) then
-        return 
+        return true
     else
         Item(item).owner_ = hero
         Item(item).own_player_ = hero.owner_
@@ -268,27 +301,57 @@ Unit:Event "單位-獲得物品" (function(trigger, hero, item)
 
     StackItem(hero.object_, Item(item))
 end)
-    
+
+StackItem = function(hero, item)
+    if not(Item.IsSecrets(item.object_) or Item.IsMaterial(item.object_)) then
+        return false
+    end
+
+    if item:get "數量" == 0 then
+        return false
+    end
+
+    for i = 0, 5 do
+        local bag_item = Item:getInstance(cj.UnitItemInSlot(hero, i))
+        if IsTypeSame(bag_item, item) then
+            bag_item:add("數量", item:get "數量")
+                
+            item:Remove()
+            return true
+        end
+    end
+end
+
+IsTypeSame = function(bag_item, target_item)
+    return (bag_item.id_ == target_item.id_) and (bag_item.handle_ ~= target_item.handle_)
+end
+
+
 -- 創建丟棄物品事件
 local drop_item_trg = War3.CreateTrigger(function()
-    Hero(cj.GetTriggerUnit()):EventDispatch("單位-丟棄物品", cj.GetManipulatedItem())
+    Hero:getInstance(cj.GetTriggerUnit()):EventDispatch("單位-丟棄物品", cj.GetManipulatedItem())
     return true
 end)
 
-Unit:Event "單位-丟棄物品" (function(trigger, hero, item)
+Unit:Event "單位-丟棄物品" (function(_, hero, item)
     if Item.IsEquipment(item) then
         hero:UpdateAttributes("減少", Equipment(item))
     end
 end)
-    
+
+
 -- 創建出售物品事件
 local sell_itemT_trg = War3.CreateTrigger(function()
-    Hero(cj.GetTriggerUnit()):EventDispatch("單位-出售物品", cj.GetSoldItem())
+    Hero:getInstance(cj.GetTriggerUnit()):EventDispatch("單位-出售物品", cj.GetSoldItem())
     return true
 end)
 
+
 local spell_effect_trg = War3.CreateTrigger(function()
-    Hero(cj.GetTriggerUnit()):EventDispatch("單位-發動技能效果", cj.GetSpellAbilityId(), Unit(cj.GetSpellTargetUnit()), Item(cj.GetSpellTargetItem()), Point.GetLoc(cj.GetSpellTargetLoc()))
+    Hero:getInstance(cj.GetTriggerUnit()):EventDispatch("單位-發動技能效果", cj.GetSpellAbilityId(),
+                                                        Unit:getInstance(cj.GetSpellTargetUnit()),
+                                                        Item:getInstance(cj.GetSpellTargetItem()),
+                                                        Point.GetLoc(cj.GetSpellTargetLoc()))
     return true
 end)
 
@@ -297,15 +360,17 @@ Unit:Event "單位-發動技能效果" (function(_, target, id)
 end)
 
 Unit:Event "單位-發動技能效果" (function(_, source, id, _, _, target_loc)
+    local S2Id = Base.String2Id
+
     -- A00M = 偵查
-    if id == Base.String2Id('A00M') then
+    if id == S2Id('A00M') then
         local Save = require 'intelligence'.Save
         Save(source, target_loc)
         target_loc:Remove()
     end
 
     -- A055 = 情報
-    if id == Base.String2Id('A055') then
+    if id == S2Id('A055') then
         local Load = require 'intelligence'.Load
         Load(source)
     end
@@ -326,27 +391,3 @@ Game:Event "單位-創建" (function(_, target)
         cj.TriggerRegisterUnitEvent(spell_effect_trg, target, cj.EVENT_UNIT_SPELL_EFFECT)
     end
 end)
-
-StackItem = function(hero, item)
-    if not(Item.IsSecrets(item.object_) or Item.IsMaterial(item.object_)) then
-        return false
-    end
-
-    if item:get "數量" == 0 then
-        return false
-    end
-
-    for i = 0, 5 do
-        local bag_item = Item(cj.UnitItemInSlot(hero, i))
-        if IsTypeSame(bag_item, item) then
-            bag_item:add("數量", item:get "數量")
-                
-            item:Remove()
-            return true
-        end
-    end
-end
-
-IsTypeSame = function(bag_item, target_item)
-    return (bag_item.id_ == target_item.id_) and (bag_item.handle_ ~= target_item.handle_)
-end

@@ -1,5 +1,9 @@
 -- 此module會在英雄身上創建狀態條
--- 要給unit、value、timeout、color、is_reverse、initialize、update
+-- 依賴
+--   point
+--   texttag.core
+--   jass.common
+--   color
 
 -- package
 local require = require
@@ -14,23 +18,23 @@ local motivation = Point(-40, 0)
 local Initialize, Update
 
 -- unit是Unit實例，不是單位
-function Bar:_new(data)
+function Bar:_new(unit, value, timeout, color, is_reverse, initialize, update)
     local SIZE = 0.015
 
-    local unit_loc = Point.GetUnitLoc(data.unit.object_)
+    local unit_loc = Point.GetUnitLoc(unit.object_)
     
-    self._msg_ = mt.GetBarModel(0, data.value or data.timeout, data.color, data.is_reverse)
+    self._msg_ = Bar.GetBarModel(0, value or timeout, color, is_reverse)
     self._loc_ = unit_loc + motivation
-    self._timeout_ = data.timeout
+    self._timeout_ = timeout
     self._value_ = 0 -- 記錄當前值，計算條的變色比例
-    self._max_value_ = data.value or data.timeout -- 記錄最大值，計算條的變色比例
+    self._max_value_ = value or timeout -- 記錄最大值，計算條的變色比例
     self._size_ = SIZE
-    self._is_reverse_ = data.is_reverse
-    self._color_ = data.color
-    self._owner_ = data.unit
+    self._is_reverse_ = is_reverse
+    self._color_ = color
+    self._owner_ = unit
 
-    self.Initialize = data.initialize or Initialize
-    self.Update = data.update or Update
+    self.Initialize = initialize or Initialize
+    self.Update = update or Update
 
     unit_loc:Remove()
 
@@ -64,8 +68,12 @@ Update = function(self)
     cj.SetTextTagText(self._texttag_, bar_model, self._size_)
 end
 
+function Bar:_delete()
+    Texttag._delete(self)
+end
+
 function Bar.GetBarModel(current, total, color, is_reverse)
-    -- 設定條是向右充能，或是向左
+    -- 設定bar是向右充能，或是向左
     current = is_reverse and (total - current) or current
     
     -- 計算染色比例
@@ -78,7 +86,7 @@ function Bar.GetBarModel(current, total, color, is_reverse)
     local string_rep = string.rep
     local BAR_MODEL = "l"
     local string_concat = {Color(color), string_rep(BAR_MODEL, coloring_rate),
-                           "|r|cffc0c0c0", string_rep(BAR_MODEL, BAR_SIZE - coloring_rate)}
+                           "|r", Color("grey"), string_rep(BAR_MODEL, BAR_SIZE - coloring_rate)}
     return table.concat(string_concat)
 end
 
