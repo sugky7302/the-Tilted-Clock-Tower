@@ -1,4 +1,6 @@
 local function KnockTest(self)
+    self.InitTimer()
+    
     local Hero = require 'unit.hero'
     local test_unit = Hero(self.EnumUnit())
 

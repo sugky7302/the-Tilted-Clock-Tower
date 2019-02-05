@@ -61,6 +61,20 @@ group(匹配單位) : 建構函數
 .Save(單位對象, 點對象) : 儲存該點儲存的情報到單位對象的資料庫內
 .Load(單位對象) : 讀取單位對象的所有情報
 
+## mover.core
+mover(data) : 建構函數，可操作成員有mover_ -> 單位對象、starting_point_ -> 起始點、max_dist_ -> 最遠距離、TraceMode -> 軌跡函數、Execute -> 每次移動都會執行的動作函數、End_Cnd -> 終止條件、target_point_ -> 終點、velocity_ -> 初速度、velocity_max_ -> 最高速度、acceleration_ -> 加速度、height_ -> 拋體運動最大高度、angle_ -> 射角、radius_ -> 半徑、starting_height_ -> 初始高度、dur_ -> 存在的時間、current_dist_ -> 走過的距離、motivation_ -> 位移量
+:Remove() : 解構函數
+
+## mover.missile
+missile(data) : 建構函數，除了mover的可操作成員外，另有owner_ -> 擁有者、model_name_ -> 投射物模型、hit_mode_ -> 數字表示擊中數達此值停止，inf表示到最大距離才停止、SetHeight -> 高度函數、GroupExecute -> 單位組的loop函數，格式一定要遵照 function(group, i, ...) 動作 end)
+
+## mover.trace
+:Line() : 直線軌跡
+:Surround() : 環繞軌跡
+
+## mover.util
+.Move(目標單位對象, 點對象, 距離, 角度) : 移動目標單位
+
 ## multiboard
 multiboard(玩家) : 建構函數
 :Remove() : 解構函數

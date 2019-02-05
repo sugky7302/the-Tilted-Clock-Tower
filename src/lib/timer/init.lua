@@ -85,7 +85,7 @@ Wakeup = function(callback)
 
     -- 如果有儲存秒數，表示是週期觸發，因此要重複設定
     if callback.timeout_ then
-        CenterTimer.SetTimeout(callback, callback.timeout_)
+        callback:SetTimeout(callback.timeout_)
     else
         callback:Remove()
     end

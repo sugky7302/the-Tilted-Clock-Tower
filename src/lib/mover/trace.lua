@@ -1,7 +1,13 @@
 -- 提供常用的軌跡函數
+-- 依賴
+--   mover.util
+--   point
+
 
 -- package
+local require = require
 local Util = require 'mover.util'
+
 
 local mod = {}
 
@@ -32,9 +38,10 @@ function mod.Surround(self)
 
     -- 移動投射物
     local unit_point = GetUnitLoc(self.owner_.object_)
+    unit_point:UpdateZ()
+    
     Util.Move(self.mover_, unit_point, self.radius_, self.angle_)
-
-    Util.SetHeight(self, self.mover_, self.starting_height_)
+    Util.SetHeight(self, self.mover_, self.starting_height_ - unit_point.z_)
 
     unit_point:Remove()
 end

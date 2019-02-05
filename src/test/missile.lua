@@ -6,7 +6,7 @@ local function MissileTest(self)
     Hero(enum_unit)
 
     local Point = require 'point'
-    local Missile = require 'missile.core'
+    local Missile = require 'mover.missile'
     local Rand = require 'math_lib'.Random
     local cj = require 'jass.common'
 
@@ -20,17 +20,12 @@ local function MissileTest(self)
 
         starting_point_ = p,
 
+        velocity_ = 20,
         radius_ = 50,
         angle_ = Rand(0, 360),
-        starting_height_ = p.z_ + 50, 
-        max_distance_ = 0,
+        starting_height_ = p.z_ + 50,
         
         TraceMode = "Surround",
-        SetHeight = function(self)
-            self.missile_:AddAbility 'Arav' 
-            self.missile_:RemoveAbility 'Arav'
-            cj.SetUnitFlyHeight(self.missile_.object_, self.starting_height_, 0.)
-        end
     }
 end
 

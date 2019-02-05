@@ -1,57 +1,61 @@
--- 可以操作任意單位進行固定軌跡的移動器
+-- 可以操作任意單位進行固定軌跡的移動器，資料所需如下:
+-- 依賴
+--   timer.core
+--   mover.trace
+-- 必選
+--   mover_:單位
+--   starting_point_:起始點
+--   TraceMode:軌跡
+-- 可選
+--   Execute:移動中執行的函數(不一定要用)
+--   End_Cnd:中止條件(不一定要用)
+--   target_point_:終點，trace_mode_ = surround不使用
+--   max_dist_:最遠距離。trace_mode_ = surround不使用
+--   velocity_:初速度，trace_mode_ ~= surround使用
+--   velocity_max_:最高速度，trace_mode_ ~= surround使用
+--   acceleration_:加速度
+--   height_:拋體運動最大高度
+--   angle_:射角。trace_mode_ = surround使用
+--   radius_:半徑。trace_mode_ = surround使用
+--   starting_height_:初始飛行高度。trace_mode_ = surround使用
 
-local class = require 'class'("Mover")
+
+local require = require 
+
+
+local Mover = require 'class'("Mover", require 'mover.trace', require 'mover.util')
 
 -- constant
-class.PERIOD = 0.03125
+Mover._VERSION = "1.1.0"
+Mover.PERIOD = 0.03125
 
 -- assert
-local Move
+local Move, InitParams
 
--- instance = {
---     mover_:單位, 
+function Mover:_new(data)
+    self:_copy(data)
 
---     starting_point_:起始點,
---     max_dist_:最遠距離。環繞軌跡不適用,
-
---     TraceMode:軌跡,
---     Execute:移動中執行的函數,
---     End_Cnd:中止條件,
-
---     可選
---     target_point_:終點，trace_mode_ = surround不使用,
-
---     velocity_:初速度，trace_mode_ ~= surround使用,
---     velocity_max_:最高速度，trace_mode_ ~= surround使用,
---     acceleration_:加速度,
---     height_:拋體運動最大高度,
---     angle_:射角。trace_mode_ = surround使用,
---     radius_:半徑。trace_mode_ = surround使用,
---     starting_height_:初始高度。trace_mode_ = surround使用,
--- }
-function mod:__call(instance)
-    setmetatable(instance, self)
-    instance.__index = instance
-
-    instance.dur_ = 0
-    instance.current_dist_ = 0
+    InitParams(self)
 
     -- TraceMode可以用trace_lib的內建函數或自己寫
     -- 自己寫，請遵照 function(self) 動作 end 的格式
-    local type = type
     local Trace = require 'mover.trace'
-    instance.TraceMode = (type(instance.TraceMode) == "string") and Trace[instance.TraceMode] or instance.TraceMode
+    self.TraceMode = (type(self.TraceMode) == "string") and Trace[self.TraceMode] or self.TraceMode
     
-    Move(instance)    
+    Move(self)    
+end
 
-    return instance
+InitParams = function(self)
+    self.dur_ = 0
+    self.current_dist_ = 0
 end
 
 Move = function(self)
     local Timer = require 'timer.core'
-    self.timer_ = Timer(mt.PERIOD, true ,function()
+
+    self.timer_ = Timer(self.PERIOD, true ,function()
         -- 計算速度會用到
-        self.dur_ = self.dur_ + mt.PERIOD
+        self.dur_ = self.dur_ + self.PERIOD
 
         self:TraceMode()
 
@@ -75,7 +79,7 @@ Move = function(self)
     end)
 end
 
-function mt:Remove()
+function Mover:_delete()
     self.timer_:Break()
 
     if self.starting_point_ then
@@ -85,13 +89,6 @@ function mt:Remove()
     if self.target_point_ then
         self.target_point_:Remove()
     end
-
-    local pairs = pairs
-    for key in pairs(self) do 
-        self[key] = nil
-    end
-
-    self = nil
 end
 
-return mod
+return Mover

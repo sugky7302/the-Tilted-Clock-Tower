@@ -1,43 +1,51 @@
 -- 高擴展性的投射物，可自定義軌跡
+-- 依賴
+--   point
+--   mover.util
+--   jass.common
+--   mover.core
+--   group.core
+--   unit.core
+--   task_tracker
+-- 必選
+--   owner_
+--   model_name_
+--   starting_point_
+--   velocity_
+--   TraceMode
+--   hit_mode_ = 1 2 3 or inf:數字表示擊中數達此值即停止，inf表示到最大距離才停止
+-- 可選
+--   target_point_:目標點，trace_mode_ = surround不使用
+--   velocity_max_:最大速度，trace_mode_ ~= surround使用
+--   acceleration_:加速度
+--   max_height_:拋體運動最大高度
+--   angle_:角度，trace_mode_ = surround使用
+--   radius_:半徑，trace_mode_ = surround使用
+--   starting_height_:，trace_mode_ = surround使用
+--   max_dist_:最遠距離
+--   SetHeight(可選，trace_mode_ = surround使用)
+--   GroupExecute(可選，為group的loop函數，格式一定要遵照 function(group, i, ...) 動作 end)
+
 
 -- package
+local require = require
 local Point = require 'point'
 local Util = require 'mover.util'
+local cj = require 'jass.common'
+
 
 -- assert
 local type = type
 local GetMissile, GetStartingHeight
 local InitFuncs, InitParams
 
--- instance = {
---     owner_
---     model_name_
---     hit_mode_ = 1 2 3 or inf:數字表示擊中數達此值即停止，inf表示到最大距離才停止
-
---     starting_point_
---     target_point_(trace_mode_ = surround不使用)
-
---     velocity_(可選，trace_mode_ ~= surround使用)
---     velocity_max_(可選，trace_mode_ ~= surround使用)
---     acceleration_
---     height_(拋體運動最大高度)
---     angle_(可選，trace_mode_ = surround使用)
---     radius_(可選，trace_mode_ = surround使用)
---     starting_height_(可選，trace_mode_ = surround使用)
---     max_dist_
-
---     SetHeight(可選，trace_mode_ = surround使用)
---     TraceMode
---     GroupExecute(可選，為group的loop函數，格式一定要遵照 function(group, i, ...) 動作 end)
--- }
 local function Missile(instance)
     InitParams(instance)
     InitFuncs(instance)
     
     -- 添加烏鴉技能，使觸發可以更改投射物高度
-    local SetUnitFlyHeight = require 'jass.common'.SetUnitFlyHeight
     Util.Fly(instance.mover_)
-    SetUnitFlyHeight(instance.mover_.object_, instance.starting_height_, 0.)
+    cj.SetUnitFlyHeight(instance.mover_.object_, instance.starting_height_, 0.)
 
     local Mover = require 'mover.core'
     return Mover(instance)
@@ -61,7 +69,7 @@ InitParams = function(self)
     local Group = require 'group.core'
     self.units_ = Group(self.mover_.object_)
 
-    self.starting_height_ = self.starting_height_ or GetStartingHeight(self.starting_point_)
+    self.starting_height_ = GetStartingHeight(self.starting_point_) -- 從地面開始計算的高度
 end
 
 -- assert
@@ -73,10 +81,11 @@ GetStartingHeight = function(starting_point)
 end
 
 GetMissile = function(self)
-    local Pet = require 'unit.pet'
+    local Unit = require 'unit.core'
     local MISSILE_ID = 'u007'
-    local missile = Pet.Create(MISSILE_ID, self.owner_, self.starting_point_)
-    
+    local missile = Unit(Unit.Create(cj.GetOwningPlayer(self.owner_.object_), MISSILE_ID, self.starting_point_,
+                                cj.GetUnitFacing(self.owner_.object_)))
+
     -- 投射物本身沒有模型，必須添加以 球體 為模板的技能，其綁定模型
     missile:AddAbility(self.model_name_)
     
@@ -84,13 +93,13 @@ GetMissile = function(self)
 end
 
 InitFuncs = function(instance)
-    local cj = require 'jass.common'
     local hit = 0
 
     instance.Execute = function(self)
-        -- Remove後計時器還會動作，但group裡的units_已經被清除了，因此要防止它調用units_
+        -- NOTE: Remove後計時器還會動作，但group裡的units_已經被清除了，因此要防止它調用units_
         if self.units_.units_ then
-            self.units_:EnumUnitsInRange(cj.GetUnitX(self.mover_.object_), cj.GetUnitY(self.mover_.object_), self.enum_range_, "IsEnemy")
+            self.units_:EnumUnitsInRange(cj.GetUnitX(self.mover_.object_), cj.GetUnitY(self.mover_.object_),
+                                         self.enum_range_, "IsEnemy")
     
             -- 計算投射物在z軸會不會撞到單位
             self.units_:Loop(function(instance, i)
@@ -100,9 +109,10 @@ InitFuncs = function(instance)
                 p_missile:UpdateZ()
                 p_u:UpdateZ()
                 
-                if p_missile.z_ + cj.GetUnitFlyHeight(self.mover_.object_)
-                    - p_u.z_ - cj.GetUnitFlyHeight(instance.units_[i]) - STANDARD_HEIGHT
-                    > self.enum_range_ then
+                local mover_height = p_missile.z_ + cj.GetUnitFlyHeight(self.mover_.object_) -- 投射物的高度(從地面計算)
+                local unit_height = p_u.z_ + cj.GetUnitFlyHeight(instance.units_[i]) -- 目標單位的高度(從地面計算)
+                local height = mover_height - unit_height - STANDARD_HEIGHT -- 
+                if height > self.enum_range_ then
                     instance:RemoveUnit(instance.units_[i])
                 end
 

@@ -1,4 +1,9 @@
 -- 擊退系統，會根據地區不同給予不同特效
+-- 依賴
+--   mover.core
+--   point
+--   jass.common
+--   jass_tool
 -- data內需要有以下參數
 -- mover_
 -- velocity_
@@ -6,6 +11,7 @@
 -- angle_(度)
 
 local function Knock(instance)
+    local require = require
     local Mover = require 'mover.core'
     local Point = require 'point'
 
@@ -16,10 +22,8 @@ local function Knock(instance)
 
     -- 透過設定0讓util.projectile無效化
     -- 起始高度要一直更新，不然會跟地面高度不符，導致mover會升高的問題
-    local p_unit = Point.GetUnitLoc(instance.mover_.object_)
-    p_unit:UpdateZ()
-    instance.starting_height_ = p_unit.z_
-    p_unit:Remove()
+    instance.starting_point_ = Point.GetUnitLoc(instance.mover_.object_)
+    instance.starting_height_ = 0
 
     instance.height_ = 0
     instance.slope_ = 0

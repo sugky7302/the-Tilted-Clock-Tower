@@ -1,19 +1,25 @@
 -- 移動器會使用的常用工具
+-- 依賴
+--   point
+--   jass.common
+
 
 -- package
+local require = require
 local cj = require 'jass.common'
+local math = math
 
-local mod = {}
 
-function mod.Move(target, p, dist, angle)
+local Util = {}
+
+function Util.Move(target, p, dist, angle)
     -- 讓投射物位移
-    local sin, cos, rad = math.sin, math.cos, math.rad
-    local x_new, y_new = p.x_ + dist * cos(rad(angle)), p.y_ + dist * sin(rad(angle))
+    local x_new, y_new = p.x_ + dist * math.cos(math.rad(angle)), p.y_ + dist * math.sin(math.rad(angle))
     cj.SetUnitPosition(target.object_, x_new, y_new)
 end
 
 -- 拋體運動
-function mod.Projectile(self)
+function Util.Projectile(self)
     local Point = require 'point'
 
     self.slope_ = self.slope_ or Point.SlopeInSpace(self.starting_point_, self.target_point_)
@@ -28,17 +34,19 @@ function mod.Projectile(self)
                               + self.height_
 
     -- 實際高度 = 高度誤差值 + 預估高度 - 當前投射物所在地面高度
-    local ERROR_HEIGHT = 0.11
     local height = self.starting_height_ + self.current_dist_ * self.slope_
-                   + projectile_height - missile_point.z_ + ERROR_HEIGHT
+                   + projectile_height - missile_point.z_
 
-    mod.SetHeight(self, self.mover_, height)
+    Util.SetHeight(self, self.mover_, height)
 
     missile_point:Remove()
 end
 
-function mod.SetHeight(self, unit, height)
-    mod.Fly(unit)
+function Util.SetHeight(self, unit, height)
+    local ERROR_HEIGHT = 0.11
+    height = height + ERROR_HEIGHT
+
+    Util.Fly(unit)
 
     if height > 0 then
         cj.SetUnitFlyHeight(unit.object_, height, 0.)
@@ -48,16 +56,15 @@ function mod.SetHeight(self, unit, height)
     end
 end
 
-function mod.Fly(unit)
+function Util.Fly(unit)
     local FLYSKILL_ID = 'Arav'
 
     unit:AddAbility(FLYSKILL_ID)
     unit:RemoveAbility(FLYSKILL_ID)
 end
 
-function mod.getMotivation(v, a, v_max, period, t)
-    local min = math.min
-    local v_now = min(v_max, v + a * t)
+function Util.getMotivation(v, a, v_max, period, t)
+    local v_now = math.min(v_max, v + a * t)
     
     -- 達到最大速度等同沒有加速度，因此可以直接計算位移
     -- 未達最大速度，加速度會影響位移量
@@ -68,4 +75,4 @@ function mod.getMotivation(v, a, v_max, period, t)
     end    
 end
 
-return mod
+return Util

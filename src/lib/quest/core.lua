@@ -8,6 +8,7 @@
 local require = require 
 local Class = require 'class'
 
+
 local Quest = Class("Quest", require 'quest.util')
 
 -- assert
