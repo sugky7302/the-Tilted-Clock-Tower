@@ -14,7 +14,7 @@ local mod = {}
 -- assert
 local GetUnitLoc = require 'point'.GetUnitLoc
 
-function mod.Line(self)
+function mod.StraightLine(self)
     -- 計算速度、加速度、位移
     self.motivation_ = Util.getMotivation(self.velocity_, self.acceleration_,
                                           self.velocity_max_, self.PERIOD, self.dur_)
@@ -22,7 +22,10 @@ function mod.Line(self)
     local missile_point = GetUnitLoc(self.mover_.object_)
     Util.Move(self.mover_, missile_point, self.motivation_, self.angle_)
 
-    Util.Projectile(self)
+    -- 有拋體運動才執行
+    if self.height_ then
+        Util.Projectile(self)
+    end
 
     missile_point:Remove()
 end
@@ -37,7 +40,7 @@ function mod.Surround(self)
     self.angle_ = self.angle_ % 360
 
     -- 移動投射物
-    local unit_point = GetUnitLoc(self.owner_.object_)
+    local unit_point = GetUnitLoc(self.mover_.object_)
     unit_point:UpdateZ()
     
     Util.Move(self.mover_, unit_point, self.radius_, self.angle_)

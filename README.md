@@ -33,6 +33,13 @@
 - 可以在keyboard shortcut添加自定義快捷鍵，直接複製f5的設定就好，只要把args的值改成task.json裡的label的值，它就會呼叫。
 ### Git
 - 如果push失敗，就直接到資料夾去pull跟push。
+- 版本管理模型
+    - [master] 版本必須是穩定可產品化發布的狀態。
+    - [develop] 平常開發的主要分支。主要負責記錄開發狀態下相對穩定的版本，即完成了某個功能或修復了某個bug後的開發穩定版本。
+    - [feature] 開發新功能的分支。每個新功能都會形成一個分支，等到功能開發測試完畢後，再合併到develop分支。
+    - [release] 測試版本分支。從develop分支出來，進行可產品化的環境下的測試，如果出現缺陷，就在此分支下修復。測試通過後，分別併入master和develop。
+    - [hotfix] 緊急線上修復分支。若線上出現bug且特別緊急時，就可以從master拉出分支到這裡進行修復，完成後分別併入master和develop。
+    - 圖片可見[敏捷開發下的版本管理][ref_url5]。
 ### Lua撰寫細則
 - function、table、userdata、thread是複製引用(call by reference)，所以A變量操作它們，B變量也會改變。
 - boolean、string、number是複製值(call by value)，所以A變量操作它們，B變量不會改變。
@@ -92,6 +99,8 @@
 - [Lua的CPU开销性能优化][ref_url2]
 - [Lua -- 重写pairs方法（让字典访问有序）][ref_url3]
 - [behaviourtree][ref_url4]
+- [敏捷開發下的版本管理][ref_url5]
+- [基於github的敏捷開發][ref_url6]
 
 ## 授權
 本專案屬於 GPL License，更多資訊請看 [LICENSE.md](LICENSE.md)
@@ -100,3 +109,5 @@
 [ref_url2]:https://blog.csdn.net/UWA4D/article/details/77988888
 [ref_url3]:https://blog.csdn.net/honey199396/article/details/78816793
 [ref_url4]:https://github.com/sugky7302/behaviourtree.lua
+[ref_url5]:https://www.jianshu.com/p/a3a32e473cc4
+[ref_url6]:https://juejin.im/post/5966406d6fb9a06bb61ffe19

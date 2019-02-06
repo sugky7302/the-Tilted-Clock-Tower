@@ -22,7 +22,7 @@ end
 function Util.Projectile(self)
     local Point = require 'point'
 
-    self.slope_ = self.slope_ or Point.SlopeInSpace(self.starting_point_, self.target_point_)
+    self.slope_ = self.slope_ or Point.SlopeInSpace(self.starting_loc_, self.target_loc_)
     
     -- 獲取投射物高度
     local missile_point = Point.GetUnitLoc(self.mover_.object_)

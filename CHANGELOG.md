@@ -1,5 +1,5 @@
 # 更新日誌
-## 0.33.0 - 2019-02-04 - 用class重構
+## 0.33.0 - 2019-02-06 - 用class重構
 ### Added:
 - 添加api.md，將所有模塊的API都填入其中，之後搜尋會比較快速，不用一個一個檔案找。
 - 添加is_nil函數，可判斷string、number、boolean、table是否為空。
@@ -7,6 +7,7 @@
 - 對所有模塊、類別都添加_VERSION成員，儲存遵循語意化版本控制規範的版本號，日後可作為hotfix的判斷依據。
 - [quest.util] 新增路徑指示器，會為玩家指向完成任務的地點。
 ### Changed:
+- [mover.core] 修改mover。
 - [mover.missile] 投射物從寵物對象改成單位對象，不然有可能會發生寵物攻擊時，因為hero.pet_被設定為投射物，導致有些動作出錯。
 - [point] 用新的class重寫功能。
 - [quest.util] Near函數的參數類型可以為點。
