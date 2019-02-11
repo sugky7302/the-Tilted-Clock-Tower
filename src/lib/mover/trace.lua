@@ -34,19 +34,18 @@ function mod.Parabola()
 end
 
 function mod.Surround(self)
+    if not self.angle_ then
+        local Rand = require 'math_lib'.Random
+        self.angle_ = Rand(0, 359)
+    end
+
     -- 這裡的angle_是角度不是弧度
     self.angle_ = self.angle_ + Util.getMotivation(self.velocity_, self.acceleration_,
                                                    self.velocity_max_, self.PERIOD, self.dur_)
     self.angle_ = self.angle_ % 360
-
-    -- 移動投射物
-    local unit_point = GetUnitLoc(self.mover_.object_)
-    unit_point:UpdateZ()
     
-    Util.Move(self.mover_, unit_point, self.radius_, self.angle_)
-    Util.SetHeight(self, self.mover_, self.starting_height_ - unit_point.z_)
-
-    unit_point:Remove()
+    -- 移動投射物
+    Util.Move(self.mover_, self.starting_loc_, self.radius_, self.angle_)
 end
 
 return mod

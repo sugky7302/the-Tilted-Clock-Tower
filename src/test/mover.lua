@@ -29,7 +29,7 @@ local function MoverTest(self)
         mover_ = test_unit,
         timeout_ = 10,
         radius_ = 100,
-        angle_ = 180,
+        velocity_ = 45,
 
         TraceMode = "Surround",
         Execute = function()
