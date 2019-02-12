@@ -36,6 +36,9 @@ local Move, InitParams, SaveMoverInQueue
 function Mover:_new(data)
     self:_copy(data)
 
+    -- mover是移動自己，但missile是移動投射物，如果對投射物設定mover_queue_，就沒辦法執行隊列了
+    self.owner_ = self.owner_ or self.mover_
+
     SaveMoverInQueue(self)
 
     -- TraceMode可以用內建軌跡函數或自己寫
@@ -44,19 +47,19 @@ function Mover:_new(data)
     
     -- 輪到當前移動器才執行，不然不理
     -- 初始化要等到真正執行時才做，如果先做會導致存到聲明時的值，跟實際會有點出入
-    if self.mover_.mover_queue_:front() == self then
+    if self.owner_.mover_queue_:front() == self then
         InitParams(self)
         Move(self)
     end
 end
 
 SaveMoverInQueue = function(self)
-    if not self.mover_.mover_queue_ then
+    if not self.owner_.mover_queue_ then
         local Queue = require 'stl.queue'
-        self.mover_.mover_queue_ = Queue()
+        self.owner_.mover_queue_ = Queue()
     end
 
-    self.mover_.mover_queue_:PushBack(self)
+    self.owner_.mover_queue_:PushBack(self)
 end
 
 Move = function(self)
@@ -103,8 +106,8 @@ function Mover:_delete()
     end
 
     -- 執行下一個移動器
-    self.mover_.mover_queue_:PopFront()
-    local next = self.mover_.mover_queue_:front()
+    self.owner_.mover_queue_:PopFront()
+    local next = self.owner_.mover_queue_:front()
 
     -- 初始化要等到真正執行時才做，如果先做會導致存到聲明時的值，跟實際會有點出入
     if next then
@@ -113,7 +116,7 @@ function Mover:_delete()
     end
 end
 
-InitParams = function(self)
+InitParams = function (self)
     self.dur_ = 0
     self.current_dist_ = 0
 
@@ -123,12 +126,16 @@ InitParams = function(self)
     self.acceleration_ = self.acceleration_ or 0
 
     local Point = require 'point'
-    self.starting_loc_ = Point.GetUnitLoc(self.mover_.object_)
+    self.starting_loc_ = Point.GetUnitLoc(self.owner_.object_)
 
     -- 對只設定地點的移動器解析成距離和角度，比較好判定
     if self.target_loc_ then
         self.max_dist_ = Point.Distance(self.starting_loc_, self.target_loc_)
         self.angle_ = Point.Deg(self.starting_loc_, self.target_loc_)
+    end
+
+    if self.InitParams then
+        self:InitParams()
     end
 end
 

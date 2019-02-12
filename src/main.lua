@@ -33,7 +33,7 @@ local function Main()
     -- require 'map'
 
     -- 呼叫測試碼
-    require 'test.core'('mover')
+    require 'test.core'('missile')
 end
 
 Main()

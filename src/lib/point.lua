@@ -39,6 +39,11 @@ function Point:__div(scale)
 end
 
 
+function Point:copy()
+    local new_point = Point(self.x_, self.y_, self.z_)
+    return new_point
+end
+
 function Point:UpdateZ()
     local loc = cj.Location(self.x_, self.y_)
     self.z_ = cj.GetLocationZ(loc)

@@ -39,13 +39,22 @@ function mod.Surround(self)
         self.angle_ = Rand(0, 359)
     end
 
+    local center
+    if self.owner_ ~= self.mover_ then -- 投射物是以擁有者為中心環繞
+        center = GetUnitLoc(self.owner_.object_)
+    else -- 自身是以起始點環繞
+        center = self.starting_loc_:copy()
+    end
+
     -- 這裡的angle_是角度不是弧度
     self.angle_ = self.angle_ + Util.getMotivation(self.velocity_, self.acceleration_,
                                                    self.velocity_max_, self.PERIOD, self.dur_)
     self.angle_ = self.angle_ % 360
     
     -- 移動投射物
-    Util.Move(self.mover_, self.starting_loc_, self.radius_, self.angle_)
+    Util.Move(self.mover_, center, self.radius_, self.angle_)
+
+    center:Remove()
 end
 
 return mod

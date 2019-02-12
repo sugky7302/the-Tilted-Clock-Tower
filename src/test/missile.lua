@@ -7,12 +7,13 @@ local function MissileTest(self)
 
     local Missile = require 'mover.missile'
 
-    local missile = Missile{
+    Missile{
         owner_ = Hero(enum_unit),
         model_name_ = 'A046',
         hit_mode_ = "inf",
 
-        velocity_ = 20,
+        timeout_ = 10,
+        velocity_ = 80,
         radius_ = 50,
 
         TraceMode = "Surround",

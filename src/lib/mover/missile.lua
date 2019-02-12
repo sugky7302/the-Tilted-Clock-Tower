@@ -39,37 +39,36 @@ local type = type
 local GetMissile, GetStartingHeight
 local InitFuncs, InitParams
 
-local function Missile(instance)
-    InitParams(instance)
-    InitFuncs(instance)
+local function Missile(data)
+    data.InitParams = function(self)
+        InitParams(self)
+        InitFuncs(self)   
+        
+        -- 添加烏鴉技能，使觸發可以更改投射物高度
+        Util.Fly(self.mover_)
+        cj.SetUnitFlyHeight(self.mover_.object_, self.starting_height_, 0)
+    end
     
-    -- 添加烏鴉技能，使觸發可以更改投射物高度
-    Util.Fly(instance.mover_)
-    cj.SetUnitFlyHeight(instance.mover_.object_, instance.starting_height_, 0.)
-
     local Mover = require 'mover.core'
-    return Mover(instance)
+    return Mover(data)
 end
 
 InitParams = function(self)
     -- 設定位移量
+    self.velocity_ = self.velocity_ or 1000
     self.velocity_max_ = self.velocity_max_ or self.velocity_
     self.acceleration_ = self.acceleration_ or 0
 
     -- 投射物的選取範圍
     self.enum_range_ = self.enum_range_ or 50
 
-    -- 設定拋體運動
-    self.height_ = self.height_ or 0 -- 最高高度
-
-    self.angle_ = self.angle_ or Point.Deg(self.starting_point_, self.target_point_)
-
     self.mover_ = GetMissile(self)
     
     local Group = require 'group.core'
     self.units_ = Group(self.mover_.object_)
 
-    self.starting_height_ = GetStartingHeight(self.starting_point_) -- 從地面開始計算的高度
+    -- 從地基-128開始計算的高度
+    self.starting_height_ = GetStartingHeight(self.starting_loc_)
 end
 
 -- assert
@@ -83,8 +82,8 @@ end
 GetMissile = function(self)
     local Unit = require 'unit.core'
     local MISSILE_ID = 'u007'
-    local missile = Unit(Unit.Create(cj.GetOwningPlayer(self.owner_.object_), MISSILE_ID, self.starting_point_,
-                                cj.GetUnitFacing(self.owner_.object_)))
+    local missile = Unit(Unit.Create(cj.GetOwningPlayer(self.owner_.object_), MISSILE_ID, self.starting_loc_,
+                                     cj.GetUnitFacing(self.owner_.object_)))
 
     -- 投射物本身沒有模型，必須添加以 球體 為模板的技能，其綁定模型
     missile:AddAbility(self.model_name_)
@@ -111,7 +110,7 @@ InitFuncs = function(instance)
                 
                 local mover_height = p_missile.z_ + cj.GetUnitFlyHeight(self.mover_.object_) -- 投射物的高度(從地面計算)
                 local unit_height = p_u.z_ + cj.GetUnitFlyHeight(instance.units_[i]) -- 目標單位的高度(從地面計算)
-                local height = mover_height - unit_height - STANDARD_HEIGHT -- 
+                local height = mover_height - unit_height - STANDARD_HEIGHT
                 if height > self.enum_range_ then
                     instance:RemoveUnit(instance.units_[i])
                 end
@@ -152,12 +151,12 @@ InitFuncs = function(instance)
         self.mover_:Remove()
         self.timer_:Break()
 
-        if self.starting_point_ then
-            self.starting_point_:Remove()
+        if self.starting_loc_ then
+            self.starting_loc_:Remove()
         end
     
-        if self.target_point_ then
-            self.target_point_:Remove()
+        if self.target_loc_ then
+            self.target_loc_:Remove()
         end
     
         self.units_:Remove()
