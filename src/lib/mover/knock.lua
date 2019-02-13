@@ -10,38 +10,30 @@
 -- max_dist_
 -- angle_(度)
 
-local function Knock(instance)
+local function Knock(data)
     local require = require
-    local Mover = require 'mover.core'
-    local Point = require 'point'
 
-    instance.velocity_max_ = instance.velocity_max_ or instance.velocity_
-    instance.acceleration_ = instance.acceleration_ or 0
+    data.velocity_ = data.velocity_ or 300
+    data.velocity_max_ = data.velocity_max_ or data.velocity_
+    data.acceleration_ = data.acceleration_ or 0
     
-    instance.TraceMode = "Line"
-
-    -- 透過設定0讓util.projectile無效化
-    -- 起始高度要一直更新，不然會跟地面高度不符，導致mover會升高的問題
-    instance.starting_point_ = Point.GetUnitLoc(instance.mover_.object_)
-    instance.starting_height_ = 0
-
-    instance.height_ = 0
-    instance.slope_ = 0
+    data.TraceMode = "StraightLine"
 
     -- 設定特效
-    local AddEffect = require 'jass.common'.AddSpecialEffect
-    local TimeEffect = require 'jass_tool'.TimeEffect
-    instance.Execute = function(self)
-        local p_unit = Point.GetUnitLoc(self.mover_.object_)
-        p_unit:UpdateZ()
-        self.starting_height_ = p_unit.z_
+    data.Execute = function(self)
+        local AddEffect = require 'jass.common'.AddSpecialEffect
+        local TimeEffect = require 'jass_tool'.TimeEffect
+        local GetUnitLoc = require 'point'.GetUnitLoc
+        
+        local p_unit = GetUnitLoc(self.mover_.object_)
 
         TimeEffect(AddEffect("Objects\\Spawnmodels\\Undead\\ImpaleTargetDust\\ImpaleTargetDust.mdl", p_unit.x_, p_unit.y_), 2*self.PERIOD)
         
         p_unit:Remove()
     end
 
-    return Mover(instance)
+    local Mover = require 'mover.core'
+    return Mover(data)
 end
 
 return Knock

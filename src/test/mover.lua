@@ -9,13 +9,12 @@ local function MoverTest(self)
 
     local test_unit = Hero(self.EnumUnit())
     -- 第一種是設定最大距離，碰到障礙物停止
-    -- TODO: mover要提供標籤
     Mover{
         mover_ = test_unit,
         max_dist_ = 600,
         angle_ = 90,
 
-        flag_collision = true,
+        flag_collision = true, -- TODO: 還沒實作標籤
 
         TraceMode = "StraightLine",
         Execute = function()
@@ -24,7 +23,6 @@ local function MoverTest(self)
     }
 
     -- 第二種是設定時間，一直執行到時間結束
-    -- TODO: 要調整Surround的參數
     Mover{
         mover_ = test_unit,
         timeout_ = 10,
