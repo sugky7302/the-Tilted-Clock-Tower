@@ -1,6 +1,7 @@
 -- 初始化單位操作物品事件
 
 -- package
+local require = require
 local Unit = require 'unit.core'
 local Equipment = require 'item.equipment.core'
 

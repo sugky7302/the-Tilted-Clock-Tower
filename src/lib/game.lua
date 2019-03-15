@@ -1,4 +1,7 @@
 -- 儲存全局事件
+-- 依賴
+--   event
+
 
 -- package
 local Event = require 'event'

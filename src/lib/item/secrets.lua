@@ -1,29 +1,23 @@
 -- 此module為item的子類別，專門處理秘物
+-- 依賴
+--   item.core
 
-local setmetatable = setmetatable
 
-local Secrets, Item = {}, require 'item.core'
-setmetatable(Secrets, Secrets)
-Secrets.__index = Item
+-- package
+local require = require
+local Item = require 'item.core'
 
--- variables
+
+local Secrets = require 'class'("Secrets", Item)
+
+-- assert
 local _GenerateAttributes
 
 -- 秘物的 生命值 為秘物等級
-function Secrets:__call(item)
-    local H2I = require 'jass_tool'.H2I
+function Secrets:_new(item)
+    Item._new(self, item)
 
-    local instance = Item[H2I(item) .. ""]
-    if not instance then
-        instance = Item(item)
-
-        AddAttributesToSecrets(instance)
-
-        setmetatable(instance, instance)
-        instance.__index = self
-    end
-
-    return instance
+    AddAttributesToSecrets(self)
 end
 
 -- assert
@@ -36,7 +30,6 @@ AddAttributesToSecrets = function(self)
         return false
     end
 
-    local pairs = pairs
     for name, val in pairs(SECRETS_LIB[self.id_]) do
         self.attribute_[name] = val
     end

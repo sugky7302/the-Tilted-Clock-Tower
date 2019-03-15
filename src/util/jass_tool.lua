@@ -1,4 +1,7 @@
 -- 自寫的jass工具
+-- 依賴
+--   jass.common
+
 
 local cj = require 'jass.common'
 return {

@@ -15,7 +15,16 @@ local Util = {}
 function Util.Move(target, p, dist, angle)
     -- 讓投射物位移
     local x_new, y_new = p.x_ + dist * math.cos(math.rad(angle)), p.y_ + dist * math.sin(math.rad(angle))
-    cj.SetUnitPosition(target.object_, x_new, y_new)
+
+    -- SetUnitX、SetUnitY用在movespeed=0的單位上看起來沒有移動是魔獸bug
+    -- 所以要先把movespeed=1，改變座標後再改回去
+    local movespeed = cj.GetUnitMoveSpeed(target.object_)
+    cj.SetUnitMoveSpeed(target.object_, movespeed == 0 and 1 or movespeed)
+    
+    cj.SetUnitX(target.object_, x_new)
+    cj.SetUnitY(target.object_, y_new)
+
+    cj.SetUnitMoveSpeed(target.object_, movespeed)
 end
 
 -- 拋體運動

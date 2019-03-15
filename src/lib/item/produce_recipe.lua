@@ -1,25 +1,30 @@
 -- 此module為檢測英雄的物品欄能不能合成出物品
+-- 依賴
+--   jass.common
+--   item.core
+--   item.add_recipe
+--   jass.japi
+--   unit.hero
 
-local setmetatable = setmetatable
+
+-- package
+local require = require
 local cj = require 'jass.common'
 
-local ProduceRecipe = {}
-setmetatable(ProduceRecipe, ProduceRecipe)
 
 -- assert
 local last_enum_product = 1
 local CollectMaterial, CheckRecipe, Exist
 local CostMaterial, UnitAddItem
 
-function ProduceRecipe:__call(unit)
+local function ProduceRecipe(unit)
     local materials = CollectMaterial(unit) -- 存Item instance
     local recipe = CheckRecipe(materials)   -- 存Item instance, [0]存products(table)
 
     if Exist(recipe) then
         CostMaterial(unit, recipe)
 
-        local S2Id = Base.String2Id
-        UnitAddItem(unit, S2Id(recipe.products[last_enum_product][0]))
+        UnitAddItem(unit, Base.String2Id(recipe.products[last_enum_product][0]))
 
         cj.DestroyEffect(cj.AddSpecialEffectTarget("Abilities\\Spells\\Items\\AIam\\AIamTarget.mdl", unit, "origin"))
 
@@ -136,7 +141,7 @@ end
 -- 檢測產品數量是否超過1個，如果有就給玩家選
 PickProduct = function(unit, products)
     if #products > 1 then
-        local Hero = require 'hero'
+        local Hero = require 'unit.hero'
         local japi = require 'jass.japi'
         local S2Id = Base.String2Id
 

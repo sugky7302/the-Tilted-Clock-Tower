@@ -1,14 +1,13 @@
 -- 此module會提高裝備可附魔的上限
+-- 依賴
+--   jass_tool
+--   math_lib
 
-local setmetatable = setmetatable
-
-local ExtendHole = {}
-setmetatable(ExtendHole, ExtendHole)
 
 -- assert
 local GetGoldCost, IsGoldEnough, CanExtend
 
-function ExtendHole:__call(equipment)
+local function ExtendHole(equipment)
     local Tip = require 'jass_tool'.Tip
 
     local gold_cost = GetGoldCost(equipment.level_ + equipment.intensify_level_, equipment.attribute_count_)

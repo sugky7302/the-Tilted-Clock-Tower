@@ -1,8 +1,6 @@
 -- 此module儲存材料配方。奇數索引存材料id，偶數存數量，最後一個索引存產品id
 -- 可以設計同個產品卻不同材料的配方
 
-local setmetatable = setmetatable
-
 local AddRecipe = {}
 setmetatable(AddRecipe, AddRecipe)
 

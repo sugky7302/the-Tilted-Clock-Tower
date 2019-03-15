@@ -1,15 +1,17 @@
 --- 此module是將低級材料合成高級材料，比例為3:1
+-- 依賴
+--   jass_tool
+--   point
+--   jass.common
+--   item.core
 
-local setmetatable = setmetatable
-
-local Combine = {}
-setmetatable(Combine, Combine)
 
 -- assert
+local require = require
 local CombineItem, IsAmountsEnough, IsGoldEnough, AddItem
 local COMBINATIONS = require 'combinations'
 
-function Combine:__call(item)
+local function Combine(item)
     local Tip = require 'jass_tool'.Tip
 
     if not COMBINATIONS[item.id_] then

@@ -1,11 +1,15 @@
+-- 匯入材料的合成金額
+-- 依賴
+--   jass.slk
+
 -- assert
+local require = require
 local GetCombineCost
 
-local function Combine()
+local function ImportCombineCost()
     local slk_item = require 'jass.slk'.item
 
     -- 解析資料庫
-    local ipairs = ipairs
     local COMBINATIONS = require 'combinations'
     for _, tb in ipairs(COMBINATIONS) do 
         for i = 1, #tb - 1 do 
@@ -22,4 +26,4 @@ GetCombineCost = function(lv)
 end
 
 -- call
-Combine()
+ImportCombineCost()

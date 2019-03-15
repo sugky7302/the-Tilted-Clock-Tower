@@ -1,15 +1,18 @@
 -- 此module擴展we的item的功能
+-- 依賴
+--   jass.common
+--   Timer.core
+--   jass_tool
 
-local setmetatable = setmetatable
+
+-- package
+local require = require
 local cj = require 'jass.common'
 
-local Item, mt = {}, {}
-setmetatable(Item, Item)
-Item.__index = mt
+
+local Item = require 'class'("Item")
 
 -- assert
-mt.type = "Item"
-
 local set, get = {}, {}
 local RecreateItem
 
@@ -24,48 +27,35 @@ function Item.Init()
     end)
 end
 
-function Item:__call(item)
+function Item:_new(item)
     local H2I = require 'jass_tool'.H2I
 
-    local instance = self[H2I(item) .. ""]
-    if not instance then
-        local modf = math.modf
-        local Id2S = Base.Id2String
-    
-        instance = {
-            name_       = cj.GetItemName(item),
-            id_         = Id2S(cj.GetItemTypeId(item)),
-            handle_     = H2I(item),
-            owner_      = nil,
-            own_player_ = nil,
-            level_      = modf(cj.GetWidgetLife(item)),
-            object_     = item,
-        }
+    self.name_       = cj.GetItemName(item)
+    self.id_         = Base.Id2String(cj.GetIteItemypeId(item))
+    self.handle_     = H2I(item)
+    self.owner_      = nil
+    self.own_player_ = nil
+    self.level_      = math.modf(cj.GetWidgetLife(item))
+    self.object_     = item
 
-        -- 記錄使用完會不會消失
-        if self.IsSecrets(item) or self.IsRecipe(item) then
-            instance.perishable_ = true
-        else
-            instance.perishable_ = false
-        end
-
-        self[H2I(item) .. ""] = instance
-
-        setmetatable(instance, self)
-        instance.__index = instance
+    -- 記錄使用完會不會消失
+    if Item.IsSecrets(item) or Item.IsRecipe(item) then
+        self.perishable_ = true
+    else
+        self.perishable_ = false
     end
 
-    return instance
+    Item:setInstance(table.concat({H2I(unit), ""}), self)
 end
 
-function mt:Remove()
+function Item:_delete()
     -- 要真正刪除物品，必須先設定生命值再刪除才行
     Item.Delete(self.object_)
 
-    local pairs = pairs
     for _, var in pairs(self) do 
         var = nil
     end
+
     self = nil
 end
 
@@ -85,25 +75,25 @@ function Item.IsRecipe(item)
     return cj.GetItemLevel(item) == 6
 end
 
-function mt:add(name, val)
+function Item:add(name, val)
     if not set[name] then
-        return 
+        return false
     end
 
     set[name](self, get[name](self) + val)
 end
 
-function mt:set(name, val)
+function Item:set(name, val)
     if not set[name] then
-        return 
+        return false
     end
 
     set[name](self, val)
 end
 
-function mt:get(name)
+function Item:get(name)
     if not get[name] then
-        return
+        return false
     end
 
     return get[name](self)
@@ -153,8 +143,7 @@ function Item.Delete(item)
 end
 
 function Item.Create(id, loc)
-    local S2Id = Base.String2Id
-    local item = cj.CreateItem(S2Id(id), loc.x_, loc.y_)
+    local item = cj.CreateItem(Base.String2Id(id), loc.x_, loc.y_)
     return item
 end
 

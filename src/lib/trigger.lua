@@ -1,4 +1,8 @@
 -- 創建自定義觸發器，打破we_trigger的侷限
+-- 依賴
+--   class
+--   timer
+
 
 local Trigger = require 'class'("Trigger")
 

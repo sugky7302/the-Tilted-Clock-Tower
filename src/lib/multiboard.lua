@@ -8,8 +8,8 @@
 local require = require
 local cj = require 'jass.common'
 
+
 local Mb = require 'class'("Multiboard")
-Mb._VERSION = "1.0.0"
 
 -- assert
 local GetItemKey, BoundColorValue

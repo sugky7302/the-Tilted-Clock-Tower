@@ -1,14 +1,19 @@
 -- 此module是讀取裝備屬性，賦予裝備小秘物序列效果
 -- 把秘物序列填成配方
+-- 依賴
+--   item.add_recipe
 
+
+-- package
+local require = require
 local _, ATTRIBUTE_INDEX, ATTRIBUTE_STATE, _ = require 'attributes'() -- 記得要加括弧，因為它是一個函數
+
 
 -- assert
 local ObtainProduct, SetSSO
+local ipairs = ipairs
 
 local function SmallSecretOrder(equipment)
-    local ipairs = ipairs
-
     -- 裝備屬性通常都排序好了，所以不用特意排序
     local orders = {}
     for _, tb in ipairs(equipment.attribute_) do
@@ -22,8 +27,6 @@ local function SmallSecretOrder(equipment)
 end
 
 ObtainProduct = function(orders)
-    local ipairs = ipairs
-
     -- 搜索產品
     local node = require 'item.add_recipe'.root
     for _, attribute_name in ipairs(orders) do

@@ -1,4 +1,8 @@
 -- 此module為註冊計時器動作
+-- 依賴
+--   class
+--   timer.init
+
 
 local require = require
 

@@ -53,7 +53,7 @@ function Quest:Update(id)
 end
 
 -- assert
-local type, pairs, ipairs = type, pairs, ipairs
+local type, ipairs = type, ipairs
 
 CheckQuest = function(self, id)
     if type(self.demands_[id]) == 'number' then

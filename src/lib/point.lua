@@ -1,6 +1,8 @@
 -- 此module取代we的point，減少ram的開銷
 -- 依賴
 --   jass.common
+--   class
+
 
 -- package
 local require = require

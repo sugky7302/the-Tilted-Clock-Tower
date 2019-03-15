@@ -1,69 +1,73 @@
 -- 此module獨立裝備功能
+-- 依賴
+--   equipment_template
+--   item.core
+--   class
+--   jass_tool
+--   jass.common
 
-local setmetatable = setmetatable
+-- package
+local require = require
+local EQUIPMENT_TEMPLATE = require 'equipment_template'
+local Item = require 'item.core'
 
-local Equipment, Item = {}, require 'item.core'
-Equipment.__index = Item
-setmetatable(Equipment, Equipment)
+
+local Equipment = require 'class'("Equipment", Item)
+
 
 -- assert
 local GetAttribute, GetLevel
 local RandRingCount
 local SetAttributeState
 
--- assert
-local EQUIPMENT_TEMPLATE = require 'equipment_template'
-
 -- 建構函式
-function Equipment:__call(item)
+function Equipment:_new(equipment)
     local H2I = require 'jass_tool'.H2I
 
-    local instance = Item[H2I(item) .. ""]
-    if not instance then
-        instance = Item(item)
-    
-        -- 前綴
-        instance.prefix_             = nil 
-        instance.big_secret_order_   = nil
-        instance.small_secret_order_ = nil
-
-        -- 每個元素包含index, value, states, fixed
-        instance.attribute_             = GetAttribute(instance.id_)
-
-        local attribute_size = #instance.attribute_
-        instance.attribute_count_       = attribute_size
-        instance.attribute_count_limit_ = attribute_size + (EQUIPMENT_TEMPLATE[instance.id_].ring_count or 0)
-
-        instance.level_ = GetLevel(instance.id_)
-
-        -- 額外效果
-        instance.additional_effect_ = {} 
-
-        instance.color_ = "|cffffffff"
-        
-        -- 精鍊
-        instance.intensify_level_      = 0
-        instance.intensify_fail_times_ = 0
-
-        -- 鍊金術四項指標
-        instance.stability_  = 0 -- 決定物品等級
-        instance.intensify_  = 0 -- 決定精鍊上限與安定值
-        instance.fusion_     = 0 -- 決定秘物屬性的增幅比例
-        instance.uniqueness_ = 0 -- 決定附加效果的數量
-        
-        -- 讓物品不可破壞
-        local cj_SetItemInvulnerable = require 'jass.common'.SetItemInvulnerable
-        cj_SetItemInvulnerable(item, true)
-
-        setmetatable(instance, instance)
-        instance.__index = self
+    if H2I(equipment) == 0 then
+        return false 
     end
 
-    -- 更新屬性
-    instance:Update()
+    Item._new(self, equipment)
     
-    return instance
+    -- 前綴
+    self.prefix_             = nil 
+    self.big_secret_order_   = nil
+    self.small_secret_order_ = nil
+
+    -- 每個元素包含index, value, states, fixed
+    self.attribute_ = GetAttribute(self.id_)
+
+    local attribute_size = #self.attribute_
+    self.attribute_count_       = attribute_size
+    self.attribute_count_limit_ = attribute_size + (EQUIPMENT_TEMPLATE[self.id_].ring_count or 0)
+
+    self.level_ = GetLevel(self.id_)
+
+    -- 額外效果
+    self.additional_effect_ = {} 
+
+    self.color_ = "|cffffffff"
+        
+    -- 精煉
+    self.intensify_level_      = 0
+    self.intensify_fail_times_ = 0
+
+    -- 煉金術四項指標
+    self.stability_  = 0 -- 決定物品等級
+    self.intensify_  = 0 -- 決定精鍊上限與安定值
+    self.fusion_     = 0 -- 決定秘物屬性的增幅比例
+    self.uniqueness_ = 0 -- 決定附加效果的數量
+        
+    -- 讓物品不可破壞
+    local SetItemInvulnerable = require 'jass.common'.SetItemInvulnerable
+    SetItemInvulnerable(equipment, true)
+
+    -- 更新屬性
+    self:Update()
 end
+
+-- TODO: 尚未完成
 
 GetAttribute = function(id)
     local attribute = {}

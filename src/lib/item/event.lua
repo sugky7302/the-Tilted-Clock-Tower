@@ -1,5 +1,13 @@
 -- 統一處理物品事件
+-- 依賴
+--   player
+--   unit.hero
+--   unit.core
+--   item.core
+--   item.enchanted
+--   item.intensify
 
+local require = require
 local Player = require 'player'
 local Hero = require 'unit.hero'
 local Unit = require 'unit.core'
@@ -28,7 +36,7 @@ Unit:Event "單位-使用物品" (function(_, unit,          item)
 
         unit:UpdateAttributes("減少", unit.manipulated_item_)
     
-        Enchanted.Insert(unit.manipulated_item_, item, false)
+        Enchanted(unit.manipulated_item_, item, false)
     
         unit:UpdateAttributes("增加", unit.manipulated_item_)
     end

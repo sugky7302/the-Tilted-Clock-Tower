@@ -3,6 +3,11 @@
 -- 如果要做多層數的buff，可以在on_cover內，將新buff的數據複製給舊buff，並要不要更新時間，最後回傳false即可
 -- cover type = 0 -> (true, false) = (當前狀態被移除，新的狀態被添加)
 -- cover type = 1 -> (true, false) = (新的狀態排序到當前狀態之前，新的狀態排序到當前狀態之後)
+-- 依賴
+--   jass.common
+--   buff.operator
+--   buff.init
+
 
 -- package
 local require = require

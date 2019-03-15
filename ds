@@ -1,0 +1,527 @@
+[33mcommit 76cbaf0d1186c06c4c8fffb536393050d90fb451[m[33m ([m[1;36mHEAD -> [m[1;32mdevelop[m[33m, [m[1;31morigin/feature[m[33m, [m[1;32mfeature[m[33m)[m
+Author: Yang Jun Yen <sugky7302@gmail.com>
+Date:   Wed Feb 13 19:54:51 2019 +0800
+
+    mover重寫完畢
+
+[33mcommit d0f0d4805663de265c0b14609a9e10602a600e84[m
+Author: Yang Jun Yen <sugky7302@gmail.com>
+Date:   Tue Feb 12 23:13:03 2019 +0800
+
+    missile重寫完
+
+[33mcommit 6abd85061b11f44040b60a5c2f16e1e1da351a4b[m
+Author: Yang Jun Yen <sugky7302@gmail.com>
+Date:   Mon Feb 11 22:14:21 2019 +0800
+
+    重寫完mover，但missile還沒好
+
+[33mcommit 584394a9ef8976167acf4395762cc83680a2b22f[m
+Author: Yang Jun Yen <sugky7302@gmail.com>
+Date:   Wed Feb 6 23:12:36 2019 +0800
+
+    Surround還無法執行
+
+[33mcommit 8bb2dde615696b63795fb4cd304fad998c2a7741[m[33m ([m[1;31morigin/release[m[33m, [m[1;31morigin/hotfix[m[33m, [m[1;31morigin/develop[m[33m, [m[1;32mrelease[m[33m, [m[1;32mmaster[m[33m, [m[1;32mhotfix[m[33m)[m
+Author: Yang Jun Yen <sugky7302@gmail.com>
+Date:   Wed Feb 6 00:17:48 2019 +0800
+
+    準備重寫mover
+
+[33mcommit 8799c6e755ec987c016a99208f082eadd11ba45a[m
+Author: Yang Jun Yen <sugky7302@gmail.com>
+Date:   Sun Feb 3 22:27:56 2019 +0800
+
+    重構進度80%
+
+[33mcommit ab87159e7d55a9e1da6d3ec4c013430dee744e37[m
+Author: Yang Jun Yen <sugky7302@gmail.com>
+Date:   Sat Feb 2 23:32:05 2019 +0800
+
+    新增api.md儲存所有模塊的API
+
+[33mcommit f29691cdc9bbae79390d91f46aa6d5e86fac2999[m
+Author: Yang Jun Yen <sugky7302@gmail.com>
+Date:   Sat Feb 2 19:19:44 2019 +0800
+
+    測試
+
+[33mcommit d4e9fcea199b9cef6550749a2811353c152c0f22[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Wed Jan 30 22:10:06 2019 +0800
+
+    持續重構
+
+[33mcommit 6f715654f45fd2631357c55389f74803515eccac[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Sun Jan 27 22:25:53 2019 +0800
+
+    重構進度70%
+
+[33mcommit cd7c717e96a2edd8c08668308b32540bbbd5eb88[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Sat Jan 26 22:38:07 2019 +0800
+
+    還沒重構完
+
+[33mcommit 7226965592638659b456e1ccde18da28788b6d1c[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Mon Jan 21 21:56:53 2019 +0800
+
+    新增技能預警圈、擊退系統，完成豺狼守望者技能與行為樹，調整Lua加載方式
+
+[33mcommit 49108e30e84d383e5317ec416259ffb7380e3e5d[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Wed Jan 16 22:07:43 2019 +0800
+
+    持續完善任務、行為樹，修正部份錯誤
+
+[33mcommit c573db975ba311ba0d5436fb7322cd57e459a96b[m
+Merge: b493325 69209da
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Tue Jan 8 00:38:20 2019 +0800
+
+    Merge branch 'master' of https://github.com/sugky7302/the-Tilted-Clock-Tower
+
+[33mcommit b493325be466b4293a3ec95271f627413b46c760[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Tue Jan 8 00:37:44 2019 +0800
+
+    更新LICENSE
+
+[33mcommit 69209da3587d3d97af1da9018f78ce8264b0eae8[m
+Merge: ea7d861 e4bf1f7
+Author: sugky7302 <37475968+sugky7302@users.noreply.github.com>
+Date:   Tue Jan 8 00:34:50 2019 +0800
+
+    Merge pull request #1 from sugky7302/add-license-1
+    
+    更新LICENSE
+
+[33mcommit e4bf1f73bfd16ea83c7df2c47010d62b84cdeff2[m[33m ([m[1;31morigin/add-license-1[m[33m)[m
+Author: sugky7302 <37475968+sugky7302@users.noreply.github.com>
+Date:   Tue Jan 8 00:34:16 2019 +0800
+
+    Create LICENSE
+
+[33mcommit ea7d8611175c0e8b43304bb111ff2eddf4f1499e[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Tue Jan 8 00:32:27 2019 +0800
+
+    移除license
+
+[33mcommit 1dd2f34bbac3db781d83d25ffffbfff835b89d60[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Tue Jan 8 00:18:35 2019 +0800
+
+    加入行為樹
+
+[33mcommit d85bfa9cfc6be5a521b63cf4676bcc4b9bc5531e[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Sun Jan 6 23:24:43 2019 +0800
+
+    開放精煉、顯示英雄復活時間
+
+[33mcommit ce13d7cc727173d0340c822b538779647ff6c2d6[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Thu Jan 3 23:13:03 2019 +0800
+
+    實裝情報系統、完善新手任務
+
+[33mcommit 623cb7adff08f756d6b95c6a264e25e57daf860e[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Mon Dec 31 15:42:38 2018 +0800
+
+    從投射物中獨立移動器模塊
+
+[33mcommit d1616a91d2dac04ce9af4b95d3aa8dee8d7e9554[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Thu Dec 27 19:56:20 2018 +0800
+
+    投射物支援弧形軌跡
+
+[33mcommit 4f1a6319ff3ee002e2ebcc4b6a4765442beacfff[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Sun Dec 23 23:57:04 2018 +0800
+
+    修正重構後的小問題
+
+[33mcommit 8f10ffdf193710480fe4464d94a51328de02495a[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Mon Dec 17 23:16:25 2018 +0800
+
+    重構完成
+
+[33mcommit 1d48661a6c1ddf22372e3759bc84be4d4887436b[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Fri Dec 14 23:17:46 2018 +0800
+
+    重構damage、skill、talent、buff、missile
+
+[33mcommit 8a0f515c315d2216f80257256d6296eaee0eb546[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Wed Dec 12 11:53:13 2018 +0800
+
+    skill還沒完成，talent還沒測試
+
+[33mcommit 4d3a6725f22b60047db5e9ab81c655103b3b16f0[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Sun Dec 9 23:23:29 2018 +0800
+
+    重構unit
+
+[33mcommit 006997172f09a3dfbf163d2be8274a57765e2102[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Sat Dec 8 22:18:28 2018 +0800
+
+    完善item所有功能
+
+[33mcommit b9b3610939c1ec9dc7f77d50c89567b5bbcb0e23[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Fri Dec 7 00:02:39 2018 +0800
+
+    重構item模塊
+
+[33mcommit 8115fd3cef835835235fe4cb405a0398d8389130[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Tue Dec 4 23:33:00 2018 +0800
+
+    重構equipment
+
+[33mcommit f63758140d34fb65fc2e52363b4c1b17929e84b3[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Mon Dec 3 23:06:13 2018 +0800
+
+    重構shield、player、item、secrets
+
+[33mcommit 50b9ed25634ba111c149ed7aef02ee9f8ce68d1e[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Sun Dec 2 21:48:37 2018 +0800
+
+    重構texttag、bar，並修正point一些小問題
+
+[33mcommit 83dbeeb735c81e9e80395a7e7fa8342b1f34a9a1[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Sat Dec 1 23:16:25 2018 +0800
+
+    重構point、event、game、polygon、region
+
+[33mcommit 8d705f75fa4bc0bba582ced04a63d009283706bf[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Fri Nov 30 22:32:21 2018 +0800
+
+    重構group、dialog、trigger
+
+[33mcommit f7d7a595081d9f13b7d6630f727015d2325f8cd7[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Fri Nov 30 00:13:32 2018 +0800
+
+    重構timer
+
+[33mcommit 9116b8c69c2ab505ba4164e0232e08976a5fea36[m
+Merge: 0de5805 a191b8c
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Thu Nov 29 00:35:29 2018 +0800
+
+    Merge branch 'master' of https://github.com/sugky7302/the-Tilted-Clock-Tower
+
+[33mcommit 0de580579a487d0cca89dbc3225c77c9f1d4edb5[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Thu Nov 29 00:35:07 2018 +0800
+
+    重構並添加測試碼，拆分出幾個module
+
+[33mcommit a191b8c8af2b8e4db856ea79109bc215346d3ade[m
+Author: sugky7302 <37475968+sugky7302@users.noreply.github.com>
+Date:   Mon Nov 26 23:54:08 2018 +0800
+
+    Update CHANGELOG.md
+
+[33mcommit 72d04b2e3f3e85b5b653f5a3915e9c766aa95a9c[m
+Author: sugky7302 <37475968+sugky7302@users.noreply.github.com>
+Date:   Mon Nov 26 23:53:49 2018 +0800
+
+    Update CHANGELOG.md
+
+[33mcommit 6ed8a7066393bf1b291d1901332ce6d669544f74[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Mon Nov 26 23:52:25 2018 +0800
+
+    重構資料夾與程式碼
+
+[33mcommit 547fdeb4d0184c8b433b19ab54a1e6cfe86adad8[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Wed Nov 21 22:12:57 2018 +0800
+
+    修正大量錯誤及崩潰
+
+[33mcommit f67d293fc513ba9417d8d666e69861de0a4a8472[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Wed Nov 21 00:34:41 2018 +0800
+
+    使英雄能獲得裝備屬性
+
+[33mcommit 89fefc64f2b23b633b270b1086c561d158f5654a[m
+Merge: c4b6584 1f0031f
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Mon Nov 19 23:13:51 2018 +0800
+
+    Merge branch 'master' of https://github.com/sugky7302/the-Tilted-Clock-Tower
+
+[33mcommit c4b6584a08e6a096f29a8c4acefa98e395dc1f65[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Mon Nov 19 23:10:20 2018 +0800
+
+    調整event
+
+[33mcommit 1f0031fab569f798e4bea9736ce2586fa067512f[m
+Author: sugky7302 <37475968+sugky7302@users.noreply.github.com>
+Date:   Sun Nov 18 23:50:59 2018 +0800
+
+    Update README.md
+
+[33mcommit 6c0d41df8ea0e04f84384ef0a9e490653d78b536[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Mon Nov 12 23:13:37 2018 +0800
+
+    新增任務
+
+[33mcommit 3bf9a3684adca59c50f93ecc6470c464a0b329fc[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Sat Nov 3 23:53:12 2018 +0800
+
+    新增冰凍效果、物品掉落事件
+
+[33mcommit 4e1befe74a6436e71944b7ec175e345023cbc3de[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Fri Nov 2 23:01:25 2018 +0800
+
+    完善任務庫
+
+[33mcommit acb3702ba188aeeba4f561f0e0e9ecca212e61e8[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Thu Nov 1 23:20:44 2018 +0800
+
+    添加任務庫，調整資料夾結構
+
+[33mcommit ec64bf30b9c8003b762142960fc0ec934cd88f41[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Wed Oct 31 22:50:17 2018 +0800
+
+    增加幾個天賦，以及替投射物添加環繞函數
+
+[33mcommit b7e0bbbe90aadf5033ef5946bc02a7ec56b03864[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Tue Oct 30 23:44:59 2018 +0800
+
+    新增天賦庫
+
+[33mcommit b01a20b8cd1e173445e14542ecb83bbc5635e8e4[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Mon Oct 29 23:49:08 2018 +0800
+
+    完成buff
+
+[33mcommit e27001f178c3a32ea7cd6ac70b771da500e3f86c[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Sun Oct 28 22:52:11 2018 +0800
+
+    buff庫
+
+[33mcommit bd3c38a0e36d4902fcd55515dbfdd347b752eef1[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Fri Oct 26 23:51:03 2018 +0800
+
+    新增技能熟練度
+
+[33mcommit f296637a13ae98c3c261ea861eddbe4adf59dc28[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Fri Oct 26 01:01:45 2018 +0800
+
+    開放寒冰箭、霜之環，新增技能音效
+
+[33mcommit 8200cdf854b6c157d54210413d565bbab91daee0[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Wed Oct 24 23:35:53 2018 +0800
+
+    完善施法階段，新增多重施法
+
+[33mcommit ab1ed23bcf9e882120c854e84ce17361755d4469[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Wed Oct 24 00:51:22 2018 +0800
+
+    補寫日誌
+
+[33mcommit 24f37725119df7a75c1c70b7a4ff2506b1cbba1c[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Wed Oct 24 00:46:12 2018 +0800
+
+    完善技能庫
+
+[33mcommit 5182e0747ee51b0d677acff1df2465f204bc6e13[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Mon Oct 22 23:01:07 2018 +0800
+
+    新增合成庫，撰寫完秘物序列，但並無測試
+
+[33mcommit abadd348e45f3b5e962031a81c87524f6445171f[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Sun Oct 21 23:53:58 2018 +0800
+
+    完成精鍊、詞綴、鑲環等模塊，並擴展recipe，使其支援任意數量材料的配方
+
+[33mcommit a11b6d9647e589f7abe8974d15d2475377f8ff2a[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Sun Oct 21 01:17:48 2018 +0800
+
+    新增databse、item
+
+[33mcommit 9254391249beb0b3e83cb0b5789b2ca4963b3376[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Sat Oct 20 00:04:03 2018 +0800
+
+    調整物理攻擊力的公式
+
+[33mcommit ca6a33cfeb0707409d3ed9e0f8aff4e33f0139fa[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Fri Oct 19 22:56:23 2018 +0800
+
+    完善README
+
+[33mcommit f2f4b2f1f6b5792edf0200647d937e656826e13f[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Fri Oct 19 22:46:52 2018 +0800
+
+    補充math_lib
+
+[33mcommit 666c402e4340e690f3e70ab0bef52935537fd81d[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Fri Oct 19 22:44:55 2018 +0800
+
+    更新項目狀態
+
+[33mcommit 418eb1acb3add779ecb1d1d0a336a5087323ddac[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Fri Oct 19 22:28:07 2018 +0800
+
+    新增damage、unit、hero庫，使用japi
+
+[33mcommit 9385d51baea4e458f838c6df51a417d514493881[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Thu Oct 18 22:48:39 2018 +0800
+
+    新增技能庫，調整部分初始化的位置
+
+[33mcommit e9f9329e3de4de4c181048e1ac5eaf205d3e8bdb[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Wed Oct 17 23:32:40 2018 +0800
+
+    修改recipe的產品列表
+
+[33mcommit 8802052739c32a80c48c5aa114ca29e7dc4f70b9[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Thu Oct 11 00:29:02 2018 +0800
+
+    新增event和trigger庫，修正小問題
+
+[33mcommit 30afb8cfb08a55d1db49d231cac9270fab815478[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Tue Oct 9 22:27:55 2018 +0800
+
+    修正REAMD誤寫 "api更名trigger"
+
+[33mcommit f20b9948fc90b4514128a9154970869953adc34a[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Tue Oct 9 22:27:06 2018 +0800
+
+    新增combat戰鬥文字，重寫timer庫，改成中心計時
+
+[33mcommit 59f0cd6dc685cd8419bd68c647d6d7ef21dbb2d8[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Tue Oct 9 01:07:37 2018 +0800
+
+    修正大量問題，新增missile相關模塊。
+
+[33mcommit 6f2da005e378697a095f33346ec7ba2af74cdd08[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Sun Oct 7 23:56:02 2018 +0800
+
+    修正計時器問題
+
+[33mcommit ec3e5a98dc8a5d6176fe39eeca3eb8a7985a9291[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Fri Oct 5 23:00:10 2018 +0800
+
+    新增紅黑樹(半成品)
+
+[33mcommit 0abf9c98aec8d7e2f70d0999603909d294c6c12c[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Thu Oct 4 16:52:28 2018 +0800
+
+    補寫README
+
+[33mcommit af30d9215a7e0265cbb6562f0cff86c66868778a[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Thu Oct 4 15:08:23 2018 +0800
+
+    分離texttag功能，修復核心無法顯示漂浮文字的功能，並重排README
+
+[33mcommit b1d93d43ea5c2f9a923275698190b642e739e756[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Mon Oct 1 23:25:05 2018 +0800
+
+    修正問題，並添加新的庫
+
+[33mcommit 434371820ce88be522cd0b2f41a5a2cb97f887d8[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Mon Oct 1 13:32:15 2018 +0800
+
+    刪除重複檔案，修正list、texttag，新增combat
+
+[33mcommit 9b4a5e4fdccb998c3b383154050a890db9503798[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Sun Sep 30 00:04:54 2018 +0800
+
+    補上更新日期
+
+[33mcommit 63c6f063208896d6ca19fccbefbc9b9d05aec106[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Sun Sep 30 00:03:44 2018 +0800
+
+    修正部分bug並新增庫
+
+[33mcommit 74f304fd94d9be4b78bd8c8372df044df89eb475[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Thu Sep 27 23:40:58 2018 +0800
+
+    修改日期
+
+[33mcommit 4ec8da80ac520ebd9d8a99a2ad768fdccc01c608[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Thu Sep 27 23:38:05 2018 +0800
+
+    由於1.32.11無法讀取外部腳本，因此將lua放入地圖中
+
+[33mcommit 841e729773bf6370058a1bb693c7ec4edaa373b2[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Thu Sep 27 23:21:37 2018 +0800
+
+    由於1.32.11無法讀取外部腳本，因此將lua放入地圖中
+
+[33mcommit 3171a30af526c25bd858956c8fbaa9c669115964[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Thu Sep 27 10:22:13 2018 +0800
+
+    持續新增新模塊
+
+[33mcommit 3b23a8310d21547cffaf55329702dcc3f2ddc148[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Sun Aug 12 20:33:46 2018 +0800
+
+    修改介紹
+
+[33mcommit cda2b6fc47784779c628911ad22b0a8c3139e03f[m
+Author: sugky7302 <sugky7302@gmail.com>
+Date:   Sun Aug 12 20:25:13 2018 +0800
+
+    0.0.0 - 2018-08-12 - 啟動專案

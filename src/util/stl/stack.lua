@@ -1,4 +1,6 @@
 -- 在lua重構C++的泛型棧
+-- 依賴
+--   class
 
 local Stack = require 'class'("Stack")
 

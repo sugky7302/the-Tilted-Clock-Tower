@@ -18,6 +18,21 @@ bar(單位對象, 最大值, 持續時間, 顏色, 是否反轉, 初始化函數
 ## bar.shield
 shield(單位對象, 護盾最大值, 持續時間) : 建構函數
 
+## buff.core
+.Register(效果名, 設定、獲得函數)
+:add(效果名, 數值) : 提升該屬性的值
+:set(效果名, 數值) : 設定該屬性的值
+:get(效果名) : 獲得該屬性的值
+:Pause() : 暫停效果
+:Resume() : 恢復效果
+:EventDispatch(效果事件名, 預設返回值, 傳參參數)
+
+## buff.operator
+.Obtain(效果對象) : 添加效果給英雄
+.Delete(效果對象) : 刪除英雄的效果
+
+## buff.unit
+
 ## class
 class(對象名, 委託對象...) : 創建一個類似類別的對象原型，委託對象可以無限個。可操作成員有_new -> 自訂的建構函數、_delete -> 自訂的解構函數、_copy -> 若建構函數傳入的是寫好的table，就可以用它把table的內容複製給實例、setInstance -> 將實例與對象關聯起來、getInstance -> 獲取實例、deleteInstance -> 刪除實例與對象的關聯
 
@@ -25,7 +40,7 @@ class(對象名, 委託對象...) : 創建一個類似類別的對象原型，�
 dialog(玩家) : 建構函數  
 :Remove() : 解構函數  
 :Clear() : 清空對話框所有按鈕  
-:AddButton(按鈕文字), 索引, 熱鍵) : 添加按鈕到對話框  
+:AddButton(按鈕文字, 索引, 熱鍵) : 添加按鈕到對話框  
 :FindButton(索引) : 搜尋按鈕並返回它  
 :Show(is_show) : 是否顯示對話框  
 :SetTitle(文字) : 設定標題
@@ -61,6 +76,68 @@ group(匹配單位) : 建構函數
 ## intelligence
 .Save(單位對象, 點對象) : 儲存該點儲存的情報到單位對象的資料庫內  
 .Load(單位對象) : 讀取單位對象的所有情報
+
+## item.add_recipe
+AddRecipe(配方表) : 添加配方表到配方庫
+.IsRecipeOverLimit(配方表) : 配方表是否超出上限
+
+## item.big_secret_order
+BigSecretOrder(英雄) : 偵測英雄有無組成大秘物序列
+
+## item.combine
+Combine(物品) : 檢測材料能否合成高級材料
+
+## item.core
+Item(物品) : 建構函數，可操作成員有name_ -> 名字、id_ -> 類型名、handle_ -> 唯一編號、owner_ -> 擁有單位、own_player_ -> 擁有玩家、level_ -> 物品等級、object_ -> 物品本身、perishable -> 使用完會不會消失
+:Remove() : 解構函數
+.IsEquipment(物品) : 是否為裝備
+.IsSecrets(物品) : 是否為秘物
+.IsMaterial(物品) : 是否為材料
+.IsRecipe(物品) : 是否為配方
+:add(屬性名, 數值) : 提高該屬性的值
+:set(屬性名, 數值) : 設定該屬性的值
+:get(屬性名) : 獲得該屬性的值
+.Delete(物品) : 刪除物品
+.Create(物品id, 位置) : 在該位置創建物品
+
+## item.enchanted
+Enchanted(裝備, 秘物) : 將秘物的效果附魔在裝備上
+
+## item.equipment.core
+Equipment(裝備) : 建構函數，可操作成員除了包含item的成員外，另有prefix_ -> 詞綴、big_secret_order_ -> 大秘物序列、small_secret_order_-> 小秘物序列、attribute_ -> 所有屬性、attribute_count -> 屬性總數量、attribute_count_limit_、屬性最大數量、additional_effect_ -> 額外效果、color_ -> 裝備名稱顏色、intensify_level_ ->精煉等級、intensify_fail_times_ -> 精煉失敗次數、stability_ -> 穩定度、intensify_ -> 強化度、fusion_ -> 融合度、uniqueness_ -> 珍稀度
+:Update() : 更新裝備數據
+:Sort() : 屬性排序
+:Rand(怪物階級, 怪物強度) : 隨機鑲環數
+:Display() : 顯示裝備敘述
+:name(要不要換行) : 顯示裝備名字
+:GetGearScore() : 顯示裝備評分
+:IsAttributeFull() : 能不能附魔
+:IsRingFull() : 能不能強化
+
+## item.equipment.printer
+.GetGearScore(裝備對象) : 顯示裝備評分
+.name(裝備對象, 要不要換行) : 顯示裝備名字
+.Display(裝備對象) : 顯示裝備敘述
+
+## item.extend_hole
+ExtendHole(裝備) : 對裝備鑲環
+
+## item.intensify
+Intensify(裝備) : 精煉裝備
+
+## item.prefix
+Prefix(裝備) : 設定裝備的詞綴
+
+## item.produce_recipe
+ProduceRecipe(單位) : 將身上的材料合成物品
+
+## item.secrets
+Secrets(物品) : 建構函數
+:set(屬性名, 數值) : 設定該屬性的值
+:get(屬性名) : 獲得該屬性的值
+
+## item.small_secret_order
+SmallSecretOrder(裝備) : 檢查裝備有無小秘物序列的效果
 
 ## mover.core
 mover(data) : 建構函數，可操作成員有mover_ -> 單位對象、starting_point_ -> 起始點、max_dist_ -> 最遠距離、TraceMode -> 軌跡函數、Execute -> 每次移動都會執行的動作函數、End_Cnd -> 終止條件、target_point_ -> 終點、velocity_ -> 初速度、velocity_max_ -> 最高速度、acceleration_ -> 加速度、height_ -> 拋體運動最大高度、angle_ -> 射角、radius_ -> 半徑、starting_height_ -> 初始高度、dur_ -> 存在的時間、current_dist_ -> 走過的距離、motivation_ -> 位移量  

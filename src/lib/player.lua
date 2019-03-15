@@ -1,11 +1,19 @@
 -- 擴展we的player的功能
+-- 依賴
+--   jass.common
+--   class
+--   api
+--   event
+--   dialog
+--   multiboard
+--   leaderboard
+--   game
 
 -- package
 local require = require 
 local cj = require 'jass.common'
 
 local Player = require 'class'("Player")
-Player._VERSION = "1.0.0"
 
 -- assert
 local set, get = {}, {}

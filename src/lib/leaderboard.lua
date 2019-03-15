@@ -7,8 +7,8 @@
 local require = require
 local cj = require 'jass.common'
 
+
 local Lb = require 'class'("Leaderboard")
-Lb._VERSION = "1.0.0"
 
 function Lb:_new(player)
     self._count_ = 0

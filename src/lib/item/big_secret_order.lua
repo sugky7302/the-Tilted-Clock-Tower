@@ -1,7 +1,14 @@
 -- 此module是讀取小秘物序列效果，
 -- 把秘物序列填成配方
+-- 依賴
+--   jass.common
+--   item.equipment.core
+--   jass_tool
+--   item.add_recipe
+
 
 -- assert
+local require = require
 local CollectSSO, FindBSO, SetBSO
 
 local function BigSecretOrder(hero)

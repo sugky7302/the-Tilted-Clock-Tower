@@ -18,7 +18,6 @@ local Player = require 'player'
 
 
 local Unit = require 'class'("Unit", require 'unit.operator')
-Unit._VERSION = "1.0.0"
 
 -- constants
 -- 這樣寫是因為局部變量讀取比較快

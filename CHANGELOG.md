@@ -1,4 +1,40 @@
 # 更新日誌
+## 0.33.2 - 2019-03-15
+### Added:
+- [dialog] 增加依賴庫註解。
+- [game] 增加依賴庫註解。
+- [leaderboard] 增加依賴庫註解。
+- [multiboard] 增加依賴庫註解。
+- [player] 增加依賴庫註解。
+- [point] 增加依賴庫註解。
+- [polygon] 增加依賴庫註解。
+- [trigger] 增加依賴庫註解。
+- [buff.core] 增加依賴庫註解。
+- [item.add_recipe] 增加依賴庫註解。
+- [item.big_secret_order] 增加依賴庫註解。
+- [item.combine] 增加依賴庫註解。
+- [item.core] 增加依賴庫註解。
+- [item.enchanted] 增加依賴庫註解。
+- [item.event] 增加依賴庫註解。
+- [item.extend_hole] 增加依賴庫註解。
+- [item.intensify] 增加依賴庫註解。
+- [item.produce_recipe] 增加依賴庫註解。
+- [item.secrets] 增加依賴庫註解。
+- [item.small_secret_order] 增加依賴庫註解。
+- [item.unit] 增加依賴庫註解。
+- [equpipment.core] 增加依賴庫註解。
+- [mover.util] 增加依賴庫註解。
+- [quest.core] 增加依賴庫註解。
+- [timer.core] 增加依賴庫註解。
+- [timer.init] 增加依賴庫註解。
+- [unit.core] 增加依賴庫註解。
+- [jass_tool] 增加依賴庫註解。
+- [stack] 增加依賴庫註解。
+
+## 0.33.1 - 2019-02-15
+### Changed:
+- [mover.util] Move函數裡移動單位的cj函數從SetUnitPosition改成SetUnitX/Y，效率提升而且比較不會卡。
+
 ## 0.33.0 - 2019-02-12 - 用class重構
 ### Added:
 - 添加api.md，將所有模塊的API都填入其中，之後搜尋會比較快速，不用一個一個檔案找。

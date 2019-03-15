@@ -1,9 +1,9 @@
 -- 此module替裝備附魔秘物
 -- 發動技能效果事件 比 使用物品事件 更早觸發
+-- 依賴
+--   jass.common
 
-local Enchanted = {}
-
-function Enchanted.Insert(equipment, secrets, is_fixed)
+local function Enchanted(equipment, secrets)
     local DisplayText = require 'jass.common'.DisplayTimedTextToPlayer
 
     -- 檢查屬性數量是否超過限制

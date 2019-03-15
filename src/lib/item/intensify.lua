@@ -1,11 +1,12 @@
 -- 此module強化裝備屬性
+-- 依賴
+--   math_lib
+--   point
+--   jass_tool
 
-local setmetatable = setmetatable
-
-local Intensify = {}
-setmetatable(Intensify, Intensify)
 
 -- assert
+local require = require
 local IsGoldEnough, IsRefine, GetGoldCost, NotLimit
 local Print
 
@@ -13,11 +14,12 @@ local Random = require 'math_lib'.Random
 local INTENSIFY_COEFFICIENT = {[0] = 1, 2, 3, 4, 6, 8, 10, 14, 18, 22, 31}
 local INTENSIFY_POS = {-2026, -3991}
 
-function Intensify:__call(equipment)
+local function Intensify(equipment)
     -- 檢查有沒有在精煉爐附近
     local Point = require 'point'
     local unit_point, pos = Point.GetUnitLoc(equipment.owner_.object_)
     local is_near = false
+
     for i = 1, #INTENSIFY_POS, 2 do
         pos = Point(INTENSIFY_POS[i], INTENSIFY_POS[i+1])
         
