@@ -1,5 +1,10 @@
 # 更新日誌
-## 0.33.2 - 2019-03-15
+## 0.33.3 - 2019-03-30
+### Changed:
+- [api.md] 修改skill.core的EventDispatch說明，添加技能事件。
+- [skill.cast] 調整寫法。
+
+## [0.33.2] - 2019-03-15
 ### Added:
 - [dialog] 增加依賴庫註解。
 - [game] 增加依賴庫註解。
@@ -31,11 +36,11 @@
 - [jass_tool] 增加依賴庫註解。
 - [stack] 增加依賴庫註解。
 
-## 0.33.1 - 2019-02-15
+## [0.33.1] - 2019-02-15
 ### Changed:
 - [mover.util] Move函數裡移動單位的cj函數從SetUnitPosition改成SetUnitX/Y，效率提升而且比較不會卡。
 
-## 0.33.0 - 2019-02-12 - 用class重構
+## [0.33.0] - 2019-02-12 - 用class重構
 ### Added:
 - 添加api.md，將所有模塊的API都填入其中，之後搜尋會比較快速，不用一個一個檔案找。
 - 添加is_nil函數，可判斷string、number、boolean、table是否為空。
@@ -48,7 +53,7 @@
 - [mover.missile] 投射物從寵物對象改成單位對象，不然有可能會發生寵物攻擊時，因為hero.pet_被設定為投射物，導致有些動作出錯。
 - [point] 用新的class重寫功能。
 - [quest.util] Near函數的參數類型可以為點。
-- [quest.core] 現在把技能拆成三個層次，任務類別-任務模板-任務實例。
+- [quest.core] 現在把任務拆成三個層次，任務類別-任務模板-任務實例。
 - [skill.core] 現在把技能拆成三個層次，技能類別-技能模板-技能實例。
 - [test.core] 根據新的point參數格式做修正。
 ### Fixed:
@@ -730,6 +735,9 @@
 [actboy168-lua-debug]:https://tieba.baidu.com/p/5902146836
 [coordinate_error]:https://tieba.baidu.com/p/5773334779?pid=120570865697&cid=0&red_tag=1133617129#120570865697
 
+[0.33.2]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/7f91a446451ef3f50540fa1ba5ebb69208d59148
+[0.33.1]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/76cbaf0d1186c06c4c8fffb536393050d90fb451
+[0.33.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/d0f0d4805663de265c0b14609a9e10602a600e84
 [0.32.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/7226965592638659b456e1ccde18da28788b6d1c
 [0.31.19]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/49108e30e84d383e5317ec416259ffb7380e3e5d
 [0.31.18]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/1dd2f34bbac3db781d83d25ffffbfff835b89d60

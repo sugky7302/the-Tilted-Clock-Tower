@@ -2,7 +2,7 @@ local mt = require 'skill.core' '暴風雪' {
     order_id_ = 'A00H',
     hotkey_ = "W",
     tip_ = "冷卻時間: |Cffffcc0010|r|n|n降下|Cffffcc002|r波冰霜，每波造成|Cffffcc00N|r|Cff99ccff[+P]|r" ..
-    "點冰寒傷害。如果在技能施放時移動或攻擊，將打斷此技能。",
+           "點冰寒傷害。如果在技能施放時移動或攻擊，將打斷此技能。",
     dis_blp_ = 'A00X',
 
     area_ = 200,

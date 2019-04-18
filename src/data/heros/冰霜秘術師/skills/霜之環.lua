@@ -2,7 +2,7 @@ local mt = require 'skill.core' '霜之環' {
     order_id_ = 'A00U',
     hotkey_ = "E",
     tip_ = "冷卻時間: |Cffffcc0012|n|r|n延遲|Cffffcc001.25|r秒後，在目標地點產生一圈霜之環，" ..
-    "造成|Cffffcc00N|r|Cff99ccff[+P]|r點冰寒傷害，並且使敵人定身|Cff99ccff3|r秒。",
+           "造成|Cffffcc00N|r|Cff99ccff[+P]|r點冰寒傷害，並且使敵人定身|Cff99ccff3|r秒。",
     dis_blp_ = 'A00Y',
     
     area_ = 400,

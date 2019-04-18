@@ -1,7 +1,7 @@
 local mt = require 'skill.core' '霜寒刺骨' {
     order_id_ = 'A00F',
     tip_ = "所有技能都會對目標造成冰冷效果，移動速度降低|cffffcc0025%|r，並且使你的技能傷害提高" ..
-    "|cffffcc0035%|r，持續|cffffcc004|r秒。施放技能將重置持續時間。",
+           "|cffffcc0035%|r，持續|cffffcc004|r秒。施放技能將重置持續時間。",
 }
 
 function mt:on_hit(source, target)
