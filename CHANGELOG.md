@@ -1,10 +1,13 @@
 # 更新日誌
 ## 0.33.4 - 2019-05-04
+### Added:
+- [util.random_number_generator] 新增count函數，可以獲取牌數。 
 ### Changed:
 - 移除Path的捷徑，例如util.class寫class就搜尋的到。現在require時一律使用正確的路徑，之後如果兩個資料夾有相同名稱的模塊時會比較方便。
 - [util.class] 修改建構函數，決定要自己創建實例，解決容量重設的問題。
 - [util.color] 將預設值直接放進table裡，減少容量重設的問題。
 - [util.point] 改寫成lua專用的點類別，之後魔獸要用的點類別會是此類別的子類別。
+- [util.random_number_generator] 修改GenerateValidCards的rand判斷，如果設定1的話，用原本的lua引擎會出問題，因為math.random()不是只給0、1，而是(0, 1)的隨機實數。
 
 ## 0.33.3 - 2019-03-30
 ### Changed:

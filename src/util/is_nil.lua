@@ -1,4 +1,4 @@
--- 用於判斷包含table是否為Nil
+-- 檢查table是否為空
 
 local function IsNil(tb)
     return tb == nil or next(tb) == nil

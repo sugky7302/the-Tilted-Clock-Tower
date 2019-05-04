@@ -1,4 +1,4 @@
--- 此module提供各種對所有元素進行排序
+-- 此module提供各種對所有元素進行排序的方法
 
 local Comparator = {}
 

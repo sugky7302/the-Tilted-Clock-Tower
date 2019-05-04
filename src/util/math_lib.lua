@@ -2,12 +2,12 @@
 
 local math = math
 
-local MathLib = {}
+local MathLib = {
+    -- constants
+    e = math.exp(1)
+}
 
--- constants
-MathLib.e = math.exp(1)
-
-function MathLib.Round(num)
+function MathLib.round(num)
     if num >= 0 then
         return math.floor(num + 0.5) 
     else
@@ -20,7 +20,7 @@ end
 -- 兩個參數 產生[n, m]的隨機整數
 -- n, m 非整數會報錯
 math.randomseed(tonumber(tostring(os.time()):reverse():sub(1,6)))
-function MathLib.Random(n, m)
+function MathLib.rand(n, m)
     local modf = math.modf
     if not n then
         return math.random()
@@ -36,11 +36,8 @@ function MathLib.Random(n, m)
     return math.random(n, m)
 end
 
-function MathLib.Difference(value, compareValue)
-    return math.abs(value - compareValue)
-end
-
-function MathLib.BoundValue(value_min, value, value_max)
+-- 確認值是否超出最大或最小值
+function MathLib.bound(value_min, value, value_max)
     -- 沒有上下限，直接回傳值
     if not(value_min or value_max) then
         return value
