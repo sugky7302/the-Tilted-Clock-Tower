@@ -11,6 +11,7 @@ local FindLetter
 function Hexadecimal.I2S(num_hex)
     local modf = math.modf
 
+    -- 轉換第一個字符
     local first_sign
     local hex_first = num_hex / 16
     if modf(hex_first) > 9 then
@@ -19,6 +20,7 @@ function Hexadecimal.I2S(num_hex)
         first_sign = modf(hex_first)
     end
 
+    -- 轉換第二個字符
     local hex_second = num_hex % 16
     local second_sign = (hex_second > 9) and HEXADECIMAL_SIGN[hex_second - 9] or hex_second
 
@@ -39,6 +41,7 @@ function Hexadecimal.S2I(sign)
 end
 
 -- O(HEXADECIMAL_SIGN)的方法
+-- 16進位的字母要替換成數字
 FindLetter = function(sign)
     for index, letter in ipairs(HEXADECIMAL_SIGN) do 
         if sign == letter then

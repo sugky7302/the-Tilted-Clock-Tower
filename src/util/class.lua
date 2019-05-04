@@ -1,4 +1,4 @@
--- Version : 1.1.0
+-- Version : 1.2.0
 -- 自定義類型 類別，使用javascript的方式--對象關聯或稱委託。
 -- 新的類別能夠很好區分類別和實例的差別，不會像以往子類實際上也只是父類的一個實例。
 
@@ -15,7 +15,7 @@ local function Class(name, ...)
 		_prototype = {...}, -- 原型，也就是委託的對象，只要該對象有你需要的東西，都可以填進去。排在最前面的原型為第一委託者。
         _VERSION = "1.0.0",
         
-		type = name,
+		type = name, -- 因為type(object)都會返回table，無法對不同類別的實例作比較，所以儲存類別的名字，在比較時才能區別。
 
         -- TODO: 考慮怎麼解決不要容量重設且_new函數不要有創建實例的動作的問題
         -- HACK: 目前想不到這兩種矛盾的解決方法，先暫時不管容量重設，反正目前鍵值對少，還沒有太大的問題。 - 2019-01-25
@@ -26,14 +26,14 @@ local function Class(name, ...)
         --       - 無參數 : class()
         --       - 有參數但非創建實例 : class(var1, var2, ...)
         --       - 直接創建實例 : class{...}
-        -- BUG: 現在有問題的是，第三種有可能會暴露內部成員變量，第二種有可能傳進去的是一個table，但是它不能被註冊成實例。
-        -- 第三種在_new中會利用_copy把table裡的值賦給instance，這樣就能解決暴露的問題。
-        -- 第二種的話按照原本的方式是不會有問題的。
+        -- BUG:  現在有問題的是，第三種有可能會暴露內部成員變量，第二種有可能傳進去的是一個table，但是它不能被註冊成實例。
+        --       第三種在_new中會利用_copy把table裡的值賦給instance，這樣就能解決暴露的問題。
+        --       第二種的話按照原本的方式是不會有問題的。
+        -- NOTE: 改成先設定好實例的參數再綁定，解決容量重設的問題。
+        --       預設的_new函數也改成返回一個table - 2019-05-04
         __call = function(self, ...)
-            local instance = setmetatable({}, self)
-            instance:_new(...)
-
-			return instance
+            local instance = self:_new(...)
+            return setmetatable(instance, self)
 		end,
 
 		-- 在self[key]找不到值時調用，如果沒有設定的話，self[key]是直接回傳nil。
@@ -88,7 +88,8 @@ local function Class(name, ...)
 		end,
 
 		-- 使用者自訂的建構函數
-		_new = function(self, this)
+        _new = function(self, this)
+            return this or {}
 		end,
 
 		-- 使用者自訂的解構函數

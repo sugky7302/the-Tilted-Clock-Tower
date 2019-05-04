@@ -1,4 +1,11 @@
 # 更新日誌
+## 0.33.4 - 2019-05-04
+### Changed:
+- 移除Path的捷徑，例如util.class寫class就搜尋的到。現在require時一律使用正確的路徑，之後如果兩個資料夾有相同名稱的模塊時會比較方便。
+- [util.class] 修改建構函數，決定要自己創建實例，解決容量重設的問題。
+- [util.color] 將預設值直接放進table裡，減少容量重設的問題。
+- [util.point] 改寫成lua專用的點類別，之後魔獸要用的點類別會是此類別的子類別。
+
 ## 0.33.3 - 2019-03-30
 ### Changed:
 - [api.md] 修改skill.core的EventDispatch說明，添加技能事件。

@@ -10,12 +10,12 @@
             "preLaunchTask": "執行",
             "sourceMaps": [
                 [
-                    "scripts\\",
-                    "${workspaceRoot}\\scripts\\"
+                    "src\\",
+                    "${workspaceFolder}\\src\\"
                 ],
                 [
                     "lua\\",
-                    "${workspaceRoot}\\map\\"
+                    "${workspaceFolder}\\map\\"
                 ]
             ]
         },
@@ -28,14 +28,26 @@
             "processName": "war3.exe",
             "sourceMaps": [
                 [
-                    "scripts\\",
-                    "${workspaceRoot}\\scripts\\"
+                    "src\\",
+                    "${workspaceFolder}\\src\\"
                 ],
                 [
                     "lua\\",
-                    "${workspaceRoot}\\map\\"
+                    "${workspaceFolder}\\map\\"
                 ]
             ]
+        },
+        {
+            "name": "Launch Script",
+            "type": "lua",
+            "request": "launch",
+            "stopOnEntry": true,
+            "program": "${workspaceFolder}\\src\\test.lua",
+            "cwd": "${workspaceFolder}",
+            "path": "${workspaceFolder}\\src\\?.lua",
+            "cpath": "${workspaceFolder}\\?.dll",
+            "arg": [],
+            "consoleCoding": "utf8"
         }
     ]
 }
