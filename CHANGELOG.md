@@ -1,4 +1,12 @@
 # 更新日誌
+## 0.33.5 - 2019-05-05
+### Added:
+- [lib.point] 此類別為util.point的子類別，專門處理魔獸的點。
+### Changed:
+- [util.task_tracker] 添加任務或完成任務的數量變為可調整。
+### Fixed:
+- [util.stl.array] 修正delete函數覆蓋數值不正確的問題。
+
 ## 0.33.4 - 2019-05-04
 ### Added:
 - [util.random_number_generator] 新增count函數，可以獲取牌數。 

@@ -4,17 +4,24 @@ local clock = os.clock
 local start_time = clock()
 ----------------以下為撰寫區----------------
 
-rng = require 'util.random_number_generator'
-rand = require 'util.math_lib'.rand
+Array = require 'util.stl.array'
 
-for i = 1, 100 do
-    print(rand())
+a = Array()
+
+for i = 1, 9 do
+    a:push_back(i)
+    a:push_back(i)
 end
 
-local t = rng(50)
-for i = 1, t:count() do
-    print(t:draw())
-end
+print(a, a:length())
+
+a:delete(5)
+print(a, a:length())
+
+print(a:exist(3), a:length())
+
+a:clear()
+print(a, a:length())
 
 ----------------以上為撰寫區----------------
 local end_time = clock()

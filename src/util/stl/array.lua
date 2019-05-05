@@ -1,14 +1,27 @@
 -- 生成一個連續但移除中間元素後，順序會開始混亂的類vector結構
 
-local Array = require 'class'("Array")
+local Array = require 'util.class'("Array")
 
 -- default
 Array._begin_  = 1
 Array._end_    = 1 -- ex: for i = _begin_, _end_ - 1(要記得扣，不然空array也會執行一次迴圈) do
 Array._length_ = 0
 
+function Array:__tostring()
+    local concat = table.concat
+    local print_tb = {"["}
+
+    for i = self._begin_, self._end_ - 1 do
+        print_tb[#print_tb + 1] = self[i]
+    end
+
+    print_tb[#print_tb + 1] = "]"
+
+    return table.concat(print_tb, " ")
+end
+
 -- 操作元素
-function Array:PushBack(data)
+function Array:push_back(data)
     if not data then
         return false
     end
@@ -21,17 +34,17 @@ function Array:PushBack(data)
 end
 
 -- 刪除所有"資料 = data"的空間
-function Array:Delete(data)
+function Array:delete(data)
     if not data then 
         return false
     end
 
     local first, last = self._begin_, self._end_ - 1
-    for i = first, last do
+    for i = self._begin_, self._end_ - 1 do
         if self[i] == data then
             -- 將最後一個元素覆蓋至現在位置
-            self[i] = self[last]
-            self[last] = nil
+            self[i] = self[self._end_-1]
+            self[self._end_-1] = nil
 
             -- 調整索引
             self._end_ = self._end_ - 1
@@ -40,7 +53,7 @@ function Array:Delete(data)
     end
 end
 
-function Array:Clear()
+function Array:clear()
     for i = self._begin_, self._end_ - 1 do 
         self[i] = nil
     end
@@ -52,7 +65,7 @@ end
 
 -- 存在的話會回傳索引
 -- 只找第一筆資料
-function Array:Exist(data)
+function Array:exist(data)
     if not data then 
         return false
     end
@@ -71,7 +84,7 @@ function Array:IsEmpty()
     return self._length_ == 0
 end
 
-function Array:getLength()
+function Array:length()
     return self._length_
 end
 
