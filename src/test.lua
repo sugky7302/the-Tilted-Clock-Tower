@@ -4,24 +4,26 @@ local clock = os.clock
 local start_time = clock()
 ----------------以下為撰寫區----------------
 
-Array = require 'util.stl.array'
+Stack = require 'util.stl.stack'
 
-a = Array()
+a = Stack()
 
 for i = 1, 9 do
-    a:push_back(i)
-    a:push_back(i)
+    a:push(i)
+    a:push(i)
 end
 
-print(a, a:length())
+print(a, a:size())
 
-a:delete(5)
-print(a, a:length())
+print(a:top())
 
-print(a:exist(3), a:length())
+a:pop()
+print(a, a:size())
+
+-- print(a:exist(3), a:size())
 
 a:clear()
-print(a, a:length())
+print(a, a:size())
 
 ----------------以上為撰寫區----------------
 local end_time = clock()

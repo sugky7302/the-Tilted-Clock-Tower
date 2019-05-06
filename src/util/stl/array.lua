@@ -3,19 +3,17 @@
 local Array = require 'util.class'("Array")
 
 -- default
-Array._begin_  = 1
-Array._end_    = 1 -- ex: for i = _begin_, _end_ - 1(要記得扣，不然空array也會執行一次迴圈) do
-Array._length_ = 0
+Array._end_ = 1 -- ex: for i = _begin_, _end_ - 1(要記得扣，不然空array也會執行一次迴圈) do
 
 function Array:__tostring()
     local concat = table.concat
     local print_tb = {"["}
 
-    for i = self._begin_, self._end_ - 1 do
-        print_tb[#print_tb + 1] = self[i]
+    for i = 1, self._end_-1 do
+        print_tb[#print_tb+1] = self[i]
     end
 
-    print_tb[#print_tb + 1] = "]"
+    print_tb[#print_tb+1] = "]"
 
     return table.concat(print_tb, " ")
 end
@@ -30,7 +28,6 @@ function Array:push_back(data)
     self[self._end_] = data
     
     self._end_ = self._end_ + 1
-    self._length_ = self._length_ + 1
 end
 
 -- 刪除所有"資料 = data"的空間
@@ -39,8 +36,7 @@ function Array:delete(data)
         return false
     end
 
-    local first, last = self._begin_, self._end_ - 1
-    for i = self._begin_, self._end_ - 1 do
+    for i = 1, self._end_-1 do
         if self[i] == data then
             -- 將最後一個元素覆蓋至現在位置
             self[i] = self[self._end_-1]
@@ -48,19 +44,16 @@ function Array:delete(data)
 
             -- 調整索引
             self._end_ = self._end_ - 1
-            self._length_ = self._length_ - 1
         end
     end
 end
 
 function Array:clear()
-    for i = self._begin_, self._end_ - 1 do 
+    for i = 1, self._end_-1 do 
         self[i] = nil
     end
 
-    self._begin_ = 1
     self._end_ = 1
-    self._length_ = 0
 end
 
 -- 存在的話會回傳索引
@@ -70,7 +63,7 @@ function Array:exist(data)
         return false
     end
 
-    for i = self._begin_, self._end_ - 1 do
+    for i = 1, self._end_-1 do
         if self[i] == data then
             return i
         end
@@ -80,12 +73,12 @@ function Array:exist(data)
 end
 
 -- 獲取私有成員變量
-function Array:IsEmpty()
-    return self._length_ == 0
+function Array:empty()
+    return self._end_ == 1
 end
 
-function Array:length()
-    return self._length_
+function Array:size()
+    return self._end_ - 1
 end
 
 return Array

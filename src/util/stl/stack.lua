@@ -2,64 +2,63 @@
 -- 依賴
 --   class
 
-local Stack = require 'class'("Stack")
+local Stack = require 'util.class'("Stack")
 
 -- default
 Stack._top_   = nil
-Stack._depth_ = 0 
+Stack._size_ = 0 
 
 function Stack:__tostring()
     local print_str = {"[bot->"}
 
-    for i = self._depth_, 1, -1 do 
-        print_str[#print_str + 1] = self[i]
-        print_str[#print_str + 1] = " "
+    for i = 1, self._size_ do 
+        print_str[#print_str+1] = self[i]
     end
 
     -- 把最後一個空格換掉
-    print_str[#print_str] = "<-top]"
+    print_str[#print_str+1] = "<-top]"
 
-    return table.concat(print_str)
+    return table.concat(print_str, " ")
 end
 
-function Stack:Clear()
-    for i = 1, self._depth_ do 
+function Stack:clear()
+    for i = 1, self._size_ do 
         self[i] = nil
     end
 
     self._top_ = nil
-    self._depth_ = 0
+    self._size_ = 0
 end
 
 -- 索引從 1 開始，因此要先增加size
-function Stack:PushTop(data)
-    self._depth_ = self._depth_ + 1
+function Stack:push(data)
+    self._size_ = self._size_ + 1
 
-    self[self._depth_] = data
+    self[self._size_] = data
 
     self._top_ = data
 end
 
 -- 先減少size再清空會無法清除末端元素
-function Stack:PopTop()
-    self[self._depth_] = nil
+function Stack:pop()
+    self[self._size_] = nil
 
-    self._depth_ = self._depth_ - 1
+    self._size_ = self._size_ - 1
 
-    self._top_ = self[self._depth_] or nil
+    self._top_ = self[self._size_] or nil
 end
 
-function Stack:IsEmpty()
-    return self._depth_ == 0
+function Stack:empty()
+    return self._size_ == 0
 end
 
 -- 獲取私有成員變量
-function Stack:getTop()
+function Stack:top()
     return self._top_
 end
 
-function Stack:getDepth()
-    return self._depth_
+function Stack:size()
+    return self._size_
 end
 
 return Stack

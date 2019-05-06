@@ -1,4 +1,12 @@
 # 更新日誌
+## 0.33.6 - 2019-05-06
+### Changed:
+- [util.stl.array] 調整函數名稱，盡量stl都一樣命名方式。並且刪除一些參數，減少記憶體占用。
+- [util.stl.queue] 調整函數名稱，盡量stl都一樣命名方式。
+- [util.stl.stack] 調整函數名稱，盡量stl都一樣命名方式。
+### Fixed:
+- [util.stl.stack] 修正print函數在空容器的情況下會顯示錯誤的問題。
+
 ## 0.33.5 - 2019-05-05
 ### Added:
 - [lib.point] 此類別為util.point的子類別，專門處理魔獸的點。
