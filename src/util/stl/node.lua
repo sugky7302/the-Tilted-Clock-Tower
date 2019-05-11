@@ -1,13 +1,13 @@
 -- list的節點，提供API讓外部能夠讀取node的資料。
 
-local Node = require 'class'("Node")
-
--- default
-Node.prev_ = nil
-Node.next_ = nil
+local Node = require 'util.class'("Node")
 
 function Node:_new(data)
-    self._data_ = data
+    return {
+        _data_ = data,
+        prev_ = nil,
+        next_ = nil
+    }
 end
 
 function Node:getData()

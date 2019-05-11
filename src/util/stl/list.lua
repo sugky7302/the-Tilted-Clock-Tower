@@ -2,63 +2,73 @@
 
 -- package
 local require = require
-local List = require 'class'("List", require 'stl.list.iterator')
+local List = require 'util.class'("List")
 
 -- default
-List._VERSION = "1.0.0"
-List._begin_ = nil
-List._end_   = nil
-List._size_  = 0
+List._VERSION = "1.1.0"
 
 -- assert
 local EraseNode
+
+function List:_new()
+    return {
+        _begin_ = nil,
+        _end_ = nil,
+        _size_ = 0
+    }
+end
 
 function List:__tostring()
     local print_str = {"["}
 
     for node in self:TraverseIterator() do
-        print_str[#print_str + 1] = node:getData()
-        print_str[#print_str + 1] = " "
+        print_str[#print_str+1] = node:getData()
     end
 
-    if print_str[#print_str] == " " then
-        print_str[#print_str] = "]"
-    else
-        print_str[#print_str + 1] = "]" -- 代表list是空的，因此不要用覆蓋，不然會回傳 ] 而不是 []
-    end
+    print_str[#print_str+1] = "]"
 
-    return table.concat(print_str)
+    return table.concat(print_str, " ")
 end
 
-function List:Clear()
+
+function List:clear()
     self:_delete()
 
-    self._begin_ = List._begin_
-    self._end_ = List._end_
-    self._size_ = List._size_
+    self._begin_ = nil
+    self._end_ = nil
+    self._size_ = 0
 end
 
 -- O(self._size_)的方法
 function List:_delete()
     for node in self:rTraverseIterator() do
-        self:Delete(node)
+        self:delete(node)
     end
 end
 
-function List:PopFront()
-    self:Delete(self._begin_)
+function List:erase(data)
+    for node in self:rTraverseIterator() do
+        if node:getData() == data then
+            self:delete(node)
+        end
+    end
 end
 
-function List:PopBack()
-    self:Delete(self._end_)
+
+function List:pop_front()
+    self:delete(self._begin_)
 end
 
-function List:Delete(node)
+function List:pop_back()
+    self:delete(self._end_)
+end
+
+function List:delete(node)
     if not node then 
         return false
     end
 
-    if self:IsEmpty() then
+    if self:empty() then
         return true
     end
 
@@ -102,34 +112,39 @@ function List:Delete(node)
     return true
 end
 
-function List:IsEmpty()
-    return self._size_ == 0
-end
-
 EraseNode = function(self, node)
     node:Remove()
     self._size_ = self._size_ - 1
 end
 
-function List:PushFront(data)
-    self:Insert(self._begin_, data)
+
+function List:merge(other_list)
+    for node in other_list:TraverseIterator() do
+        self:push_back(node:getData())
+    end
+
+    other_list:Remove()
 end
 
-function List:PushBack(data)
-    self:Insert(nil, data)
+function List:push_front(data)
+    self:insert(data, self._begin_)
+end
+
+function List:push_back(data)
+    self:insert(data, nil)
 end
 
 -- data 會插在 node 的前面
 -- node 等於 nil，視作插在 list 的最末端
-function List:Insert(node, data)
+function List:insert(data, node)
     if not data then 
         return false
     end
 
-    local Node = require 'stl.list.node'
+    local Node = require 'util.stl.node'
     local node_new = Node(data)
     
-    if self:IsEmpty() then
+    if self:empty() then
 
         -- 新node是第一個node，也是最後一個node
         self._begin_ = node_new
@@ -181,7 +196,7 @@ function List:Insert(node, data)
 end
 
 -- 只找第一筆資料
-function List:Find(data)
+function List:find(data)
     for node in self:TraverseIterator() do
         if node:getData() == data then 
             return node
@@ -191,8 +206,46 @@ function List:Find(data)
     return false
 end
 
+
+-- assert
+local IsNil = require 'util.is_nil'
+
+-- O(self._size_)的迭代器方法
+-- HACK: 使用閉包的寫法會比無狀態的迭代器多開銷
+function List:TraverseIterator()
+    local node = self._begin_
+    return function()
+        if IsNil(node) then
+            return nil 
+        end
+
+        local prev = node
+        node = node.next_ or nil
+        return prev
+    end
+end
+
+-- O(self._size_)的迭代器方法
+function List:rTraverseIterator()
+    local node = self._end_
+    return function()
+        if IsNil(node) then
+            return nil 
+        end
+
+        local prev = node
+        node = node.prev_ or nil
+        return prev
+    end
+end
+
+
 -- 獲取私有成員變量
-function List:getSize()
+function List:empty()
+    return self._size_ == 0
+end
+
+function List:size()
     return self._size_
 end
 
@@ -202,6 +255,14 @@ end
 
 function List:getEnd()
     return self._end_
+end
+
+function List:front()
+    return self._begin_:getData()
+end
+
+function List:back()
+    return self._end_:getData()
 end
 
 return List

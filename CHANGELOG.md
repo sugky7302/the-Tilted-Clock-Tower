@@ -1,4 +1,12 @@
 # 更新日誌
+## 0.33.7 - 2019-05-11
+### Added:
+- [doc.api] 將api分成每個資料夾各一份，方便檢查。
+### Changed:
+- [util.array] 將delete函數名稱改為erase，和list相同。
+- [util.list] 把list移出來，並將iterator和core合併成一個文件。
+- [util.node] 把node獨立出來。
+
 ## 0.33.6 - 2019-05-06
 ### Changed:
 - [util.stl.array] 調整函數名稱，盡量stl都一樣命名方式。並且刪除一些參數，減少記憶體占用。

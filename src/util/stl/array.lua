@@ -31,7 +31,7 @@ function Array:push_back(data)
 end
 
 -- 刪除所有"資料 = data"的空間
-function Array:delete(data)
+function Array:erase(data)
     if not data then 
         return false
     end

@@ -1,7 +1,6 @@
 -- 解決pairs無序的問題
 -- O(#tb)的方法
 local function PairsByKey(tb)
-    local pairs = pairs
     local tb_key, size = {}, 0
     for n in pairs(tb) do 
         size = size + 1
