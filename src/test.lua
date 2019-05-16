@@ -17,6 +17,10 @@ a:erase(5)
 print(a)
 a:insert(11)
 print(a)
+a:insert(12)
+print(a)
+a:erase(8)
+print(a)
 
 ----------------以上為撰寫區----------------
 local end_time = clock()
