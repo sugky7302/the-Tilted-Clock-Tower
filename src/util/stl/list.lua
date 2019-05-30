@@ -251,7 +251,7 @@ end
 
 
 -- 獲取私有成員變量
-function List:empty()
+function List:isEmpty()
     return self._size_ == 0
 end
 

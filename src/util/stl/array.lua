@@ -73,7 +73,7 @@ function Array:exist(data)
 end
 
 -- 獲取私有成員變量
-function Array:empty()
+function Array:isEmpty()
     return self._end_ == 1
 end
 
