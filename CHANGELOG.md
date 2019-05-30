@@ -1,11 +1,19 @@
 # 更新日誌
+## 0.33.9 - 2019-05-26
+### Changed:
+-[util.stl] 把empty改名為isEmpty，這樣才能看出是布林表達式。
+
+## 0.33.8 - 2019-05-16
+### Changed:
+- [util.stl.list] 根據programming rule修改程式碼，使之提高可讀性。
+
 ## 0.33.7 - 2019-05-11
 ### Added:
 - [doc.api] 將api分成每個資料夾各一份，方便檢查。
 ### Changed:
-- [util.array] 將delete函數名稱改為erase，和list相同。
-- [util.list] 把list移出來，並將iterator和core合併成一個文件。
-- [util.node] 把node獨立出來。
+- [util.stl.array] 將delete函數名稱改為erase，和list相同。
+- [util.stl.list] 把list移出來，並將iterator和core合併成一個文件。
+- [util.stl.node] 把node獨立出來。
 
 ## 0.33.6 - 2019-05-06
 ### Changed:

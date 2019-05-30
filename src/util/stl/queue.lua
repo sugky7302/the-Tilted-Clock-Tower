@@ -50,7 +50,7 @@ function Queue:clear()
 end
 
 -- 獲取私有成員變量
-function Queue:empty()
+function Queue:isEmpty()
     return self:size() == 0
 end
 

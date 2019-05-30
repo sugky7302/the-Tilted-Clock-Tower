@@ -48,7 +48,7 @@ function Stack:pop()
     self._top_ = self[self._size_] or nil
 end
 
-function Stack:empty()
+function Stack:isEmpty()
     return self._size_ == 0
 end
 
