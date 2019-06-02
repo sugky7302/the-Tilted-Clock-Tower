@@ -4,18 +4,20 @@ local clock = os.clock
 local start_time = clock()
 ----------------以下為撰寫區----------------
 
-Class = require 'util.class'
+-- Price = require 'lib.price'
 
-a = Class("a")
-a.x = 1
-
-b = Class("b", a)
-b.y = 2
-
-c = Class("c", b)
-print(c.y) -- 呼叫b.y
-print(c.x) -- 呼叫a.x
-print(c.z) -- nil
+-- a = Price(1, 2005, 300)
+-- print(a)
+-- a = a + Price(35, 1, 5934)
+-- print(a)
+-- a = a - Price(3, 21245, 66)
+-- print(a)
+-- a = a * 5
+-- print(a)
+-- a = a / 17
+-- print(a)
+print(math.modf(-2100, 1000))
+print(math.abs(-2))
 
 ----------------以上為撰寫區----------------
 local end_time = clock()

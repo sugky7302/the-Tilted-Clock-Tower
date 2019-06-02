@@ -76,7 +76,7 @@ local function Class(name, ...)
 		-- __newindex = function(table, key, value)
 		-- end,
 
-		Remove = function(self)
+		remove = function(self)
 			-- 使用者自訂的解構函數
 			self:_delete()
 
@@ -130,6 +130,23 @@ local function Class(name, ...)
 
         deleteSubclass = function(self, key)
             self[table_concat({"subclass_", key})] = nil
+        end,
+
+        -- 呼叫委託對象
+        super = function(super_name)
+            if #_prototype == 0 then
+                return false
+            end
+
+            if not super_name then
+                return _prototype[1]
+            end
+
+            for i = 1, #_prototype do
+                if _prototype[i].type == super_name then
+                    return _prototype[i]
+                end
+            end
         end,
 	}
 

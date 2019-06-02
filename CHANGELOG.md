@@ -1,7 +1,17 @@
 # 更新日誌
+## 0.33.11 - 2019-06-02
+### Changed:
+- [src] 把原本的src改成src_old，再新增一個src放置新的腳本。
+
+## 0.33.10 - 2019-06-01
+### Added:
+- [util.class] 添加super函數，可以調用第一個委託對象或指定委託對象。
+### Changed:
+- [lib.event] 修改名稱，以提高可讀性。
+
 ## 0.33.9 - 2019-05-26
 ### Changed:
--[util.stl] 把empty改名為isEmpty，這樣才能看出是布林表達式。
+- [util.stl] 把empty改名為isEmpty，這樣才能看出是布林表達式。
 
 ## 0.33.8 - 2019-05-16
 ### Changed:

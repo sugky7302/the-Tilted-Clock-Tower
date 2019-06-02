@@ -15,10 +15,10 @@ local GetEvents, GetEvent
 
 -- NOTE: 使用 .__call 會無法讀取eventName
 -- callback第一個參數是trigger的實例，後面的參數才是自己加的
-function Event:__call(class, event_name) 
+function Event:__call(object, event_name) 
     local Trigger = require 'trigger'
     
-    local events = GetEvents(class)
+    local events = GetEvents(object)
     local event = GetEvent(events, event_name)
 
     return function(callback)
@@ -26,11 +26,11 @@ function Event:__call(class, event_name)
     end
 end
 
-GetEvents = function(class)
-    local events = class.events
+GetEvents = function(object)
+    local events = object.events
     if not events then
         events = Array()
-        class.events = events
+        object.events = events
     end
 
     return events
@@ -51,8 +51,8 @@ GetEvent = function(events, event_name)
 end
 
 -- 有回傳值
-function Event.Dispatch(class, event_name, ...)
-    local events = class.events
+function Event.Dispatch(object, event_name, ...)
+    local events = object.events
     if not events then
         return false
     end
@@ -74,8 +74,8 @@ end
 
 -- NOTE: 預留不用
 -- 沒有回傳值
-function Event.Notify(class, event_name, ...)
-    local events = class.events
+function Event.Notify(object, event_name, ...)
+    local events = object.events
     if not events then
         return
     end
