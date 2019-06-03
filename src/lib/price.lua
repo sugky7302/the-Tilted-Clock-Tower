@@ -1,85 +1,117 @@
 local Price = require 'util.class'("Price")
 local math = math
+local table = table
 
-local DealNegativeValue, DealDecimal, DealCarrying
+
 local RATIO = 10^3
+local DealNegativeValue, DealDecimal, DealCarrying
 
-function Price:_new(gold, silver, copper)
-    gold, silver, copper = gold or 0, silver or 0, copper or 0
-    gold, silver, copper = DealNegativeValue(gold, silver, copper)
-    gold, silver, copper = DealDecimal(gold, silver, copper)
-    gold, silver, copper = DealCarrying(gold, silver, copper)
-    
-    return {
-        gold_ = gold,
-        silver_ = silver,
-        copper_ = copper
-    }
+function Price:_new(...)
+    local money = {...}
+    money = DealNegativeValue(money)
+    money = DealDecimal(money)
+    money = DealCarrying(money)
+    money._units_ = {"金", "銀", "銅"}
+
+    return money
 end
 
-local 
-DealNegativeValue = function(gold, silver, copper)
-    if gold < 0 then
-        return 0, 0, 0
-    end
+DealNegativeValue = function(money)
+    local need 
 
-    if silver < 0 then
-        local need = math.floor(math.abs(silver / RATIO)) + 1
-        if gold < need then
-            return 0, 0, 0
+    for i = #money, 2, -1 do
+        if money[i] < 0 then
+            for j = i-1, 1, -1 do
+                need = math.floor(math.abs(money[i] / RATIO^(i-j))) + 1
+                if money[j] >= need then
+                    money[j] = money[j] - need
+                    money[i] = money[i] + RATIO^(i-j) * need
+                end
+            end
         end
-
-        gold = gold - need
-        silver = need * RATIO + silver
     end
-    silver = math.max(0, silver or 0)
-    copper = math.max(0, copper or 0)
 
-    return gold, silver, copper
+    return money
 end
 
-DealDecimal = function(gold, silver, copper)
-    local gold_integer, gold_decimal = math.modf(gold)
-    local silver_integer, silver_decimal = math.modf(silver + gold_decimal * RATIO)
-    copper = math.modf(copper + silver_decimal * RATIO)
+DealDecimal = function(money)
+    local decimal = 0
+    for i = 1, #money do
+        money[i], decimal = math.modf(money[i] + decimal * RATIO)
+    end
 
-    return gold_integer, silver_integer, copper
+    return money
 end
 
-local mod
+local Mod
 
-DealCarrying = function(gold, silver, copper)
-    local copper_carry, copper_remain = mod(copper, RATIO)
-    local silver_carry, silver_remain = mod(silver + copper_carry, RATIO)
-    local gold_remain = gold + silver_carry
+DealCarrying = function(money)
+    local carry = 0
+    for i = #money, 1, -1 do
+        carry, money[i] = Mod(money[i] + carry, RATIO)
+    end
 
-    return gold_remain, silver_remain, copper_remain
+    return money
 end
 
-mod = function(number, mod_value)
+Mod = function(number, mod_value)
     local carry = math.modf(number / mod_value)
     local remain = number - carry * mod_value
     return carry, remain
 end
 
 function Price:__tostring()
-    return table.concat({math.modf(self.gold_), "金", math.modf(self.silver_), "銀", math.modf(self.copper_), "銅"})
+    local print_str = {}
+    for i = 1, #self do
+        print_str[#print_str+1] = math.modf(self[i])
+        print_str[#print_str+1] = self._units_[i] or " "
+    end
+    
+    return table.concat(print_str)
 end
 
+local CalculateTable
+
 function Price:__add(price)
-    return Price(self.gold_ + price.gold_, self.silver_ + price.silver_, self.copper_ + price.copper_)
+    return Price(CalculateTable(self, price, 1))
 end
 
 function Price:__sub(price)
-    return Price(self.gold_ - price.gold_, self.silver_ - price.silver_, self.copper_ - price.copper_)
+    return Price(CalculateTable(self, price, -1))
 end
 
+CalculateTable = function(price1, price2, sign)
+    local price_new = {}
+    local length = math.max(#price1, #price2)
+    
+    for i = 1, length do
+        price_new[#price_new+1] = (price1[i] or 0) + sign * (price2[i] or 0)
+    end
+
+    return table.unpack(price_new)
+end
+
+local CalculateScalar
+
 function Price:__mul(ratio)
-    return Price(self.gold_ * ratio, self.silver_ * ratio, self.copper_ * ratio)
+    return Price(CalculateScalar(self, ratio, 1))
 end
 
 function Price:__div(ratio)
-    return Price(self.gold_ / ratio, self.silver_ / ratio, self.copper_ / ratio)
+    return Price(CalculateScalar(self, ratio, -1))
+end
+
+CalculateScalar = function(price, scalar, sign)
+    local price_new = {}
+    for i = 1, #price do
+        price_new[#price_new+1] = price[i] * scalar^sign
+    end
+
+    return table.unpack(price_new)
+end
+
+function Price:setUnits(unit_table)
+    self._units_ = unit_table
 end
 
 return Price

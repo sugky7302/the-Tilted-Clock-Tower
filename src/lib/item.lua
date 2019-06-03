@@ -10,7 +10,7 @@ function Item:_new(tb)
         tb._kind_ = tb.kind or ""
         tb._type_ = tb.type or ""
         tb._owner_ = tb.owner or nil
-        tb._price_ = tb.price or Price()
+        tb._price_ = tb.price or Price(0, 0, 0)
         tb._object_ = tb.object or nil
         tb._description_ = tb.description or ""
 
