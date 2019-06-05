@@ -4,20 +4,32 @@ local clock = os.clock
 local start_time = clock()
 ----------------以下為撰寫區----------------
 
-Price = require 'lib.item'
+Item = require 'lib.item'
 
-a = Price(0, -205, -300)
-print(a)
-a = a + Price(35, 1, 5934)
-print(a)
-a = a - Price(3, 21245, 66)
-print(a)
-a = a * 5
-print(a)
-a = a / 17
-print(a)
--- print(math.modf(-2100, 1000))
--- print(math.abs(-2))
+test = Item{
+    name = "test",
+    type = "1",
+    kind = "2",
+    description = "hi"
+}
+
+t = Item{
+    name = "t",
+    type = "3",
+    kind = "2",
+    description = "ha"
+}
+
+print(test:getOwnPlayer())
+print(test:isSameType(t))
+print(test:isSameKind("2"))
+
+test:registerPickUpEvent(function()
+    print("ya hahas")
+    return 111
+end)
+
+print(test:dispatchPickUpEvent())
 
 ----------------以上為撰寫區----------------
 local end_time = clock()

@@ -6,6 +6,7 @@ local table = table
 local RATIO = 10^3
 local DealNegativeValue, DealDecimal, DealCarrying
 
+-- 可隨意設定多種幣值。幣值要處理負數、小數、進位，出現的數值才會正常。
 function Price:_new(...)
     local money = {...}
     money = DealNegativeValue(money)
@@ -70,6 +71,7 @@ function Price:__tostring()
     return table.concat(print_str)
 end
 
+
 local CalculateTable
 
 function Price:__add(price)
@@ -80,6 +82,7 @@ function Price:__sub(price)
     return Price(CalculateTable(self, price, -1))
 end
 
+-- CalculateTable會根據sign是1:加法、-1:減法做處理
 CalculateTable = function(price1, price2, sign)
     local price_new = {}
     local length = math.max(#price1, #price2)
@@ -91,6 +94,7 @@ CalculateTable = function(price1, price2, sign)
     return table.unpack(price_new)
 end
 
+
 local CalculateScalar
 
 function Price:__mul(ratio)
@@ -101,6 +105,7 @@ function Price:__div(ratio)
     return Price(CalculateScalar(self, ratio, -1))
 end
 
+-- CalculateScalar會根據sign是1:乘法、-1:除法做處理
 CalculateScalar = function(price, scalar, sign)
     local price_new = {}
     for i = 1, #price do
@@ -109,6 +114,7 @@ CalculateScalar = function(price, scalar, sign)
 
     return table.unpack(price_new)
 end
+
 
 function Price:setUnits(unit_table)
     self._units_ = unit_table
