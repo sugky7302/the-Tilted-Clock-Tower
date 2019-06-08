@@ -6,7 +6,6 @@ local Array = require 'util.class'("Array")
 Array._end_ = 1 -- ex: for i = _begin_, _end_ - 1(要記得扣，不然空array也會執行一次迴圈) do
 
 function Array:__tostring()
-    local concat = table.concat
     local print_tb = {"["}
 
     for i = 1, self._end_-1 do
@@ -30,14 +29,20 @@ function Array:push_back(data)
     self._end_ = self._end_ + 1
 end
 
+local DefaultCompasion
+
 -- 刪除所有"資料 = data"的空間
-function Array:erase(data)
+function Array:erase(data, comparison)
     if not data then 
         return false
     end
 
+    if not comparison then
+        comparison = DefaultCompasion
+    end
+
     for i = 1, self._end_-1 do
-        if self[i] == data then
+        if comparison(self[i], data) then
             -- 將最後一個元素覆蓋至現在位置
             self[i] = self[self._end_-1]
             self[self._end_-1] = nil
@@ -58,18 +63,26 @@ end
 
 -- 存在的話會回傳索引
 -- 只找第一筆資料
-function Array:exist(data)
+function Array:exist(data, comparison)
     if not data then 
         return false
     end
 
+    if not comparison then
+        comparison = DefaultCompasion
+    end
+
     for i = 1, self._end_-1 do
-        if self[i] == data then
+        if comparison(self[i], data) then
             return i
         end
     end
 
     return false
+end
+
+DefaultCompasion = function(a, b)
+    return a == b
 end
 
 -- 獲取私有成員變量

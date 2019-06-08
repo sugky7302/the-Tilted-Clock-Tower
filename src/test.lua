@@ -4,32 +4,21 @@ local clock = os.clock
 local start_time = clock()
 ----------------以下為撰寫區----------------
 
-Item = require 'lib.item'
+Class = require 'lib.attribute'
 
-test = Item{
-    name = "test",
-    type = "1",
-    kind = "2",
-    description = "hi"
-}
+a = Class()
 
-t = Item{
-    name = "t",
-    type = "3",
-    kind = "2",
-    description = "ha"
-}
+a:push_back("法術攻擊力", 3, "t45")
+a:push_back("物理攻擊力", 3, "test")
+print(a)
 
-print(test:getOwnPlayer())
-print(test:isSameType(t))
-print(test:isSameKind("2"))
+a:sort()
+print(a)
 
-test:registerPickUpEvent(function()
-    print("ya hahas")
-    return 111
-end)
-
-print(test:dispatchPickUpEvent())
+print(a:exist("法術攻擊力"))
+a:erase("法術攻擊力")
+print(a:size())
+print(a)
 
 ----------------以上為撰寫區----------------
 local end_time = clock()

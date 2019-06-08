@@ -21,7 +21,7 @@ local ATTRIBUTE = {
     '生命恢復', '魔力恢復', '移動速度',
 }
 
-local ATTRIBUTE_INDEX, ipairs = {}, ipairs
+local ATTRIBUTE_INDEX = {}
 for i, v in ipairs(ATTRIBUTE) do 
     ATTRIBUTE_INDEX[v] = i
 end

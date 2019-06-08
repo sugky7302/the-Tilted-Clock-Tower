@@ -133,18 +133,18 @@ local function Class(name, ...)
         end,
 
         -- 呼叫委託對象
-        super = function(super_name)
-            if #_prototype == 0 then
+        super = function(self, super_name)
+            if #self._prototype == 0 then
                 return false
             end
 
             if not super_name then
-                return _prototype[1]
+                return self._prototype[1]
             end
 
-            for i = 1, #_prototype do
-                if _prototype[i].type == super_name then
-                    return _prototype[i]
+            for i = 1, #self._prototype do
+                if self._prototype[i].type == super_name then
+                    return self._prototype[i]
                 end
             end
         end,
