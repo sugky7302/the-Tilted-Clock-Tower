@@ -8,9 +8,10 @@ local Attribute = require'util.class'("Attribute", require 'util.stl.array')
 
 function Attribute:__tostring()
     local print_tb = {"["}
+    local single
 
     for i = 1, self._end_-1 do
-        local single = {}
+        single = {}
         for j = 1, 4 do
             single[#single+1] = self[i][j]
         end
@@ -37,7 +38,12 @@ function Attribute:sort()
 end
 
 function Attribute:push_back(name, value, description, is_fixed)
-    self:super().push_back(self, {ATTRIBUTE_INDEX[name], value or 0, description or "", is_fixed or false})
+    self:super().push_back(self, {
+        ATTRIBUTE_INDEX[name],
+        value or 0,
+        description or "",
+        is_fixed or false
+    })
 end
 
 local Comparison
