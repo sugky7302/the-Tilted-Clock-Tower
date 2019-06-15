@@ -4,13 +4,22 @@ local clock = os.clock
 local start_time = clock()
 ----------------以下為撰寫區----------------
 
-Class = require 'util.database'
+Class = require 'lib.attribute'
 
-a = Class(3)
+a = Class()
 
-a:append("a", 2, "c")
-a:append("k", 5, "q")
-print(a:query("k")[3])
+a:insert("法術護甲%", 25, true)
+a:insert("物理攻擊力", 15)
+a:insert("龍系增傷", 10)
+print(a:size())
+print(a)
+a:sort()
+print(a)
+a:setValue("物理攻擊力", 30)
+print(a)
+a:addValue("龍系增傷", -5)
+print(a)
+print(a:getName(5))
 
 ----------------以上為撰寫區----------------
 local end_time = clock()

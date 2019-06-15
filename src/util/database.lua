@@ -49,7 +49,7 @@ local GetData
 function Database:query(key)
     local type = type
 
-    if type(key) == "integer" then
+    if type(key) == "number" then
         return GetData(self, key)
     end
 
@@ -60,7 +60,7 @@ end
 
 GetData = function(self, key)
     local column
-    local data = {}
+    local data = {key}
 
     for i = 1, #self do
         column = self[i]

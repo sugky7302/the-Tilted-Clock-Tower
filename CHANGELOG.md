@@ -1,11 +1,35 @@
 # 更新日誌
+## 0.34.0 - 2019-06-15
+
+### Added:
+
+- [lib.attribute] 新增setValue、getValue、addValue函數，可改變指定屬性的值，並修正文字。
+- [lib.attribute] 新增getName函數，可獲得指定索引的屬性名。
+- [lib] 新增intensity模組，專職處理物品精煉功能，但**尚未測試**。
+- [util] 新增database模組，可生成一個空白的資料庫。目前用途是將data資料夾的資料表統一格式。
+
+### Changed:
+
+- [data.attributes] 更名為attribute_db，並使用util.database生成一個新的資料庫。
+- [data.equipment_template] 更名為equipment_db，並使用util.database生成一個新的資料庫。
+- [data.secrets_lib] 更名為secrets_db，並使用util.database生成一個新的資料庫。
+- [lib.attribute] 引入attribute_db，push_back更名為insert，並修改insert函數的參數表，還調整了erase的參數。
+- [lib.attribute] exist改成query，並改成私有函數，現在輸入屬性名會直接回傳該屬性所有的數據。
+
+### Removed:
+
+- [data.intensify_attribute] 與attribute_db合併。
+- [data.prefix_lib] 與attribute_db合併。
+
 ## 0.33.13 - 2019-06-08
+
 ### Added:
 - [lib] 添加attribute類別，專職屬性操作。
 ### Changed:
 - 將data資料夾從src_old移動到src。
 
 ## 0.33.12 - 2019-06-05
+
 ### Added:
 - [lib] 添加price類別，能夠自定義幣值。
 - [lib] 添加item類別，為遊戲內所有物品的基類。
