@@ -20,6 +20,7 @@ print(a)
 a:addValue("龍系增傷", -5)
 print(a)
 print(a:getName(5))
+print(a:getValue(3))
 
 ----------------以上為撰寫區----------------
 local end_time = clock()

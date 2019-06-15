@@ -1,6 +1,9 @@
 local require = require
-local Intensity = require 'util.class'("Intensity")
 local rand = require 'util.math_lib'.rand
+
+
+local Intensity = require 'util.class'("Intensity")
+local GetUpvalue, AttributeCanIncrease
 
 
 function Intensity:__new(equipment)
@@ -14,8 +17,6 @@ end
 function Intensity:getLevel()
     return self._level_
 end
-
-local GetUpvalue, AttributeCanIncrease
 
 function Intensity:success()
     -- 精鍊成功會重置失敗次數

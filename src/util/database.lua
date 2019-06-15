@@ -67,6 +67,10 @@ GetData = function(self, key)
         data[#data + 1] = column[key]
     end
 
+    if #data < 2 then
+        return nil
+    end
+    
     return data
 end
 
