@@ -1,5 +1,7 @@
--- 儲存所有屬性數據
+local Database = require 'util.database'
+local Attribute = Database(3)
 
+Attribute:append("物理攻擊力", "+N 物理攻擊力", 0.5)
 local ATTRIBUTE = {
     '物理攻擊力', '法術攻擊力', '物理護甲', '法術護甲',
     '無元素傷害', '地元素傷害', '水元素傷害', '火元素傷害', '風元素傷害',
