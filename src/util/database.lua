@@ -8,6 +8,8 @@ local setmetatable = setmetatable
 local Database = {}
 setmetatable(Database, Database)
 
+local Associate, GetData
+
 function Database:__call(column_count)
     local instance = {
         association = {}
@@ -21,8 +23,6 @@ function Database:__call(column_count)
     instance.__index = self
     return instance
 end
-
-local Associate
 
 function Database:append(...)
     local args = {...}
@@ -43,8 +43,6 @@ Associate = function(tb, arg, id)
     local key = table.concat{arg, ""}
     tb[key] = id
 end
-
-local GetData
 
 function Database:query(key)
     local type = type

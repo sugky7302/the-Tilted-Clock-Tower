@@ -1,11 +1,17 @@
 # 更新日誌
-## 0.34.1 - 2019-06-16
+## 0.34.2 - 2019-06-17
+
+### Changed:
+
+- [util.database] 把函數聲明全部寫在上面，比較簡潔。
+
+## [0.34.1] - 2019-06-16
 
 ### Changed:
 
 - [lib.intensity] 調整函數，目前只有兩個接口，一個是getMessage，另一個是invoke，原本的接口全部轉成內部實現，以讓裝備和精煉功能解耦。
 
-## 0.34.0 - 2019-06-15
+## [0.34.0] - 2019-06-15
 
 ### Added:
 
@@ -27,14 +33,14 @@
 - [data.intensify_attribute] 與attribute_db合併。
 - [data.prefix_lib] 與attribute_db合併。
 
-## 0.33.13 - 2019-06-08
+## [0.33.13] - 2019-06-08
 
 ### Added:
 - [lib] 添加attribute類別，專職屬性操作。
 ### Changed:
 - 將data資料夾從src_old移動到src。
 
-## 0.33.12 - 2019-06-05
+## [0.33.12] - 2019-06-05
 
 ### Added:
 - [lib] 添加price類別，能夠自定義幣值。
@@ -43,25 +49,25 @@
 - [lib.event] 在建構函數裡幫對象註冊事件調用函數，讓其對象不用額外寫一個。
 - [lib.trigger] 因應class對建構函數的修改做修正。
 
-## 0.33.11 - 2019-06-02
+## [0.33.11] - 2019-06-02
 ### Changed:
 - [src] 把原本的src改成src_old，再新增一個src放置新的腳本。
 
-## 0.33.10 - 2019-06-01
+## [0.33.10] - 2019-06-01
 ### Added:
 - [util.class] 添加super函數，可以調用第一個委託對象或指定委託對象。
 ### Changed:
 - [lib.event] 修改名稱，以提高可讀性。
 
-## 0.33.9 - 2019-05-26
+## [0.33.9] - 2019-05-26
 ### Changed:
 - [util.stl] 把empty改名為isEmpty，這樣才能看出是布林表達式。
 
-## 0.33.8 - 2019-05-16
+## [0.33.8] - 2019-05-16
 ### Changed:
 - [util.stl.list] 根據programming rule修改程式碼，使之提高可讀性。
 
-## 0.33.7 - 2019-05-11
+## [0.33.7] - 2019-05-11
 ### Added:
 - [doc.api] 將api分成每個資料夾各一份，方便檢查。
 ### Changed:
@@ -69,7 +75,7 @@
 - [util.stl.list] 把list移出來，並將iterator和core合併成一個文件。
 - [util.stl.node] 把node獨立出來。
 
-## 0.33.6 - 2019-05-06
+## [0.33.6] - 2019-05-06
 ### Changed:
 - [util.stl.array] 調整函數名稱，盡量stl都一樣命名方式。並且刪除一些參數，減少記憶體占用。
 - [util.stl.queue] 調整函數名稱，盡量stl都一樣命名方式。
@@ -77,7 +83,7 @@
 ### Fixed:
 - [util.stl.stack] 修正print函數在空容器的情況下會顯示錯誤的問題。
 
-## 0.33.5 - 2019-05-05
+## [0.33.5] - 2019-05-05
 ### Added:
 - [lib.point] 此類別為util.point的子類別，專門處理魔獸的點。
 ### Changed:
@@ -85,7 +91,7 @@
 ### Fixed:
 - [util.stl.array] 修正delete函數覆蓋數值不正確的問題。
 
-## 0.33.4 - 2019-05-04
+## [0.33.4] - 2019-05-04
 ### Added:
 - [util.random_number_generator] 新增count函數，可以獲取牌數。 
 ### Changed:
@@ -95,7 +101,7 @@
 - [util.point] 改寫成lua專用的點類別，之後魔獸要用的點類別會是此類別的子類別。
 - [util.random_number_generator] 修改GenerateValidCards的rand判斷，如果設定1的話，用原本的lua引擎會出問題，因為math.random()不是只給0、1，而是(0, 1)的隨機實數。
 
-## 0.33.3 - 2019-03-30
+## [0.33.3] - 2019-03-30
 ### Changed:
 - [api.md] 修改skill.core的EventDispatch說明，添加技能事件。
 - [skill.cast] 調整寫法。
@@ -442,7 +448,7 @@
 ## [0.28.0] - 2018-11-19
 ### Added:
 - 新增polygon庫，用於處理多邊形，例如區域。
-- [unit] 添加Event、EventDispatch函數。注意，Event的第一個參數self指的是"trigger"，不是EventDispatch呼叫的那個東西。
+- [unit] 添加Event、EventDispatch函數。注意，**Event的第一個參數self指的是"trigger"**，不是EventDispatch呼叫的那個東西。
 - [hero] 調整事件觸發。
 ### Fixed:
 - [hero] 修正"單位-創建"，會註冊多個相同觸發，導致EventDispatch調用冗餘的問題。
@@ -831,6 +837,19 @@
 [actboy168-lua-debug]:https://tieba.baidu.com/p/5902146836
 [coordinate_error]:https://tieba.baidu.com/p/5773334779?pid=120570865697&cid=0&red_tag=1133617129#120570865697
 
+[0.34.1]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/2dfda595358a4fe8419cd3619870f05a92858832
+[0.34.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/fb10ccc5a4f8edc883cc7be14dc32dc7355c0859
+[0.33.13]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/8ff5a499d65d6877677bc4a9b147b7bc70505cbe
+[0.33.12]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/570283f1c773505f349e7e6a2aadb3d921a4e765
+[0.33.11]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/37098851c5c3723e20371f677a5a9701c9f09e61
+[0.33.10]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/7833a9fa2714413ed83e9924d75d5b3d81f84d18
+[0.33.9]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/d3e943178684c9bc2b81a57d0fd4d69cc5ffeef8
+[0.33.8]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/a11b21b11dd89408e64a942600c1efae8f9a47ee
+[0.33.7]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/d7ae38e42dbccbc9edc45e01058d0632b7fbd989
+[0.33.6]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/4c4ade6823d13bb2181c1f611432afc309b81380
+[0.33.5]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/38dd037395fcd00ee76c799b3631e2a7c1cd4e82
+[0.33.4]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/89b405346940f3d3339df831d9271a14d34648e2
+[0.33.3]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/c686f5268f1a683bb40aec4071a9b6b6b8b6c723
 [0.33.2]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/7f91a446451ef3f50540fa1ba5ebb69208d59148
 [0.33.1]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/76cbaf0d1186c06c4c8fffb536393050d90fb451
 [0.33.0]:https://github.com/sugky7302/the-Tilted-Clock-Tower/commit/d0f0d4805663de265c0b14609a9e10602a600e84
