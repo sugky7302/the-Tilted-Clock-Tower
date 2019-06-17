@@ -1,6 +1,10 @@
 # 更新日誌
 ## 0.34.2 - 2019-06-17
 
+### Added:
+
+- [resource] 新增三個光柱模型，名稱分別為anheiguang、chengguangzhubaoxiang、lvguangzhubaoxiang。
+
 ### Changed:
 
 - [util.database] 把函數聲明全部寫在上面，比較簡潔。
