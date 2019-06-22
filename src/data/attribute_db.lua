@@ -5,7 +5,7 @@ local Attribute = Database(5)
 -- 欄位: 屬性名 | 屬性文字格式 | 權重 | 精煉時，該屬性會不會提高 | 詞綴
 Attribute:append("物理攻擊力", "+N 物理攻擊力", 0.5, true, "戰意")
 Attribute:append("法術攻擊力", "+N 法術攻擊力", 0.75, true, "秘奧")
-Attribute:append("物理護甲", "+N 物理護甲", 0.5, true)
+Attribute:append("物理護甲", "+N 物理護甲", 0.5, true, "不動")
 Attribute:append("法術護甲", "+N 法術護甲", 0.75, true)
 Attribute:append("無元素傷害", "+N 無元素傷害", 1, false)
 Attribute:append("地元素傷害", "+N 地元素傷害", 1, false)

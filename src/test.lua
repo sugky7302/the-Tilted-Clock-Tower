@@ -4,23 +4,36 @@ local clock = os.clock
 local start_time = clock()
 ----------------以下為撰寫區----------------
 
-Class = require 'lib.attribute'
+Class = require 'lib.equipment'
 
-a = Class()
+a = Class{
+    name = "test",
+    kind = "a",
+    type = "pmna",
+}
 
-a:insert("法術護甲%", 25, true)
-a:insert("物理攻擊力", 15)
-a:insert("龍系增傷", 10)
-print(a:size())
-print(a)
-a:sort()
-print(a)
-a:setValue("物理攻擊力", 30)
-print(a)
-a:addValue("龍系增傷", -5)
-print(a)
-print(a:getName(5))
-print(a:getValue(3))
+a:registerPickUpEvent(function(_, self, secrets)
+    print(self:enchanting(secrets))
+end)
+
+Class1 = require 'lib.secrets'
+b = Class1{
+    name = "test1",
+    kind = "d",
+    type = "sbch"
+}
+
+c = Class1{
+    name = "test2",
+    kind = "d",
+    type = "crys"
+}
+
+a:dispatchPickUpEvent(c)
+a:dispatchPickUpEvent(b)
+
+a:update()
+print(a:getName())
 
 ----------------以上為撰寫區----------------
 local end_time = clock()

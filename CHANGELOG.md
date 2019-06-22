@@ -1,4 +1,29 @@
 # 更新日誌
+## 0.34.3 - 2019-06-22
+
+### Added:
+
+- [lib] 新增consumables，處理消耗品需要的功能。
+- [lib] 新增secrets，處理秘物需要的功能。
+- [lib] 新增enchant，提供裝備附魔的功能。
+- [lib] 新增prefix，可將裝備屬性排序，並顯示詞綴。
+- [lib.intensity] 新增getLevel函數，可以獲取精煉等級。
+- [lib.attribute] 新增isFull函數，可檢查屬性表是否已滿。
+- [lib.attribute] 新增isFixed函數，可查看該屬性是否被鎖住。
+- [util.database] 新增setPrimaryKey函數，可以自行綁定主鍵，方便搜尋。但僅限數字或字串，表無法綁定。
+
+### Changed:
+
+- [lib.attribute] 修改生成函數，多了一個limit。
+- [lib.attribute] 修改insert函數，現在會檢查有無超過數量限制和是否重複。 
+- [lib.event] 在EventDispatch函數中，調用run的時候添加類別。
+
+### Fixed:
+
+- [lib.equipment] 修正新建class時，把名字這個參數存到item類別，導致無法調用item函數的問題。
+- [lib.equipment] 修正_new錯字為__new，導致無法生成新實例的問題。
+- [lib.intensity] 修正_new錯字為__new，導致無法生成新實例的問題。
+
 ## 0.34.2 - 2019-06-17
 
 ### Added:

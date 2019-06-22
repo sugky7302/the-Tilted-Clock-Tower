@@ -7,13 +7,17 @@ local Intensity = require 'util.class'("Intensity")
 local GetUpvalue, AttributeCanIncrease, Success, Fail, CanIntensify, IsLimited, GetCost, IsNotEnough
 
 
-function Intensity:__new(equipment)
+function Intensity:_new(equipment)
     return {
         _object_ = equipment,
-        _message_ = "",
+        _message_ = nil,
         _level_ = 0,
         _fail_times_ = 0,
     }
+end
+
+function Intensity:getLevel()
+    return self._level_
 end
 
 function Intensity:getMessage()
@@ -27,7 +31,7 @@ function Intensity:invoke()
     end
 
     if IsNotEnough(self) then
-        self._message_ = "|cff00ff00提示|r - 你攜帶的金錢不足。"
+        self._message_ = concat{"|cff00ff00提示|r - 你還缺少", GetCost(self) - 100, "。"}
         return false 
     end
 

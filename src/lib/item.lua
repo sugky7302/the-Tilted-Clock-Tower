@@ -1,14 +1,15 @@
 local require = require
 local Item = require 'util.class'("Item")
-local Price = require 'lib.price'
 
 
 local ID = 0
 local GenerateNewId
 
 function Item:_new(tb)
+    local Price = require 'lib.price'
+
     return {
-        _id_ = tb.id or GenerateNewId(),
+        _id_ = GenerateNewId(),
         _name_ = tb.name or "",
         _kind_ = tb.kind or "",
         _type_ = tb.type or "",
@@ -32,7 +33,11 @@ function Item:isSameType(object)
         return self._type_ == object
     end
 
-    return self._type_ == object._type_
+    return self._type_ == object:getType()
+end
+
+function Item:getType()
+    return self._type_
 end
 
 function Item:isSameKind(object)
@@ -40,7 +45,11 @@ function Item:isSameKind(object)
         return self._kind_ == object
     end
 
-    return self._kind_ == object._kind_
+    return self._kind_ == object:getKind()
+end
+
+function Item:getKind()
+    return self._kind_
 end
 
 function Item:getOwnPlayer()
@@ -66,8 +75,9 @@ function Item:registerPickUpEvent(trigger)
     return Event(self, PICK_UP)(trigger)
 end
 
+-- eventDispatch是event幫忙註冊的
 function Item:dispatchPickUpEvent(...)
-    return self:eventDispatch(PICK_UP)
+    return self:eventDispatch(PICK_UP, ...)
 end
 
 function Item:registerDropEvent(trigger)
@@ -75,7 +85,7 @@ function Item:registerDropEvent(trigger)
 end
 
 function Item:dispatchDropEvent(...)
-    return self:eventDispatch(DROP)
+    return self:eventDispatch(DROP, ...)
 end
 
 function Item:registerUseEvent(trigger)
@@ -83,7 +93,7 @@ function Item:registerUseEvent(trigger)
 end
 
 function Item:dispatchUseEvent(...)
-    return self:eventDispatch(USE)
+    return self:eventDispatch(USE, ...)
 end
 
 function Item:registerSellEvent(trigger)
@@ -91,7 +101,7 @@ function Item:registerSellEvent(trigger)
 end
 
 function Item:dispatchSellEvent(...)
-    return self:eventDispatch(SELL)
+    return self:eventDispatch(SELL, ...)
 end
 
 return Item

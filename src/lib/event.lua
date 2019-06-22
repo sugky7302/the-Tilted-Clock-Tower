@@ -76,7 +76,7 @@ function Event.dispatch(object, event_name, ...)
 
     for i = #event, 1, -1 do
         -- 不直接return是因為想要讓沒回傳值的觸發也能回傳nil，而不是空白
-        local callback = event[i]:run(...)
+        local callback = event[i]:run(object, ...)
         return callback
     end
 end

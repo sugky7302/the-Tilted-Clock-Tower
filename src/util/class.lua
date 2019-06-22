@@ -135,7 +135,7 @@ local function Class(name, ...)
         -- 呼叫委託對象
         super = function(self, super_name)
             if #self._prototype == 0 then
-                return false
+                return nil
             end
 
             if not super_name then

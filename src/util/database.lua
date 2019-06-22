@@ -12,7 +12,8 @@ local Associate, GetData
 
 function Database:__call(column_count)
     local instance = {
-        association = {}
+        _association = {},
+        _primary_key = 1,
     }
 
     for i = 1, column_count do
@@ -22,6 +23,10 @@ function Database:__call(column_count)
     setmetatable(instance, instance)
     instance.__index = self
     return instance
+end
+
+function Database:setPrimaryKey(index)
+    self._primary_key = index
 end
 
 function Database:append(...)
@@ -36,7 +41,7 @@ function Database:append(...)
         column[index] = args[i] or false
     end
 
-    Associate(self.association, args[1], index)
+    Associate(self._association, args[self._primary_key], index)
 end
 
 Associate = function(tb, arg, id)
@@ -52,7 +57,7 @@ function Database:query(key)
     end
 
     if type(key) == "string" then
-        return GetData(self, self.association[key])
+        return GetData(self, self._association[key])
     end
 end
 
