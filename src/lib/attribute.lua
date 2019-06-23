@@ -80,7 +80,7 @@ end
 
 function Attribute:insert(name, value, is_locked)
     local attribute = Attribute_db:query(name)
-
+    
     if not attribute then
         self._message_ = "none"
         return false
@@ -97,10 +97,10 @@ function Attribute:insert(name, value, is_locked)
     end
 
     self:super().push_back(self, {
-        attribute[1], -- 優先級
+        attribute[0], -- 優先級
         name,
         value or 0,
-        GetFormattedText(attribute[3], value), -- 將格式文字套入數字
+        GetFormattedText(attribute[2], value), -- 將格式文字套入數字
         is_locked or false,
     })
 
@@ -128,7 +128,7 @@ function Attribute:getValue(key)
         return attribute[3]
     end
 
-    return nil
+    return 0
 end
 
 function Attribute:setValue(key, value)
@@ -139,7 +139,7 @@ function Attribute:setValue(key, value)
 
     attribute[3] = value
     
-    local formatter = Attribute_db:query(key)[3]
+    local formatter = Attribute_db:query(key)[2]
     attribute[4] = GetFormattedText(formatter, value)
 end
 

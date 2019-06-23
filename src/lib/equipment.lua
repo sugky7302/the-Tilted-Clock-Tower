@@ -10,19 +10,21 @@ function Equipment:_new(tb)
     local Intensity = require 'lib.intensity'
     local Enchant = require 'lib.enchant'
     local Prefix = require 'lib.prefix'
+    local ExtendHole = require 'lib.extend_hole'
+    local Printer = require 'lib.printer'
 
     local instance = self:super():_new(tb)
     instance._level_ = tb.level or 1
-    instance._color_ = nil
+    instance.color_ = "|cffffffff"
     instance._attributes_ = Attributes()
     instance._stack_behavior_ = nil
     instance._activate_behavior_ = nil
-    instance._extend_hole_ = nil
+    instance._extend_hole_ = ExtendHole(instance, instance._attributes_)
     instance._enchant_ = Enchant(instance._attributes_)
     instance._alchemy_ = nil
-    instance._intensity_ = Intensity(instance)
-    instance._printer_ = nil
-    instance._prefix_ = Prefix(instance._attributes_)
+    instance._intensity_ = Intensity(instance, instance._attributes_)
+    instance._prefix_ = Prefix(instance, instance._attributes_, instance._intensity_)
+    instance._printer_ = Printer(instance, instance._attributes_, instance._intensity_, instance._prefix_)
 
     LoadConfigFromDatabase(instance)
 
@@ -37,15 +39,15 @@ LoadConfigFromDatabase = function(self)
         return false
     end
 
-    self._level_ = data[3]
+    self._level_ = data[2]
 
-    if data[5] then
-        for name, value in pairs(data[5]) do
+    if data[4] then
+        for name, value in pairs(data[4]) do
             self._attributes_:insert(name, value, true)
         end
     end
 
-    self._attributes_.limit_ = self._attributes_:size() + (data[4] or 0)
+    self._attributes_.limit_ = self._attributes_:size() + (data[3] or 0)
 end
 
 function Equipment:getAttributes()
@@ -53,12 +55,11 @@ function Equipment:getAttributes()
 end
 
 function Equipment:getLevel()
-    return self._level_
+    return self._level_ + self._intensity_:getLevel()
 end
 
 function Equipment:getName()
-    return table.concat{"+", self._intensity_:getLevel(), " ",
-        self._prefix_:getPrefix(), self._name_}
+    return self._name_
 end
 
 function Equipment:getGearScore()
@@ -66,7 +67,7 @@ function Equipment:getGearScore()
     local score, weight = 0
 
     for i = 1, self._attributes_:size() do
-        weight = attribute_db:query(self._attributes_:getName(i))
+        weight = attribute_db:query(self._attributes_:getName(i))[3]
         score = score + self._attributes_:getValue() * weight
     end
 
@@ -75,10 +76,18 @@ end
 
 function Equipment:update()
     self._attributes_:sort()
-    self._prefix_:generate()
+    self._prefix_:invoke()
+    self._printer_:invoke()
 end
 
-function Equipment:print()
+function Equipment:print(is_expend)
+    local msg = {self._prefix_:getPrefix()}
+
+    if is_expend then
+        msg[#msg + 1] = self._printer_:getInfo()
+    end
+
+    return table.concat(msg)
 end
 
 

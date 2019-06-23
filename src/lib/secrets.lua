@@ -8,8 +8,8 @@ function Secrets:_new(tb)
     local instance = self:super():_new(tb)
 
     local attribute = Secrets_db:query(tb.type)
-    instance._attribute_name_ = attribute[3]
-    instance._attribute_value_ = attribute[4]
+    instance._attribute_name_ = attribute[2]
+    instance._attribute_value_ = attribute[3]
 
     return instance
 end

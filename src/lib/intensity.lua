@@ -7,9 +7,10 @@ local Intensity = require 'util.class'("Intensity")
 local GetUpvalue, AttributeCanIncrease, Success, Fail, CanIntensify, IsLimited, GetCost, IsNotEnough
 
 
-function Intensity:_new(equipment)
+function Intensity:_new(equipment, attributes)
     return {
         _object_ = equipment,
+        _attributes_ = attributes,
         _message_ = nil,
         _level_ = 0,
         _fail_times_ = 0,
@@ -86,14 +87,13 @@ Success = function(self)
     self._level_ = self._level_ + 1
 
     local fix, random_max = GetUpvalue(self._level_)
-    local attribute = self._object_:getAttributes()
     local name
 
-    for i = 1, attribute:size() do
-        name = attribute:getName(i)
+    for i = 1, self._attributes_:size() do
+        name = self._attributes_:getName(i)
 
         if AttributeCanIncrease(name) then
-            attribute:addValue(name, fix + rand(rnadom_max))
+            self._attributes_:addValue(name, fix + rand(rnadom_max))
         end
     end
     
@@ -118,7 +118,7 @@ end
 
 AttributeCanIncrease = function(name)
     local Attribute_db = require 'data.attribute_db'
-    return Attribute_db:query(name)[5]
+    return Attribute_db:query(name)[4]
 end
 
 return Intensity

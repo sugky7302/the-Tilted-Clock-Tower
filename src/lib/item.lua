@@ -68,7 +68,7 @@ end
 local Event = require 'lib.event'
 local PICK_UP = "物品-拾取"
 local DROP = "物品-丟棄"
-local Use = "物品-使用"
+local USE = "物品-使用"
 local SELL = "物品-販售"
 
 function Item:registerPickUpEvent(trigger)

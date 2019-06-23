@@ -63,14 +63,14 @@ end
 
 GetData = function(self, key)
     local column
-    local data = {key}
+    local data = {[0]=key}
 
     for i = 1, #self do
         column = self[i]
-        data[#data + 1] = column[key]
+        data[#data+1] = column[key]
     end
 
-    if #data < 2 then
+    if #data < 1 then
         return nil
     end
     

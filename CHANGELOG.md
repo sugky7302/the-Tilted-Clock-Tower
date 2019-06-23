@@ -1,4 +1,23 @@
 # 更新日誌
+## 0.34.4 - 2019-06-23
+
+### Added:
+
+- 新增test資料夾，如果要做單步測試，只要在test.lua呼叫檔案就行。
+- [lib] 新增printer，專門生成裝備資訊。
+- [lib] 添加extend_hole，處理鑲環的功能。
+- [lib] 新增recipe_tree，處理配方。
+- [test] 新增equipment，專門測試裝備所有的特性。
+- [test] 新增recipe_tree，測試配方樹是否正常。
+
+### Changed:
+
+- [lib.intensity] 增加參數，使其遵守Demeter原則。
+- [lib.prefix] generate更名為invoke。
+- [lib.prefix] 現在詞綴是生成整個裝備的名字。
+- [lib.prefix] 修改排序條件。
+- [util.database] GetData函數把key放到索引0，不過#data也會是0。
+
 ## 0.34.3 - 2019-06-22
 
 ### Added:
