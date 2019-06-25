@@ -4,7 +4,7 @@ local clock = os.clock
 local start_time = clock()
 ----------------以下為撰寫區----------------
 
-require 'test.recipe_tree'
+require 'test.status'
 
 ----------------以上為撰寫區----------------
 local end_time = clock()
