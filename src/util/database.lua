@@ -49,6 +49,12 @@ Associate = function(tb, arg, id)
     tb[key] = id
 end
 
+function Database:queryAll(action)
+    for i = 1, #self[1] do
+        action(GetData(self, i))
+    end
+end
+
 function Database:query(key)
     local type = type
 
@@ -75,6 +81,10 @@ GetData = function(self, key)
     end
     
     return data
+end
+
+function Database:size()
+    return #self[1]
 end
 
 return Database
