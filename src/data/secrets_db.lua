@@ -1,5 +1,4 @@
-local Database = require 'util.database'
-local Secrets = Database(3)
+local Secrets = require 'util.database':new(3)
 
 -- 按照秘物編號排序
 -- 欄位: id(主鍵) | 屬性名 | 屬性值

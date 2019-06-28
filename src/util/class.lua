@@ -1,10 +1,10 @@
--- Version : 1.2.0
+-- Version : 1.2.1
 -- 自定義類型 類別，使用javascript的方式--對象關聯或稱委託。
 -- 新的類別能夠很好區分類別和實例的差別，不會像以往子類實際上也只是父類的一個實例。
 
--- 功能有__call、__index、Remove。鑒於Lua的特性，若有需要可直接重寫方法。
+-- 功能有new、__index、remove。鑒於Lua的特性，若有需要可直接重寫方法。
 -- 保留setInstance、getInstance關鍵字，用來處理實例與類別的綁定。
--- 私有函數_new、_delete提供使用者自定義在建構和解構時想要執行的功能。
+-- 私有函數_new、_remove提供使用者自定義在建構和解構時想要執行的功能。
 -- table、string、number、boolean:當前類別搜索不到會去搜尋原型鏈，找到的話就返回值，沒有就返回nil。不會複製一份給自己。
 -- function:同樣會搜尋原型鏈，但是是將實例委託該函數處理。不會複製函數引用給自己。
 -- 盡量在class設定預設值，不要用_new為每個實例創建值，等要用的時候再建就好，除非是一定會用到的、每個實例都不同的值。
@@ -31,7 +31,9 @@ local function Class(name, ...)
         --       第二種的話按照原本的方式是不會有問題的。
         -- NOTE: 改成先設定好實例的參數再綁定，解決容量重設的問題。
         --       預設的_new函數也改成返回一個table - 2019-05-04
-        __call = function(self, ...)
+        -- NOTE: 把__call改成new，這樣可以直接使用require 'xxx':new創建實例，
+        --       不像之前需要先require'xxx'，再xxx:__call - 2019-06-28
+        new = function(self, ...)
             local instance = self:_new(...)
             return setmetatable(instance, self)
 		end,
@@ -78,7 +80,7 @@ local function Class(name, ...)
 
 		remove = function(self)
 			-- 使用者自訂的解構函數
-			self:_delete()
+			self:_remove()
 
 			for key in pairs(self) do
 				self[key] = nil
@@ -93,7 +95,7 @@ local function Class(name, ...)
 		end,
 
 		-- 使用者自訂的解構函數
-		_delete = function(self)
+		_remove = function(self)
         end,
         
         -- 因應第三種建構方式，instance會把data複製一份給自己

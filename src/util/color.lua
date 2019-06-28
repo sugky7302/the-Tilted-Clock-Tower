@@ -22,10 +22,9 @@ local Color = {
     skin         = "|cffffd8ae",
     grey         = "|cff999999"
 }
-setmetatable(Color, Color)
 
 -- 參數可能會給"顏色的英文名字"或"RGB數字"
-function Color:__call(...) 
+function Color:new(...) 
     local r, g, b = ...
 
     local type = type

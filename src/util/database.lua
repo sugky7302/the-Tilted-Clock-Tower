@@ -2,15 +2,11 @@
 -- append(col1, col2, ...): 插入新的資料
 -- query(key): 查詢某筆資料
 
-local setmetatable = setmetatable
-
 
 local Database = {}
-setmetatable(Database, Database)
-
 local Associate, GetData
 
-function Database:__call(column_count)
+function Database:new(column_count)
     local instance = {
         _association = {},
         _primary_key = 1,

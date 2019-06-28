@@ -5,19 +5,19 @@
 
 local require = require
 local cj = require 'jass.common'
-local Point = require 'util.point'
-local CJ_Point = require 'util.class'("CJ_Point", Point)
+local Point = 
+local CJ_Point = require 'util.class'("CJ_Point", require 'util.point')
 
 function CJ_Point:_new(x, y, z)
-    return Point(x, y, z)
+    return self:super():_new(x, y, z)
 end
 
-function CJ_Point.Slope3D(p1, p2)
+function CJ_Point.slope3D(p1, p2)
     p1:UpdateZ()
     p2:UpdateZ()
 
     local z_difference = p2.z_ - p1.z_
-    local distance = Point.Distance(p1, p2)
+    local distance = Point.distance(p1, p2)
 
     return z_difference / distance
 end

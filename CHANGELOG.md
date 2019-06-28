@@ -1,4 +1,12 @@
 # 更新日誌
+## 0.34.6 - 2019-06-28
+
+### Changed:
+
+[util.class] 建構函數__call更名為new，使之require ‘xxx’可以直接調用。
+
+[util.class] 私有解構函數delete更名為remove，與接口相同。
+
 ## 0.34.5 - 2019-06-25
 
 ### Added:

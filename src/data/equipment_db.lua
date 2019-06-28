@@ -1,5 +1,4 @@
-local Database = require 'util.database'
-local Equipment = Database(4)
+local Equipment = require 'util.database':new(4)
 
 -- 欄位: id(主鍵) | 等級 | 自帶環數 | 自帶屬性
 Equipment:append('ratf', 2, 1, {["物理攻擊力"] = 1})

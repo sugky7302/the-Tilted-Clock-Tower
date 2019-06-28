@@ -6,25 +6,23 @@ local LoadConfigFromDatabase
 
 
 function Equipment:_new(tb)
-    local Attributes = require 'lib.attribute'
-    local Intensity = require 'lib.intensity'
-    local Enchant = require 'lib.enchant'
-    local Prefix = require 'lib.prefix'
-    local ExtendHole = require 'lib.extend_hole'
-    local Printer = require 'lib.printer'
-
     local instance = self:super():_new(tb)
     instance._level_ = tb.level or 1
     instance.color_ = "|cffffffff"
-    instance._attributes_ = Attributes()
+    instance._attributes_ = require 'lib.attribute':new()
     instance._stack_behavior_ = nil
     instance._activate_behavior_ = nil
-    instance._extend_hole_ = ExtendHole(instance, instance._attributes_)
-    instance._enchant_ = Enchant(instance._attributes_)
+    instance._extend_hole_ = require 'lib.extend_hole':new(instance, instance._attributes_)
+    instance._enchant_ = require 'lib.enchant':new(instance._attributes_)
     instance._alchemy_ = nil
-    instance._intensity_ = Intensity(instance, instance._attributes_)
-    instance._prefix_ = Prefix(instance, instance._attributes_, instance._intensity_)
-    instance._printer_ = Printer(instance, instance._attributes_, instance._intensity_, instance._prefix_)
+    instance._intensity_ = require 'lib.intensity':new(instance, instance._attributes_)
+    instance._prefix_ = require 'lib.prefix':new(instance, instance._attributes_, instance._intensity_)
+    instance._printer_ = require 'lib.printer':new(
+        instance,
+        instance._attributes_,
+        instance._intensity_,
+        instance._prefix_
+    )
 
     LoadConfigFromDatabase(instance)
 

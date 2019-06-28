@@ -6,15 +6,13 @@ local ID = 0
 local GenerateNewId
 
 function Item:_new(tb)
-    local Price = require 'lib.price'
-
     return {
         _id_ = GenerateNewId(),
         _name_ = tb.name or "",
         _kind_ = tb.kind or "",
         _type_ = tb.type or "",
         _owner_ = tb.owner or nil,
-        _price_ = tb.price or Price(0, 0, 0),
+        _price_ = tb.price or require 'lib.price':new(0, 0, 0),
         _object_ = tb.object or nil,
         _description_ = tb.description or ""
     }

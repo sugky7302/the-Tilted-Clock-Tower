@@ -3,15 +3,14 @@
 -- 可以到skill.cast和寒冰箭看看實際案例
 
 local TaskTracker = {}
-setmetatable(TaskTracker, TaskTracker)
 
-function TaskTracker:__call(key, unfinished_task)
+function TaskTracker:new(key, unfinished_task)
     -- -1表示還沒加入任務，這樣使用IsCompleted也不會出問題。
     -- 不會出現明明才剛創建追蹤器且還沒加入任務，追蹤器卻認為你已經完成任務而結束的問題。
     self[key] = unfinished_task or -1
 end
 
-function TaskTracker:remove(key)
+function TaskTracker:delete(key)
     self[key] = nil
 end
 

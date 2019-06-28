@@ -49,13 +49,13 @@ function Point:rotate(deg)
 end
 
 -- 只會計算平面夾角
-function Point.Deg(p1, p2)
+function Point.deg(p1, p2)
     return math.deg(Point.Rad(p1, p2))
 end
 
 -- 範圍為[0, 2 * pi]
 -- 只會計算平面夾角
-function Point.Rad(p1, p2)
+function Point.rad(p1, p2)
     local rad = math.atan(p2.y_ - p1.y_, p2.x_ - p1.x_)
 
     if rad < 0 then
@@ -65,22 +65,22 @@ function Point.Rad(p1, p2)
     return rad
 end
 
-function Point.Slope(p1, p2)
+function Point.slope(p1, p2)
     return (p2.y_ - p1.y_) / (p2.x_ - p1.x_)
 end
 
-function Point.Slope3D(p1, p2)
+function Point.slope3D(p1, p2)
     local z_difference = p2.z_ - p1.z_
     local distance = Point.Distance(p1, p2)
 
     return z_difference / distance
 end
 
-function Point.Distance(p1, p2)
+function Point.distance(p1, p2)
     return math.sqrt((p1.x_ - p2.x_) ^ 2 + (p1.y_ - p2.y_) ^ 2)
 end
 
-function Point.Distance3D(p1, p2)
+function Point.distance3D(p1, p2)
     return math.sqrt((p1.x_ - p2.x_) ^ 2 + (p1.y_ - p2.y_) ^ 2 + (p1.z_ - p2.z_) ^ 2)
 end
 

@@ -4,7 +4,9 @@ local clock = os.clock
 local start_time = clock()
 ----------------以下為撰寫區----------------
 
-require 'test.status'
+local a = require 'util.class'("test"):new()
+print(a)
+
 
 ----------------以上為撰寫區----------------
 local end_time = clock()

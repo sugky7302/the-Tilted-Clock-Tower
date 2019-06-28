@@ -8,19 +8,14 @@ local Array = require 'util.stl.array'
 
 
 local Event = {}
-setmetatable(Event, Event)
-
-
 local GetEvents, GetEvent
 
 -- NOTE: 使用 .__call 會無法讀取event_name
 -- callback第一個參數是trigger的實例，後面的參數才是自己加的
-function Event:__call(object, event_name)
+function Event:new(object, event_name)
     if not object then
         return 
     end
-    
-    local Trigger = require 'lib.trigger'
     
     local events = GetEvents(object)
     local event = GetEvent(events, event_name)
@@ -31,7 +26,7 @@ function Event:__call(object, event_name)
     end
 
     return function(callback)
-        return Trigger(event, callback)
+        return require 'lib.trigger':new(event, callback)
     end
 end
 
@@ -39,7 +34,7 @@ end
 GetEvents = function(object)
     local events = object.events
     if not events then
-        events = Array()
+        events = Array:new()
         object.events = events
     end
 
@@ -50,7 +45,7 @@ end
 GetEvent = function(events, event_name)
     local event = events[event_name]
     if not event then
-        event = Array()
+        event = Array:new()
         events[event_name] = event
 
         function event:dispose()

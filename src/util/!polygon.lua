@@ -18,7 +18,6 @@ function Polygon:_new(points)
 end
 
 GeneratePoints = function(points)
-    local Point = require 'point'
 
     -- 奇數索引是X座標，偶數索引是Y座標
     local pts, x_tmp = {}
@@ -26,7 +25,7 @@ GeneratePoints = function(points)
         if i % 2 == 1 then
             x_tmp = points[i]
         else
-            pts[#pts + 1] = Point(x_tmp, points[i])
+            pts[#pts + 1] = require 'util.point':new(x_tmp, points[i])
         end
     end
 

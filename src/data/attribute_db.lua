@@ -1,5 +1,4 @@
-local Database = require 'util.database'
-local Attribute = Database(5)
+local Attribute = require 'util.database':new(5)
 
 -- 先append，屬性的優先級越高
 -- 欄位: 屬性名 | 屬性文字格式 | 權重 | 精煉時，該屬性會不會提高 | 詞綴
