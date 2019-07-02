@@ -4,9 +4,11 @@ local clock = os.clock
 local start_time = clock()
 ----------------以下為撰寫區----------------
 
-local a = require 'util.class'("test"):new()
-print(a)
-
+local Copy = require 'util.copy'
+t = {1, 2, 3, {5,4,2}}
+t1 = Copy.copy(t)
+t2 = Copy.deepCopy(t)
+print(t, t1, t2)
 
 ----------------以上為撰寫區----------------
 local end_time = clock()
