@@ -1,4 +1,5 @@
 require 'filesystem'
+local MAP_NAME = 'TheTiltedClockTower.w3x'  -- 請改為您的地圖名稱
 local registry = require 'registry'
 local ydwe = require 'tools.ydwe'
 local process = require 'process'
@@ -19,12 +20,12 @@ local function get_debugger()
 end
 
 local root = fs.path(arg[1])
-if not fs.exists(root / 'TheTiltedClockTower.w3x') then
-    print('地圖不存在', root / 'TheTiltedClockTower.w3x')
+if not fs.exists(root / MAP_NAME) then
+    print('地圖不存在', root / MAP_NAME)
     return
 end
 local command = (registry.open [[HKEY_CURRENT_USER\SOFTWARE\Classes\YDWEMap\shell\run_war3\command]])['']
-command = command:gsub("%%1", (root / 'TheTiltedClockTower.w3x'):string())
+command = command:gsub("%%1", (root / MAP_NAME):string())
 if get_debugger() then
     --command = command .. ' -debugger 4278'
 end

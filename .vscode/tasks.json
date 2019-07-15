@@ -20,7 +20,7 @@
             ]
         },
         {
-            "label": "Lni",
+            "label": "外部編輯格式(Lni)",
             "command": "chcp 65001 && \"${workspaceRoot}/tools/w3x2lni/w2l.exe\"",
             "presentation": {
                 "echo": false,
@@ -35,7 +35,7 @@
             ]
         },
         {
-            "label": "Obj",
+            "label": "WE編輯格式(Obj)",
             "command": "chcp 65001 && \"${workspaceRoot}/tools/w3x2lni/w2l.exe\"",
             "presentation": {
                 "echo": false,
@@ -50,7 +50,7 @@
             ]
         },
         {
-            "label": "Slk",
+            "label": "地圖發佈格式(Slk)",
             "command": "chcp 65001 && \"${workspaceRoot}/tools/w3x2lni/w2l.exe\"",
             "presentation": {
                 "echo": false,
