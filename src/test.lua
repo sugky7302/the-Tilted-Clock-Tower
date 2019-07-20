@@ -4,11 +4,16 @@ local clock = os.clock
 local start_time = clock()
 ----------------以下為撰寫區----------------
 
-local Copy = require 'util.copy'
-t = {1, 2, 3, {5,4,2}}
-t1 = Copy.copy(t)
-t2 = Copy.deepCopy(t)
-print(t, t1, t2)
+local Copy = require 'util.pairs_by_key'
+local t = {
+    x=1,
+    y=2,
+    z=3,
+    w=4
+}
+for k, v in Copy(t) do
+    print(k, v)
+end
 
 ----------------以上為撰寫區----------------
 local end_time = clock()
