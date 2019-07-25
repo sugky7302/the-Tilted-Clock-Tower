@@ -9,6 +9,8 @@ local t = {
     x=1,
     y=2,
     z=3,
+    nil,
+    k = nil,
     w=4
 }
 for k, v in Copy(t) do
