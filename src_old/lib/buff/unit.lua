@@ -8,7 +8,7 @@ local Buff = require 'buff.core'
 -- instance內部的name可以填寫自己想要的名稱
 function Unit:AddBuff(name, delay)
     return function(data)
-        local class = pcall(require, table.concat({"buffs.", name})
+        local class = pcall(require, table.concat({"buffs.", name}))
         if not class then
             return false
         end
