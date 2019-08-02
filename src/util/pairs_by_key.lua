@@ -2,14 +2,14 @@
 -- O(#tb)的方法
 local function PairsByKey(tb)
     local tb_key, size = {}, 0
-    for n in pairs(tb) do 
+    for n in pairs(tb) do
         size = size + 1
-        tb_key[size] = n 
+        tb_key[size] = n
     end
-    
+
     local Comparator = require 'util.comparator'.Default
     table.sort(tb_key, Comparator)
-    
+
     local i = 0
     return function()
         i = i + 1
@@ -18,4 +18,3 @@ local function PairsByKey(tb)
 end
 
 return PairsByKey
-    

@@ -7,6 +7,7 @@
 -- time: float
 -- model: string
 -- }
+
 local function Shield(req)
     -- 獲得目標的護盾表
     -- 生成新的護盾對象

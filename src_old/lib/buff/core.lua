@@ -8,12 +8,11 @@
 --   buff.operator
 --   buff.init
 
-
 -- package
 local require = require
 local cj = require 'jass.common'
 
-local Buff = require 'class'("Buff", require 'buff.operator')
+local Buff = require 'class'('Buff', require 'buff.operator')
 
 -- default
 require 'buff.init'(Buff)
@@ -31,17 +30,17 @@ end
 
 function Buff:add(name, val)
     InitValue(self, name)
-    
+
     self[name] = self[name] + val
-    
+
     CallSetFn(self, name)
 end
 
 function Buff:set(name, val)
     InitValue(self, name)
-    
+
     self[name] = val
-    
+
     CallSetFn(self, name)
 end
 
@@ -55,7 +54,7 @@ function Buff:get(name)
     InitValue(self, name)
 
     if get[name] then
-        return get[name]
+        return get[name] 
     end
 
     return self[name]
@@ -80,7 +79,7 @@ function Buff:Pause()
             self.timer_:Pause()
         end
 
-        self:EventDispatch "狀態-刪除"
+        self:EventDispatch '狀態-刪除'
     end
 end
 
@@ -90,7 +89,7 @@ function Buff:Resume()
 
         self.timer_:Resume()
 
-        self:EventDispatch "狀態-獲得"
+        self:EventDispatch '狀態-獲得'
     end
 end
 
@@ -102,11 +101,11 @@ function Buff:EventDispatch(name, default, ...)
     end
 
     local EVENT_NAME = {
-        ["狀態-獲得"] = "on_add",
-        ["狀態-覆蓋"] = "on_cover",
-        ["狀態-結束"] = "on_finish",
-        ["狀態-週期"] = "on_pulse",
-        ["狀態-刪除"] = "on_remove",
+        ['狀態-獲得'] = 'on_add',
+        ['狀態-覆蓋'] = 'on_cover',
+        ['狀態-結束'] = 'on_finish',
+        ['狀態-週期'] = 'on_pulse',
+        ['狀態-刪除'] = 'on_remove'
     }
 
     name = EVENT_NAME[name]

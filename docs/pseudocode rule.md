@@ -58,11 +58,11 @@ Pseudocode是一種算法描述語言，使用它的目的是為了使被描述�
 
 ```
 if 條件 then
-	動作
+  動作
 else if 條件 then
-	動作
+  動作
 else
-	動作
+  動作
 end if
 ```
 
@@ -70,12 +70,12 @@ end if
 
 ```
 switch (n)
-	case a:
-		動作
-	case b:
-		動作
-	default:
-		動作
+  case a:
+    動作
+  case b:
+    動作
+  default:
+    動作
 end switch
 ```
 
@@ -83,27 +83,27 @@ end switch
 
 - while
 
-  ```
-  while 條件 do
-  	動作
-  end while
-  ```
+```
+while 條件 do
+  動作
+end while
+```
 
 - 數字for
 
-  ```
-  for 索引 (開始 to 結束 by 步數) do
-  	動作
-  end for
-  ```
+```
+for 索引 (開始 to 結束 by 步數) do
+  動作
+end for
+```
 
 - 遍歷for
 
-  ```
-  for 索引 (集合) do
-  	動作
-  end for
-  ```
+```
+for 索引 (集合) do
+  動作
+end for
+```
 
 ## 函數
 
@@ -152,4 +152,3 @@ arr <- an array from 開始 to 結束
 ```
 q <- an empty queue
 ```
-
