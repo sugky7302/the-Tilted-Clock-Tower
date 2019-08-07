@@ -37,9 +37,13 @@
     - on_cover: 覆蓋時觸發的事件
     - on_pulse: 週期觸發事件
 
-## EffectModel
+## EffectTemplate
 - 需求:
     - 實現模板，將字段轉成實例
+
+## EffectModel
+- 需求:
+    - 模板整合
 - 單一職責: 將table轉成可操作的對象。
 - 成員:
     - templates: 儲存模板
@@ -49,11 +53,11 @@
         - 輸出: EffectModel實例
         - 說明: 本程序會創建一個EffectModel實例，並回傳實例。
         - 隱藏細節: 創建模板和EffectTable。
-    - getTemplates
+    - getTemplate
         - 輸入: 模板名稱
         - 輸出: 模板
         - 說明: 本程序會從模板庫中調用所需的模板並回傳。
-        - 隱藏細節: X
+        - 隱藏細節: 
 
 ## EffectController
 - 需求:

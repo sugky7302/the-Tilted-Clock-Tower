@@ -1,0 +1,12 @@
+import 模板
+import EffectTemplate
+
+class EffectModel:
+    private: 
+        _templates_ <- an empty array from 0
+
+    func __ctr__()
+        for t (模板) do 
+            _templates_.add(t)
+    end func
+end class
