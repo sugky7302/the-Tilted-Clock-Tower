@@ -12,9 +12,9 @@
 
 ## EffectTable
 - 需求:
-    - 只是單純的table，實例化交由外部。
+    - 純文字。
     - 容易維護。
-- 單一職責: 編寫effect字段，經由規範化的參數讓外部可實例化。
+- 單一職責: 純文字的效果文本。
 - 成員:
     - name: 名稱
     - value: 數值
@@ -37,14 +37,20 @@
     - on_cover: 覆蓋時觸發的事件
     - on_pulse: 週期觸發事件
 
-## EffectTemplate
+## Effect
 - 需求:
-    - 實現模板，將字段轉成實例
+    - 實現EffectTable，將文本轉成對象
+    - 提供實作方法
+    - 可操作EffectManager儲存的模板
+    - 外部無法生成，只能由EffectManager生成。
+- 單一職責: 實現EffectTable。
 
-## EffectModel
+## EffectManager
 - 需求:
-    - 模板整合
-- 單一職責: 將table轉成可操作的對象。
+    - 讀取模板
+    - 生成Effect
+    - 唯一實例
+- 單一職責: Effect的外部接口。
 - 成員:
     - templates: 儲存模板
 - 接口:
@@ -57,14 +63,4 @@
         - 輸入: 模板名稱
         - 輸出: 模板
         - 說明: 本程序會從模板庫中調用所需的模板並回傳。
-        - 隱藏細節: 
-
-## EffectController
-- 需求:
-    - 接受使用者的指令
-    - 可操作Model
-
-## EffectAdapter
-- 需求:
-    - 使用者唯一的操作接口
-    - 可以被裝飾
+        - 隱藏細節: 如果找不到模板會回傳空模板。
