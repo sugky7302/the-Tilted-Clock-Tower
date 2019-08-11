@@ -1,13 +1,84 @@
 import 模板
-import EffectTemplate
 
 
-class EffectModel:
-    private: 
-        _templates_ <- an empty array from 0
+class EffectManager:
+    private:
+        static _templates_ <- an empty array from 0
+        _list_ <- an empty dict
+        
+    public:
+        func __ctr__()
+            _list_ <- an empty dict
+        end func
 
-    func __ctr__()
-        for t (模板) do 
-            _templates_.add(t)
-    end func
+        func add(data)
+            for t (_templates_) do
+                if t["name"] == data.name then
+                    instance <- Effect(t)
+                    break
+                end if
+            end for
+
+            if 沒有instance then
+                return nil
+            end if
+
+            for k, v (data) do
+                instance[k] = v
+            end for
+
+            if not instance._list_[data.name] then
+                instance._list_[data.name] <- an empty list from 0
+            end if
+            
+            instance.getTemplates = getTemplates
+
+            return instance
+        end func
+
+        func find()
+        end func
+
+        func delete()
+        end func
+end class
+
+class Effect
+    public:
+        func __ctr__(template)
+            instance <- 複製一份template的副本
+            設定instance為Effect實例
+            return instance
+        end func
+
+        func start()
+            if delay then
+                等待delay秒數
+            end if
+
+            on_add()
+            _setMode()
+            _setTime()
+            _addView()
+        end func
+
+        func pause()
+            暫停計時器
+            on_delete()
+            effect設置暫停
+            _removeView()
+        end func
+
+        func resume()
+            on_add()
+            _setMode()
+            _setTime()
+            _addView()
+        end func
+
+        func delete()
+        end func
+
+        func finish()
+        end func
 end class
