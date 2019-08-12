@@ -75,7 +75,7 @@
 - 需求:
     - 讀取模板
     - 生成Effect
-    - 唯一實例
+    - 統一管理Effect
 - 單一職責: Effect的外部接口。
 - 成員:
     - templates: 儲存模板

@@ -44,6 +44,25 @@ class EffectManager:
 end class
 
 class Effect
+    private:
+        func _addModel()
+            if _model_存在 then
+                添加特效
+            end if
+        end func
+
+        func _removeModel()
+            if _model_存在 then
+                刪除特效
+            end if
+        end func
+
+        func _setMode()
+        end func
+
+        func _startTimer()
+        end func
+
     public:
         func __ctr__(template)
             instance <- 複製一份template的副本
@@ -52,33 +71,36 @@ class Effect
         end func
 
         func start()
-            if delay then
-                等待delay秒數
-            end if
+            設定模式
+            調用添加事件
+            添加特效
+            設定時間並啟動計時器
+        end func
 
-            on_add()
-            _setMode()
-            _setTime()
-            _addView()
+        func delete()
+            關閉計時器
+            調用刪除事件
+            刪除Effect
+            刪除特效
+        end func
+
+         只有在計時器裡會用到
+        func finish()
+            調用完成事件
+            刪除Effect
+            刪除特效
         end func
 
         func pause()
             暫停計時器
-            on_delete()
-            effect設置暫停
-            _removeView()
+            調用刪除事件
+            暫停Effect
+            刪除特效
         end func
 
         func resume()
-            on_add()
-            _setMode()
-            _setTime()
-            _addView()
-        end func
-
-        func delete()
-        end func
-
-        func finish()
-        end func
+            調用添加事件
+            添加特效
+            恢復計時器
+        end func       
 end class
