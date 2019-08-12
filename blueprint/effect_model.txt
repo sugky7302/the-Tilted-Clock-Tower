@@ -12,6 +12,10 @@ class EffectManager:
         end func
 
         func add(data)
+            if _list_[data.name]不存在 then
+                _create(data.name)
+            end if
+
             for t (_templates_) do
                 if t["name"] == data.name then
                     instance <- Effect(t)
@@ -36,15 +40,31 @@ class EffectManager:
             return instance
         end func
 
-        func find()
+        func find(name)
+            for effect (_list_) do
+                if effect["name"] == name then
+                    return effect
+                end if
+            end for
+            return nil
         end func
 
         func delete()
+        end func
+
+        func save(effect)
+            _list_[effect["name"]].end <- effect
+        end func
+
+        func _create(name)
+            _list_[name] <- an empty array
         end func
 end class
 
 class Effect
     private:
+        manager: 儲存管理器的引用
+
         func _addModel()
             if _model_存在 then
                 添加特效
@@ -58,6 +78,25 @@ class Effect
         end func
 
         func _setMode()
+            if mode == 獨佔模式 then
+                effect <- manager搜尋效果名稱，會回傳array
+                if effect 不存在 then
+                    在效果列表創建效果
+                    效果列表存入self
+                    return
+                end if
+
+                if effect[0].on_cover不存在 then
+                    return
+                end if
+
+                if effect[0].on_cover(self) == false then
+                    return
+                end if
+
+                manager.save(self)
+            else
+            end if
         end func
 
         func _startTimer()
