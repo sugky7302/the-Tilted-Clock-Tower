@@ -6,6 +6,10 @@ class EffectManager:
         static _templates_ <- an empty array from 0
         _list_ <- an empty dict
         
+        func _create(name)
+            _list_[name] <- an empty array
+        end func
+        
     public:
         func __ctr__()
             _list_ <- an empty dict
@@ -49,15 +53,19 @@ class EffectManager:
             return nil
         end func
 
-        func delete()
+        func delete(name)
+            if _list_[name] 不存在 then
+                return 
+            end if
+
+            for i (_list_[name].end to 1) do
+                _list_[name][i].delete()
+                _list_[name][i]從_list[name]中刪除
+            end for
         end func
 
         func save(effect)
             _list_[effect["name"]].end <- effect
-        end func
-
-        func _create(name)
-            _list_[name] <- an empty array
         end func
 end class
 
