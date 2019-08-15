@@ -7,7 +7,7 @@ class EffectManager:
         _list_ <- an empty dict
         
         func _create(name)
-            _list_[name] <- an empty array
+            _list_[name] <- Effect(_templates_[name], self)
         end func
         
     public:
@@ -16,30 +16,18 @@ class EffectManager:
         end func
 
         func add(data)
-            if _list_[data.name]不存在 then
-                _create(data.name)
+            instance <- _list_[data.name]
+            if instance不存在 then
+                instance <- _create(data.name)
             end if
-
-            for t (_templates_) do
-                if t["name"] == data.name then
-                    instance <- Effect(t)
-                    break
-                end if
-            end for
 
             if 沒有instance then
                 return nil
             end if
-
-            for k, v (data) do
-                instance[k] = v
-            end for
-
-            if not instance._list_[data.name] then
-                instance._list_[data.name] <- an empty list from 0
-            end if
             
             instance.getTemplates = getTemplates
+
+            instance.start(data)
 
             return instance
         end func
@@ -58,14 +46,7 @@ class EffectManager:
                 return 
             end if
 
-            for i (_list_[name].end to 1) do
-                _list_[name][i].delete()
-                _list_[name][i]從_list[name]中刪除
-            end for
-        end func
-
-        func save(effect)
-            _list_[effect["name"]].end <- effect
+            _list_[name].clear()
         end func
 end class
 
@@ -85,29 +66,53 @@ class Effect
             end if
         end func
 
-        func _setMode()
+        func _setMode(task)
+            if self沒有任務 then
+                self.begin <- self
+                return
+            end if
+
             if mode == 獨佔模式 then
-                effect <- manager搜尋效果名稱，會回傳array
-                if effect 不存在 then
-                    在效果列表創建效果
-                    效果列表存入self
+                if self.on_cover不存在 then
                     return
                 end if
 
-                if effect[0].on_cover不存在 then
+                if self.on_cover(self.begin, task) == false then
                     return
                 end if
 
-                if effect[0].on_cover(self) == false then
-                    return
-                end if
-
-                manager.save(self)
+                self.begin <- task
             else
+                for i (self.begin to self.end) do
+                    if self[i]不存在 then
+                        self[i] <- task
+
+                        if self.max != 0 and i > self.max then
+                            self.pause(task)
+                        end if
+
+                        break
+                    end if
+                end for
             end if
         end func
 
-        func _startTimer()
+        func _startTimer(task)
+            task.remained_time <- task.time
+            if self.on_pulse then
+                Timer(self.period, 重複, func()
+                    self.on_pulse(task)
+
+                    task.remained_time <- task.remained_time - self.period
+                    if 結束 then
+                        self.finish(task)
+                    end if
+                end func)
+            else
+                Timer(task.time, 單一, func()
+                    self.finish(task)
+                end func)
+            end if
         end func
 
     public:
@@ -117,14 +122,20 @@ class Effect
             return instance
         end func
 
-        func start()
+        func start(task)
             設定模式
             調用添加事件
             添加特效
             設定時間並啟動計時器
         end func
 
-        func delete()
+        func clear()
+            for i (self.end to self.begin) do
+                self.delete(self[i])
+            end for
+        end func  
+
+        func delete(task)
             關閉計時器
             調用刪除事件
             刪除Effect
@@ -132,22 +143,22 @@ class Effect
         end func
 
          只有在計時器裡會用到
-        func finish()
+        func finish(task)
             調用完成事件
             刪除Effect
             刪除特效
         end func
 
-        func pause()
+        func pause(task)
             暫停計時器
             調用刪除事件
             暫停Effect
             刪除特效
         end func
 
-        func resume()
+        func resume(task)
             調用添加事件
             添加特效
             恢復計時器
-        end func       
+        end func
 end class

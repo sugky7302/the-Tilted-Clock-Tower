@@ -15,16 +15,16 @@
     - 純文字。
     - 容易維護。
 - 單一職責: 純文字的效果文本。
-- 成員:
+- 成員:(!表示任務可調整的選項)
     - name: 名稱
-    - value: 數值
+    - !value: 數值
     - level: 等級
-    - period: 觸發週期事件的頻率，單位為秒
-    - source: 施法者
-    - target: 目標
-    - time: 持續時間
+    - !period: 觸發週期事件的頻率，單位為秒
+    - !source: 施法者
+    - !target: 目標
+    - !time: 持續時間
     - priority: 優先級
-    - remained_time: 剩餘時間
+    - !remained_time: 剩餘時間
     - mode: 布林值。0表示獨佔模式，1表示共存模式
     - model: 視覺特效
     - model_point: 視覺特效點
@@ -43,6 +43,7 @@
     - 提供實作方法
     - 可操作EffectManager儲存的模板
     - 外部無法生成，只能由EffectManager生成。
+    - 外部給予的只是計畫任務。
 - 單一職責: 實現EffectTable。
 - 接口:
     - start:
