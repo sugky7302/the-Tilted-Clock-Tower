@@ -25,6 +25,7 @@
     - !time: 持續時間
     - priority: 優先級
     - !remained_time: 剩餘時間
+    - !valid: 是否有效
     - mode: 布林值。0表示獨佔模式，1表示共存模式
     - model: 視覺特效
     - model_point: 視覺特效點
