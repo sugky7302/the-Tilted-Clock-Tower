@@ -1,5 +1,21 @@
 # 更新日誌
 
+## 0.36.0 - 2019-08-18
+
+### Added:
+- [data.effects.templates] 新增init.lua，用於註冊效果模板的lua文件。
+- [lib] 新增EffectManger類別，作為Effect的外部接口。
+
+## 0.35.1 - 2019-08-17
+
+### Changed:
+- [util.stl.list] find函數現在會回傳索引，使用第二個回傳值。
+
+### Fixed:
+- [util.stl.list]
+    - 修正empty會改成isEmpty，導致無法獲得list是否為空的問題。
+    - 修正remove大小寫錯誤的問題。
+
 ## 0.35.0 - 2019-08-16
 
 ### Added:

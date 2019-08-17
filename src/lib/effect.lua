@@ -1,8 +1,10 @@
 -- 實現EffectTable。
 
-local Effect = require 'util.class'('Effect')
-local AddModel, RemoveModel, SetMode, StartTimer
+local require = require
 
+local Effect = require 'util.class'('Effect')
+local AddModel, DeleteModel, AddTask, DeleteTask, StartTimer
+local IsValid, InitArgs
 
 function Effect:_new(template, manager)
     return {
@@ -19,22 +21,23 @@ function Effect:_new(template, manager)
         _max_ = template.max,
         _keep_after_death_ = template.keep_after_death,
         _manager_ = manager,
+        _tasks_ = require 'util.stl.list':new(),
         on_add = template.on_add,
-        on_remove = template.on_remove,
+        on_delete = template.on_delete,
         on_finish = template.on_finish,
         on_cover = template.on_cover,
         on_pulse = template.on_pulse
     }
 end
 
-
 function Effect:start(new_task)
-    SetMode(self, new_task)
-    self:on_add(new_task)
-    AddModel(self, new_task)
+    InitArgs(new_task)
+    AddTask(self, new_task)
 
     if new_task.valid then
-        StartTimer(self, new_task)
+        self:on_add(new_task)
+    -- AddModel(self, new_task)
+    -- StartTimer(self, new_task)
     end
 end
 
@@ -44,92 +47,138 @@ function Effect:clear()
     end
 end
 
-function Effect:delete(new_task)
-    -- CloseTimer
-    self:on_remove(new_task)
-    RemoveModel(self, new_task)
+function Effect:delete(task)
+    -- task.timer:stop()
+    self:on_delete(task)
+    -- DeleteModel(self, task)
+    DeleteTask(self, task)
 end
 
-function Effect:finish(new_task)
-    self:on_finish(new_task)
-    RemoveModel(self, new_task)
+function Effect:finish(task)
+    self:on_finish(task)
+    self:on_delete(task)
+    -- DeleteModel(self, task)
+    DeleteTask(self, task)
 end
 
-function Effect:pause(new_task)
-    -- PauseTimer
-    self:on_remove(new_task)
-    RemoveModel(self, new_task)
+function Effect:pause(task)
+    task.valid = false
+    -- task.timer:pause()
+    self:on_delete(task)
+    -- DeleteModel(self, task)
 end
 
-function Effect:resume(new_task)
-    self:on_add(new_task)
-    AddModel(self, new_task)
-    -- RestartTimer
+function Effect:resume(task)
+    task.valid = true
+    self:on_add(task)
+    -- AddModel(self, task)
+    -- task.timer:resume()
 end
 
-AddModel = function(self, new_task)
-    if new_task.target身上沒有self._model_ then
-        new_task.target:addModel(self._model_)
-    end
+InitArgs = function(new_task)
+    new_task.valid = true
 end
 
-RemoveModel = function(self, new_task)
-    if new_task.target身上沒有self._model_ then
-        new_task.target:removeModel(self._model_)
-    end
-end
+-- AddModel = function(self, task)
+--     if task.target身上沒有self._model_ then
+--         task.target:addModel(self._model_)
+--     end
+-- end
 
-SetMode = function(self, new_task)
-    if not self[1] then
-        self[1] = new_task
+-- DeleteModel = function(self, task)
+--     if task.target身上沒有self._model_ then
+--         task.target:deleteModel(self._model_)
+--     end
+-- end
+
+AddTask = function(self, new_task)
+    if self._tasks_:isEmpty() then
+        self._tasks_:push_back(new_task)
         return
     end
 
-    if self._mode_ == 0 then  -- 獨佔模式
+    -- 獨佔模式
+    if self._mode_ == 0 then
+        -- 共存模式
         -- effect無法覆蓋
         if not self.on_cover then
+            new_task.valid = false
             return
         end
 
-        if not self.on_cover(self[1], new_task) then
+        if not self.on_cover(self._tasks_:front(), new_task) then
+            new_task.valid = false
             return
         end
 
-        self[1] = new_task
-    else  -- 共存模式
-        -- 如果前面都滿了，就新增空間儲存
-        for i = 1, #self+1 do
-            if not self[i] then
-                self[i] = new_task
-            
-                if self._max_ > 0 and i > self._max_ then
-                    self:pause(new_task)
-                end
+        -- 終止舊的效果
+        self:delete(self._tasks_:front())
 
-                break
-            end
+        -- 替換成新的效果
+        self._tasks_:pop_front()
+        self._tasks_:push_back(new_task)
+    else
+        self._tasks_:push_back(new_task)
+
+        -- size可以當作新的任務的索引
+        if not IsValid(self._tasks_:size(), self._max_) then
+            self:pause(new_task)
         end
     end
 end
 
-StartTimer = function(self, new_task)
-    new_task.remained_time = new_task.time or self._time_
+StartTimer = function(self, task)
+    task.remained_time = task.time or self._time_
 
     if self.on_pulse then
-        Timer(new_task.period or self._period_, true, function(this)
-            self.on_pulse(new_task)
+        task.timer =
+            Timer(
+            task.period or self._period_,
+            true,
+            function(this)
+                self.on_pulse(task)
 
-            self.remained_time = self.remained_time - this.period_
+                self.remained_time = self.remained_time - this.period_
 
-            if this.is_shutdown() then
-                self.finish(new_task)
+                if this.is_shutdown() then
+                    self.finish(task)
+                end
             end
-        end)
+        )
     else
-        Timer(new_task.period or self._period_, false, function()
-            self.finish(new_task)
-        end)
+        task.timer =
+            Timer(
+            task.period or self._period_,
+            false,
+            function()
+                self.finish(task)
+            end
+        )
     end
+end
+
+DeleteTask = function(self, task)
+    local task_node, index = self._tasks_:find(task)
+
+    -- 如果是共存模式，要把暫停的任務恢復
+    if self._mode_ == 1 and task_node.next_ and IsValid(index, self._max_) then
+        self:resume(task_node.next_:getData())
+    end
+
+    -- delete會把node刪掉，這樣的話會抓不到next
+    self._tasks_:delete(task_node)
+end
+
+IsValid = function(index, max)
+    if max < 1 then
+        return true
+    end
+
+    if index > max then
+        return false
+    end
+
+    return true
 end
 
 

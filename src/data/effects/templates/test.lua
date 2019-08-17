@@ -10,8 +10,8 @@ return {
     on_add = function()
         print('add')
     end,
-    on_remove = function()
-        print('remove')
+    on_delete = function()
+        print('delete')
     end,
     on_finish = function()
         print('finish')

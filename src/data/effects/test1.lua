@@ -10,7 +10,7 @@ return {
     on_add = function(self)
         self.getTemplates("測試").on_add()
     end,
-    on_remove = function(self)
+    on_delete = function(self)
         self.getTemplates("測試").on_remove()
     end,
     on_finish = function(self)

@@ -2,11 +2,10 @@
 
 -- package
 local require = require
-local List = require 'util.class'("List")
+local List = require 'util.class'('List')
 
 -- default
-List._VERSION = "1.1.0"
-
+List._VERSION = '1.1.0'
 
 function List:_new()
     return {
@@ -17,17 +16,16 @@ function List:_new()
 end
 
 function List:__tostring()
-    local print_str = {"["}
+    local print_str = {'['}
 
     for node in self:iterator() do
-        print_str[#print_str+1] = node:getData()
+        print_str[#print_str + 1] = node:getData()
     end
 
-    print_str[#print_str+1] = "]"
+    print_str[#print_str + 1] = ']'
 
-    return table.concat(print_str, " ")
+    return table.concat(print_str, ' ')
 end
-
 
 function List:clear()
     self:_delete()
@@ -63,11 +61,11 @@ end
 local DeleteBeginNode, DeleteEndNode, DeleteMidNode, DeleteSingleNode
 
 function List:delete(node)
-    if not node then 
+    if not node then
         return false
     end
 
-    if self:empty() then
+    if self:isEmpty() then
         return true
     end
 
@@ -98,7 +96,7 @@ DeleteBeginNode = function(self, node)
     -- 把node的next_指標設定成新的first節點
     node.next_.prev_ = nil
     self._begin_ = node.next_
-    
+
     DeleteNode(self, node)
 end
 
@@ -115,12 +113,12 @@ DeleteMidNode = function(self, node)
     -- 先把node的上個節點和下個節點相互指向對方
     node.prev_.next_ = node.next_
     node.next_.prev_ = node.prev_
-    
+
     DeleteNode(self, node)
 end
 
 DeleteNode = function(self, node)
-    node:Remove()
+    node:remove()
     self._size_ = self._size_ - 1
 end
 
@@ -129,7 +127,7 @@ function List:merge(other_list)
         self:push_back(node:getData())
     end
 
-    other_list:Remove()
+    other_list:remove()
 end
 
 function List:push_front(data)
@@ -145,14 +143,13 @@ local InsertNodeToBegin, InsertNodeToEmptyList, InsertNodeToEnd, InsertNodeFront
 
 -- node 等於 nil，視作插在 list 的最末端
 function List:insert(data, node)
-    if not data then 
+    if not data then
         return false
     end
 
-    local Node = require 'util.stl.node'
-    local new_node = Node(data)
-    
-    if self:empty() then
+    local new_node = require 'util.stl.node':new(data)
+
+    if self:isEmpty() then
         InsertNodeToEmptyList(self, new_node)
     elseif node == self._begin_ then
         InsertNodeToBegin(self, new_node)
@@ -161,7 +158,7 @@ function List:insert(data, node)
     else
         InsertNodeFrontOfThePosition(new_node, node)
     end
-    
+
     self._size_ = self._size_ + 1
 
     return true
@@ -207,15 +204,17 @@ end
 
 -- 只找第一筆資料
 function List:find(data)
+    local i = 0
     for node in self:iterator() do
-        if node:getData() == data then 
-            return node
+        i = i + 1
+
+        if node:getData() == data then
+            return node, i
         end
     end
 
     return false
 end
-
 
 -- assert
 local IsNil = require 'util.is_nil'
@@ -226,7 +225,7 @@ function List:iterator()
     local node = self._begin_
     return function()
         if IsNil(node) then
-            return nil 
+            return nil
         end
 
         local prev = node
@@ -240,7 +239,7 @@ function List:reverseIterator()
     local node = self._end_
     return function()
         if IsNil(node) then
-            return nil 
+            return nil
         end
 
         local prev = node
@@ -248,7 +247,6 @@ function List:reverseIterator()
         return prev
     end
 end
-
 
 -- 獲取私有成員變量
 function List:isEmpty()

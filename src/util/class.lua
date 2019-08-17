@@ -11,12 +11,10 @@
 local function Class(name, ...)
     local setmetatable, pairs, table_concat = setmetatable, pairs, table.concat
 
-	local object = {
-		_prototype = {...}, -- 原型，也就是委託的對象，只要該對象有你需要的東西，都可以填進去。排在最前面的原型為第一委託者。
-        _VERSION = "1.0.0",
-        
-		type = name, -- 因為type(object)都會返回table，無法對不同類別的實例作比較，所以儲存類別的名字，在比較時才能區別。
-
+    local object = {
+        _prototype = {...}, -- 原型，也就是委託的對象，只要該對象有你需要的東西，都可以填進去。排在最前面的原型為第一委託者。
+        _VERSION = '1.0.0',
+        type = name, -- 因為type(object)都會返回table，無法對不同類別的實例作比較，所以儲存類別的名字，在比較時才能區別。
         -- TODO: 考慮怎麼解決不要容量重設且_new函數不要有創建實例的動作的問題
         -- HACK: 目前想不到這兩種矛盾的解決方法，先暫時不管容量重設，反正目前鍵值對少，還沒有太大的問題。 - 2019-01-25
         -- HACK: 因為Mover、Missile等類別會直接創建table傳參，因此解決了容量重設的問題以及不要創建實例的問題，
@@ -36,11 +34,10 @@ local function Class(name, ...)
         new = function(self, ...)
             local instance = self:_new(...)
             return setmetatable(instance, self)
-		end,
-
-		-- 在self[key]找不到值時調用，如果沒有設定的話，self[key]是直接回傳nil。
-		-- 搜索原型鏈，將對象委託給原型處理(function)或是返回原型的值(table、string、number、boolean)
-		-- 根據原型鏈的排列順序決定優先度
+        end,
+        -- 在self[key]找不到值時調用，如果沒有設定的話，self[key]是直接回傳nil。
+        -- 搜索原型鏈，將對象委託給原型處理(function)或是返回原型的值(table、string、number、boolean)
+        -- 根據原型鏈的排列順序決定優先度
         -- 不使用rawget的原因是需要搜索整個原型鏈，而不是只有當前原型鏈
         -- table會傳入呼叫此函式的對象，而不是getmetatable(對象)
         __index = function(table, key)
@@ -49,7 +46,7 @@ local function Class(name, ...)
 
             -- 只搜尋指定table有沒有key，不會一直搜索導致stack flow
             local value = rawget(class, key)
-            
+
             if value then
                 -- 如果類別有number、string、boolean、或table，賦值給實例
                 -- NOTE: 考慮要不要用這個功能，或是單純的委託 - 2019-01-26
@@ -62,78 +59,67 @@ local function Class(name, ...)
 
             for i = 1, #class._prototype do
                 -- 這也會執行__index，只是table不同，直到原型鏈的頂端
-				value = class._prototype[i][key]
+                value = class._prototype[i][key]
 
-				if value ~= nil then
-					return value
-				end
-			end
+                if value ~= nil then
+                    return value
+                end
+            end
 
-			return nil
-		end,
+            return nil
+        end,
+        -- __newindex是在對不存在的索引賦值時調用，我們不會拿來賦值，因為self[key] = value就會直接賦值了，
+        -- __newindex存在則編譯器會調用它，而不會調用賦值。如果__newindex是一個table，則會賦值在table裡。
+        -- 如果內部用self[key] = value，它又會因為對不存在的索引賦值而調用__newindex，導致無限循環因而報錯。
+        -- __newindex = function(table, key, value)
+        -- end,
 
-		-- __newindex是在對不存在的索引賦值時調用，我們不會拿來賦值，因為self[key] = value就會直接賦值了，
-		-- __newindex存在則編譯器會調用它，而不會調用賦值。如果__newindex是一個table，則會賦值在table裡。
-		-- 如果內部用self[key] = value，它又會因為對不存在的索引賦值而調用__newindex，導致無限循環因而報錯。
-		-- __newindex = function(table, key, value)
-		-- end,
+        remove = function(self)
+            -- 使用者自訂的解構函數
+            self:_remove()
 
-		remove = function(self)
-			-- 使用者自訂的解構函數
-			self:_remove()
+            for key in pairs(self) do
+                self[key] = nil
+            end
 
-			for key in pairs(self) do
-				self[key] = nil
-			end
-
-			self = nil
-		end,
-
-		-- 使用者自訂的建構函數
+            self = nil
+        end,
+        -- 使用者自訂的建構函數
         _new = function(self, this)
             return this or {}
-		end,
-
-		-- 使用者自訂的解構函數
-		_remove = function(self)
         end,
-        
+        -- 使用者自訂的解構函數
+        _remove = function(self)
+        end,
         -- 因應第三種建構方式，instance會把data複製一份給自己
         _copy = function(self, data)
             if data and type(data) == 'table' then
-                for key, value in pairs(data) do 
+                for key, value in pairs(data) do
                     self[key] = value
                 end
             end
         end,
-
         -- key可以是number或string
         setInstance = function(self, key, instance)
-            self[table_concat({"instance_", key})] = instance
+            self[table_concat({'instance_', key})] = instance
         end,
-
         getInstance = function(self, key)
-            local instance = self[table_concat({"instance_", key})]
+            local instance = self[table_concat({'instance_', key})]
             return instance
         end,
-
         deleteInstance = function(self, key)
-            self[table_concat({"instance_", key})] = nil
+            self[table_concat({'instance_', key})] = nil
         end,
-
         setSubclass = function(self, key, subclass)
-            self[table_concat({"subclass_", key})] = subclass
+            self[table_concat({'subclass_', key})] = subclass
         end,
-
         getSubclass = function(self, key)
-            local subclass = self[table_concat({"subclass_", key})]
+            local subclass = self[table_concat({'subclass_', key})]
             return subclass
         end,
-
         deleteSubclass = function(self, key)
-            self[table_concat({"subclass_", key})] = nil
+            self[table_concat({'subclass_', key})] = nil
         end,
-
         -- 呼叫委託對象
         super = function(self, super_name)
             if #self._prototype == 0 then
@@ -149,12 +135,12 @@ local function Class(name, ...)
                     return self._prototype[i]
                 end
             end
-        end,
-	}
+        end
+    }
 
-	setmetatable(object, object)
+    setmetatable(object, object)
 
-	return object
+    return object
 end
 
 return Class
