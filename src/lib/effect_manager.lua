@@ -20,7 +20,7 @@ LoadTemplates = function()
 
     -- 使用xpcall捕獲require異常，會知道哪個module沒讀到
     for _, name in ipairs(templates) do
-        local success, template = xpcall(require, debug.traceback, concat{path, name}))
+        local success, template = xpcall(require, debug.traceback, concat{path, name})
         if success then
             effects[template.name] = Effect:new(template, self)
         end
@@ -37,7 +37,7 @@ function EffectManager:getInstance()
     return self._instance_
 end
 
-function EffectManager:getEffect(name)
+function EffectManager:find(name)
     return self._effects_[name]
 end
 

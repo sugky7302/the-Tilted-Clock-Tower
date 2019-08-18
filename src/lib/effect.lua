@@ -36,8 +36,8 @@ function Effect:start(new_task)
 
     if new_task.valid then
         self:on_add(new_task)
-    -- AddModel(self, new_task)
-    -- StartTimer(self, new_task)
+        AddModel(self, new_task)
+        StartTimer(self, new_task)
     end
 end
 
@@ -48,48 +48,50 @@ function Effect:clear()
 end
 
 function Effect:delete(task)
-    -- task.timer:stop()
+    task.timer:stop()
     self:on_delete(task)
-    -- DeleteModel(self, task)
+    DeleteModel(self, task)
     DeleteTask(self, task)
 end
 
 function Effect:finish(task)
     self:on_finish(task)
     self:on_delete(task)
-    -- DeleteModel(self, task)
+    DeleteModel(self, task)
     DeleteTask(self, task)
 end
 
 function Effect:pause(task)
     task.valid = false
-    -- task.timer:pause()
+    task.timer:pause()
     self:on_delete(task)
-    -- DeleteModel(self, task)
+    DeleteModel(self, task)
 end
 
 function Effect:resume(task)
     task.valid = true
     self:on_add(task)
-    -- AddModel(self, task)
-    -- task.timer:resume()
+    AddModel(self, task)
+    task.timer:resume()
 end
 
 InitArgs = function(new_task)
     new_task.valid = true
 end
 
--- AddModel = function(self, task)
---     if task.target身上沒有self._model_ then
---         task.target:addModel(self._model_)
---     end
--- end
+-- BUG: 尚未設定條件
+AddModel = function(self, task)
+    if task.target身上沒有self._model_ then
+        task.target:addModel(self._model_)
+    end
+end
 
--- DeleteModel = function(self, task)
---     if task.target身上沒有self._model_ then
---         task.target:deleteModel(self._model_)
---     end
--- end
+-- BUG: 尚未設定條件
+DeleteModel = function(self, task)
+    if task.target身上沒有self._model_ then
+        task.target:deleteModel(self._model_)
+    end
+end
 
 AddTask = function(self, new_task)
     if self._tasks_:isEmpty() then

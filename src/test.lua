@@ -4,8 +4,8 @@ local clock = os.clock
 local start_time = clock()
 ----------------以下為撰寫區----------------
 
-local e = require 'lib.effect_manager':getInstance()
-e:getEffect("測試").on_cover()
+local e = require('lib.effect_manager'):getInstance()
+e:find("測試").on_cover()
 
 ----------------以上為撰寫區----------------
 local end_time = clock()
