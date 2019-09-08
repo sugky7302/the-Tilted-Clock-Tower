@@ -79,16 +79,14 @@ InitArgs = function(new_task)
     new_task.valid = true
 end
 
--- BUG: 尚未設定條件
 AddModel = function(self, task)
-    if task.target身上沒有self._model_ then
+    if not task.target:hasModel(self._model_) then
         task.target:addModel(self._model_)
     end
 end
 
--- BUG: 尚未設定條件
 DeleteModel = function(self, task)
-    if task.target身上沒有self._model_ then
+    if not task.target:hasModel(self._model_) then
         task.target:deleteModel(self._model_)
     end
 end

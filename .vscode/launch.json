@@ -42,7 +42,7 @@
             "type": "lua",
             "request": "launch",
             "stopOnEntry": true,
-            "program": "${workspaceFolder}\\src\\test.lua",
+            "program": "${fileDirname}\\${fileBasenameNoExtension}.lua",
             "cwd": "${workspaceFolder}",
             "path": "${workspaceFolder}\\src\\?.lua",
             "cpath": "${workspaceFolder}\\?.dll",

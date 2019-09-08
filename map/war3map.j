@@ -47,7 +47,6 @@ trigger l__library_init
 
 endglobals
 
-
 //library Base:
     
     function Base__Init takes nothing returns nothing

@@ -4,7 +4,6 @@
 	"recommendations": [
 		// Extension identifier format: ${publisher}.${name}. Example: vscode.csharp
 		"actboy168.tasks",
-		"actboy168.lua-debug",
-		"FakedWeiss.awesome-vjass-support"
+		"actboy168.lua-debug"
 	]
 }
