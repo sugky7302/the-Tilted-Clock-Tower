@@ -1,4 +1,4 @@
-local Status = require 'lib.status'
+local Status = require 'lib_old.status'
 
 a = Status()
 

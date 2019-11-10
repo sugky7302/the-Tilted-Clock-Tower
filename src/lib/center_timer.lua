@@ -5,15 +5,21 @@ local setmetatable = setmetatable
 local CenterTimer = {__mode = 'kv'}
 setmetatable(CenterTimer, CenterTimer)
 
-local CLOCK_CYCLE, INSTRUCTION_COUNT = 0.001, 10
+local StartTimer, NewTimer, CLOCK_CYCLE, INSTRUCTION_COUNT
 local current_frame, end_frame, order_queue_index = 0, 0, 0
 local ExecuteOrder, ProcessOrder
 
 
+function CenterTimer.init(start_timer_func, timer_func, clock_cycle, instruction_count)
+    StartTimer = start_timer_func
+    NewTimer = timer_func
+    CLOCK_CYCLE = clock_cycle
+    INSTRUCTION_COUNT = instruction_count
+end
+
 function CenterTimer.start()
-    local cj = require 'jass.common'
-    cj.TimerStart(
-        cj.CreateTimer(),
+    StartTimer(
+        NewTimer(),
         CLOCK_CYCLE * INSTRUCTION_COUNT,
         true,
         function()

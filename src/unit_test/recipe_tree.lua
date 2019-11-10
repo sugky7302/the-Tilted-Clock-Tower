@@ -1,4 +1,4 @@
-Class = require 'lib.recipe_tree'
+Class = require 'lib_old.recipe_tree'
 
 a = Class()
 a:insert{"a", 3, "b", 2, "c", 1, "d"}
@@ -7,7 +7,7 @@ a:insert{"a", 5, "b", 1, "c", 4, "f"}
 a:insert{"a", 2, "b", 2, "c", 1, "g"}
 a:insert{"a", 3, "b", 2, "c", 6, "h"}
 
-Class1 = require 'lib.consumables'
+Class1 = require 'lib_old.consumables'
 local b = a:query{
     Class1{
         type = "b",

@@ -1,5 +1,14 @@
 # 更新日誌
 
+## 0.78.0 - 2019-11-09
+
+### Added:
+- [lib/center_timer] 新增init函數，可以外部設定計時器啟動函數、計時器生成函數、週期和單次週期執行的個數。
+
+### Changed:
+- 原lib更名為lib_old，並新增lib。lib是放入從lib_old優化後的檔案。
+- test更名為unit_test
+
 ## 0.77.0 - 2019-09-08
 
 ### Added:
