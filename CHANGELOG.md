@@ -1,5 +1,13 @@
 # 更新日誌
 
+## 0.79.0 - 2019-11-xx
+
+### Added:
+- lib新增quest。
+
+### Changed:
+- [class] _copy現在會回傳self，讓self._copy(duplication, origin)可以複製資料到任一table，不再綁定self。
+
 ## 0.78.0 - 2019-11-09
 
 ### Added:

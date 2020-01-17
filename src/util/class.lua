@@ -91,6 +91,8 @@ local function Class(name, ...)
                     self[key] = value
                 end
             end
+
+            return self
         end,
         -- key可以是number或string
         setInstance = function(self, key, instance)

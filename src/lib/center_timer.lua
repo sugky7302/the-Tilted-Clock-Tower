@@ -77,7 +77,7 @@ ProcessOrder = function(order)
         return false
     end
 
-    CenterTimer.insert(order.frame_)
+    CenterTimer.insert(order, order.frame_)
 end
 
 -- NOTE: 不直接使用order.frame_的原因是
