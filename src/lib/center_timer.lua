@@ -1,6 +1,5 @@
 local setmetatable = setmetatable
 
-
 -- NOTE: 設計為弱引用表是因為讓lua在做垃圾收集時，能夠將失效的幀的table完全清除。
 local CenterTimer = {__mode = 'kv'}
 setmetatable(CenterTimer, CenterTimer)
@@ -8,7 +7,6 @@ setmetatable(CenterTimer, CenterTimer)
 local StartTimer, NewTimer, CLOCK_CYCLE, INSTRUCTION_COUNT
 local current_frame, end_frame, order_queue_index = 0, 0, 0
 local ExecuteOrder, ProcessOrder
-
 
 function CenterTimer.init(start_timer_func, timer_func, clock_cycle, instruction_count)
     StartTimer = start_timer_func
@@ -23,13 +21,15 @@ function CenterTimer.start()
         CLOCK_CYCLE * INSTRUCTION_COUNT,
         true,
         function()
-            end_frame = end_frame + INSTRUCTION_COUNT
-            for i = 1, INSTRUCTION_COUNT do
-                -- 每一幀的命令隊列都處理完才做下一幀
-                if order_queue_index == 0 then
-                    current_frame = current_frame + 1
-                end
+            -- 上一幀的命令隊列尚未處理完
+            if order_queue_index > 0 then
+                current_frame = current_frame - 1
+            end
 
+            end_frame = end_frame + INSTRUCTION_COUNT
+
+            for i = current_frame, end_frame do
+                current_frame = current_frame + 1
                 ExecuteOrder()
             end
         end
@@ -39,6 +39,7 @@ end
 ExecuteOrder = function()
     local order_queue = CenterTimer[current_frame]
     if not order_queue then
+        order_queue_index = 0
         return false
     end
 
@@ -53,6 +54,9 @@ ExecuteOrder = function()
         order_queue_index = i
         order_queue[i] = nil
     end
+
+    -- 所有命令都做完了，命令索引要指回第一個
+    order_queue_index = 0
 
     -- 必須所有引用都清除，lua才會釋放記憶體
     CenterTimer[current_frame] = nil
@@ -124,6 +128,5 @@ end
 function CenterTimer.now()
     return current_frame
 end
-
 
 return CenterTimer
