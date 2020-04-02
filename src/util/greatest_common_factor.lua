@@ -10,7 +10,7 @@ local function GreatestCommonFactor(num1, num2)
         small_num = num1
     end
 
-    for i = 1, big_num do 
+    for i = 1, big_num do
         big_num = big_num % small_num
         if big_num == 0 then
             return small_num
@@ -19,7 +19,6 @@ local function GreatestCommonFactor(num1, num2)
         -- 保證big_num > small_num
         big_num, small_num = small_num, big_num
     end
-end 
+end
 
 return GreatestCommonFactor
-    

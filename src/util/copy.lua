@@ -2,7 +2,7 @@
 -- 淺複製: 引用子可變對象
 -- 深複製: 複製子可變對象
 
-local pairs, setmetatable, getmetatable = pairs, setmetatable, getmetatable
+local pairs = pairs
 
 local function Copy(object)
     local duplicate = {}

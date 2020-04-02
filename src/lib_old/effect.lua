@@ -97,9 +97,7 @@ AddTask = function(self, new_task)
         return
     end
 
-    -- 獨佔模式
-    if self._mode_ == 0 then
-        -- 共存模式
+    if self._mode_ == 0 then  -- 獨佔模式
         -- effect無法覆蓋
         if not self.on_cover then
             new_task.valid = false
@@ -117,7 +115,7 @@ AddTask = function(self, new_task)
         -- 替換成新的效果
         self._tasks_:pop_front()
         self._tasks_:push_back(new_task)
-    else
+    else  -- 共存模式
         self._tasks_:push_back(new_task)
 
         -- size可以當作新的任務的索引

@@ -60,7 +60,6 @@ ExecuteOrder = function()
 
     -- 必須所有引用都清除，lua才會釋放記憶體
     CenterTimer[current_frame] = nil
-    order_queue = nil
 end
 
 ProcessOrder = function(order)
